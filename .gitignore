@@ -37,3 +37,4 @@ lerna-debug.log*
 
 # Database data
 db/data
+docker-compose.override.yml

@@ -6,7 +6,11 @@ import { AppModule } from './modules/app/app.module';
 const apiName = 'offchain-purchase-service';
 
 export async function bootstrap(host: string, prefix: string, port: number) {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: {
+      origin: process.env.CORS_ORIGIN
+    }
+  });
 
   app.setGlobalPrefix(prefix);
   // app.useGlobalInterceptors(new RequestErrorInterceptor());

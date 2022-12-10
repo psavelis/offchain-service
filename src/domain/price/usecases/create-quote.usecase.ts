@@ -153,6 +153,8 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       quote.gatewayAmountInBrl,
     );
 
+    quote.gasAmountInEth = userEstimatedGasFee.ETH;
+
     quote.totalPerTokenInUserCurrency = this.calculusPort.divide(
       quote.totalInUserCurrency,
       quote.finalAmountOfTokens,

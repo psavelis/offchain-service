@@ -25,6 +25,8 @@ export interface Quote {
   gasAmountInBrl: CurrencyAmount;
   totalFeeAmountInBrl: CurrencyAmount;
 
+  gasAmountInEth: CurrencyAmount;
+
   netTotalInBrl: CurrencyAmount;
   netTotalInUsd: CurrencyAmount;
   netTotalInEth: CurrencyAmount;

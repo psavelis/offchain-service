@@ -35,10 +35,10 @@ export class FetchableGasPriceJsonRpcAdapter implements FetchableGasPricePort {
     // ====> maxPriorityFeePerGas: maxPriority
 
     // https://docs.alchemy.com/reference/eth-gasprice
-    const gasPrice = await this.alchemyInstance.core.getGasPrice();
+    const feeData = await this.alchemyInstance.core.getFeeData();
 
     return {
-      unassignedNumber: gasPrice.toString(),
+      unassignedNumber: feeData.maxFeePerGas.toString(),
       decimals: 18,
       isoCode: 'ETH',
     };

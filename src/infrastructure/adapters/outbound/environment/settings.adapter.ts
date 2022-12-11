@@ -57,7 +57,7 @@ export class SettingsAdapter {
       },
       price: {
         quoteExpirationSeconds: this.envNumber('QUOTE_EXPIRATION_SECONDS'),
-        persistQuotes: true,
+        persistQuotes: JSON.parse(this.envString('PERSIST_QUOTES')),
       },
     };
   }

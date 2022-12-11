@@ -59,13 +59,11 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   }
 
   async execute(entry: CreateQuoteDto): Promise<Quote> {
-    console.time('fetch-basis');
     const [ethBasis, knnBasis, usdBasis] = await Promise.all([
       this.ethPort.fetch(entry.forceReload),
       this.knnPort.fetch(entry.forceReload),
       this.usdPort.fetch(entry.forceReload),
     ]);
-    console.timeEnd('fetch-basis');
 
     const {
       amount: {
@@ -96,8 +94,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       knnBasis,
       ethBasis,
     );
-
-    console.time('calculus');
 
     const quote = {} as Quote;
     quote.userCurrency = userCurrency;
@@ -171,8 +167,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       userCurrency,
     );
 
-    console.timeEnd('calculus');
-
     if (this.settings.price.persistQuotes && !entry.forceReload) {
       await this.persistableQuotePort.save(quote).catch((e) => {
         console.log(e);
@@ -227,7 +221,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     knnQuotation: KnnQuoteBasis,
     ethQuotation: EthQuoteBasis,
   ): Promise<QuotationAggregate> {
-    console.time('calc-gas');
     const gasPriceInETH = await this.gasPricePort.fetch(entry.forceReload);
 
     const estimatedGasInWEI = LOCK_SUPPLY_GAS + CLAIM_TOKEN_GAS;
@@ -243,8 +236,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       gasPriceInETH,
       IsoCodes.ETH,
     );
-
-    console.timeEnd('calc-gas');
 
     return this.calculateETH(
       amountInETH,

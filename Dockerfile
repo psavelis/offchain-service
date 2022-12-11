@@ -1,4 +1,4 @@
-FROM node:16.18
+FROM --platform=linux/amd64 node:16.18
 
 COPY ./ /var/www
 
@@ -12,15 +12,17 @@ RUN npm prune --production
 
 
 
-FROM node:16.18-alpine
+FROM --platform=linux/amd64 node:16.18-alpine
 
 ENV NODE_ENV=production
 ENV APP_NAME=offchain-purchase-service-dev
 ENV API_ENTRYPOINT=v1/purchases
 ENV API_PORT=3000
 ENV API_HOST=localhost
+ENV CORS_ORIGIN=*
 ENV QUOTE_EXPIRATION_SECONDS=3600
 ENV PERSIST_QUOTES=false
+ENV RPC_NETWORK=eth-mainnet
 
 WORKDIR /var/www
 

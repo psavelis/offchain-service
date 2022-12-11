@@ -8,7 +8,8 @@ const apiName = 'offchain-purchase-service';
 export async function bootstrap(host: string, prefix: string, port: number) {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: process.env.CORS_ORIGIN
+      origin: [process.env.CORS_ORIGIN],
+      methods: ['POST', 'PUT', 'DELETE', 'GET'],
     }
   });
 

@@ -28,6 +28,6 @@ export class PriceController {
 
   @Post('quote')
   postQuote(@Body() entry: CreateQuoteDto) {
-    return this.createQuote.execute(entry);
+    return this.createQuote.execute({ ...entry, forceReload: false });
   }
 }

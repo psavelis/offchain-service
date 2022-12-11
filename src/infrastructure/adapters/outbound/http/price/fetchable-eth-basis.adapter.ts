@@ -7,7 +7,7 @@ const BRL_ISO_CODE = 'BRL';
 const USD_ISO_CODE = 'USD';
 const QUOTATION_DECIMALS = 2;
 const QUOTATION_PRECISION = 1e2;
-const QUOTATION_EXPIRATION_SECONDS = 15;
+const QUOTATION_EXPIRATION_SECONDS = 10;
 
 const KNOWN_ETHBRL_FLOOR = 1_000;
 const KNOWN_ETHBRL_CEILING = 100_000;
@@ -22,7 +22,11 @@ export interface PartnerQuotation {
 
 export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
   static instance: FetchableEthBasisPort;
-  private constructor() {}
+  static cachedBasis: EthQuoteBasis;
+
+  private constructor() {
+    FetchableEthBasisHttpAdapter.cachedBasis = null;
+  }
 
   static getInstance(): FetchableEthBasisPort {
     if (!FetchableEthBasisHttpAdapter.instance) {
@@ -33,7 +37,24 @@ export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
     return FetchableEthBasisHttpAdapter.instance;
   }
 
-  async fetch(): Promise<EthQuoteBasis> {
+  static getCachedBasis(): EthQuoteBasis {
+    if (
+      FetchableEthBasisHttpAdapter.cachedBasis &&
+      FetchableEthBasisHttpAdapter.cachedBasis.expiration > new Date()
+    ) {
+      return FetchableEthBasisHttpAdapter.cachedBasis;
+    }
+
+    return null;
+  }
+
+  async fetch(forceReload: boolean = false): Promise<EthQuoteBasis> {
+    const cached = FetchableEthBasisHttpAdapter.getCachedBasis();
+
+    if (cached && !forceReload) {
+      return cached;
+    }
+
     const quotation = await fetch(
       'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BRL,USD',
     );
@@ -89,14 +110,15 @@ export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
         )}, SOURCE:${JSON.stringify(quotationRoot)})`,
       );
     }
-
-    return {
+    FetchableEthBasisHttpAdapter.cachedBasis = {
       BRL: brlQuotation,
       USD: usdQuotation,
       expiration: new Date(
         new Date().getTime() + QUOTATION_EXPIRATION_SECONDS * 1_000,
       ),
     };
+
+    return FetchableEthBasisHttpAdapter.cachedBasis;
   }
 
   private validatePartnerBrlQuotation(quotation: PartnerQuotation): boolean {

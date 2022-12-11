@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { CronJob } from 'cron';
 import { CreateQuoteDto } from '../../../../../../domain/price/dtos/create-quote.dto';
 import {
   CreateQuote,
@@ -11,16 +11,23 @@ export class PriceController {
   constructor(
     @Inject(CreateQuote)
     readonly createQuote: CreateQuoteInteractor,
-  ) {}
+  ) {
+    const job = new CronJob('*/7 * * * * *', () => {
+      return this.createQuote.execute({
+        amount: {
+          unassignedNumber: '1',
+          decimals: 0,
+          isoCode: 'USD',
+        },
+        forceReload: true,
+      });
+    });
 
-  // @UseGuards(AuthGuard('bearer'))
+    job.start();
+  }
+
   @Post('quote')
   postQuote(@Body() entry: CreateQuoteDto) {
     return this.createQuote.execute(entry);
-  }
-
-  @Get()
-  getPrice() {
-    throw new Error('NOT IMPLEMENTED!');
   }
 }

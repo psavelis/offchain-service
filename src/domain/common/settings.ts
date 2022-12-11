@@ -1,6 +1,7 @@
 export interface Settings {
   price: {
     quoteExpirationSeconds: number;
+    persistQuotes: boolean;
   };
   db: {
     database: string;

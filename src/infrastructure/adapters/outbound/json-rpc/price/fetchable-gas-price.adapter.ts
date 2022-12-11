@@ -5,15 +5,13 @@ import { Settings } from '../../../../../domain/common/settings';
 
 export class FetchableGasPriceJsonRpcAdapter implements FetchableGasPricePort {
   static instance: FetchableGasPricePort;
+  static cachedAmount: CurrencyAmount;
+  static cacheExpiration: Date;
   private readonly alchemyInstance: Alchemy;
 
   private constructor(readonly alchemySettings: AlchemySettings) {
-    // const settings = {
-    //   apiKey: "demo", // Replace with your Alchemy API Key.
-    //   network: Network.ETH_MAINNET, // Replace with your network.
-    // };
-
     this.alchemyInstance = new Alchemy(alchemySettings);
+    FetchableGasPriceJsonRpcAdapter.cachedAmount = null;
   }
 
   static getInstance(settings: Settings) {
@@ -28,19 +26,36 @@ export class FetchableGasPriceJsonRpcAdapter implements FetchableGasPricePort {
     return FetchableGasPriceJsonRpcAdapter.instance;
   }
 
-  async fetch(): Promise<CurrencyAmount> {
-    // baseFee => web3alch.eth.getBlock('pending'): block.baseFeePerGas
-    // maxPriority => web3alch.eth.getMaxPriorityFeePerGas: number 'tip' (maxPriority = tip)
-    // ===>> maxFeePerGas: baseFee + maxPriority
-    // ====> maxPriorityFeePerGas: maxPriority
+  static getCachedBasis(): CurrencyAmount {
+    if (
+      FetchableGasPriceJsonRpcAdapter.cachedAmount &&
+      FetchableGasPriceJsonRpcAdapter.cacheExpiration > new Date()
+    ) {
+      return FetchableGasPriceJsonRpcAdapter.cachedAmount;
+    }
 
-    // https://docs.alchemy.com/reference/eth-gasprice
+    return null;
+  }
+
+  async fetch(forceReload: boolean = false): Promise<CurrencyAmount> {
+    const cached = FetchableGasPriceJsonRpcAdapter.getCachedBasis();
+
+    if (cached && !forceReload) {
+      return cached;
+    }
+
     const feeData = await this.alchemyInstance.core.getFeeData();
 
-    return {
+    FetchableGasPriceJsonRpcAdapter.cachedAmount = {
       unassignedNumber: feeData.maxFeePerGas.toString(),
       decimals: 18,
       isoCode: 'ETH',
     };
+
+    FetchableGasPriceJsonRpcAdapter.cacheExpiration = new Date(
+      new Date().getTime() + 1_000 * 10,
+    );
+
+    return FetchableGasPriceJsonRpcAdapter.cachedAmount;
   }
 }

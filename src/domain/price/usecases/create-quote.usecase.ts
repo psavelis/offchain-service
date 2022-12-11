@@ -27,6 +27,9 @@ export type CalculationStrategy = (
   ethQuotation: EthQuoteBasis,
 ) => QuotationAggregate;
 
+const LOCK_SUPPLY_GAS = 65_361;
+const CLAIM_TOKEN_GAS = 54_981;
+
 export interface CalculationStrategyAggregate
   extends Record<CurrencyIsoCode, CalculationStrategy> {}
 
@@ -58,9 +61,9 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   async execute(entry: CreateQuoteDto): Promise<Quote> {
     console.time('fetch-basis');
     const [ethBasis, knnBasis, usdBasis] = await Promise.all([
-      this.ethPort.fetch(),
-      this.knnPort.fetch(),
-      this.usdPort.fetch(),
+      this.ethPort.fetch(entry.forceReload),
+      this.knnPort.fetch(entry.forceReload),
+      this.usdPort.fetch(entry.forceReload),
     ]);
     console.timeEnd('fetch-basis');
 
@@ -80,6 +83,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     );
 
     const userEstimatedGasFee: QuotationAggregate = await this.calculateGas(
+      entry,
       usdBasis,
       knnBasis,
       ethBasis,
@@ -169,10 +173,13 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     console.timeEnd('calculus');
 
-    return this.persistableQuotePort.save(quote).catch((e) => {
-      console.log(e);
-      return quote;
-    });
+    if (this.settings.price.persistQuotes && !entry.forceReload) {
+      await this.persistableQuotePort.save(quote).catch((e) => {
+        console.log(e);
+        return quote;
+      });
+    }
+    return quote;
   }
 
   private async calculateGatewayFee(
@@ -200,7 +207,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     userEstimatedGasFee: QuotationAggregate,
   ): Promise<CurrencyAmount> {
     const gatewayFeeInBrl: CurrencyAmount = {
-      unassignedNumber: '1', // 0.01
+      unassignedNumber: '0',
       decimals: 2,
       isoCode: IsoCodes.BRL,
     }; // TODO: parametrizar calculo do gateway
@@ -215,14 +222,15 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   }
 
   async calculateGas(
+    entry: CreateQuoteDto,
     usdQuotation: UsdQuoteBasis,
     knnQuotation: KnnQuoteBasis,
     ethQuotation: EthQuoteBasis,
   ): Promise<QuotationAggregate> {
     console.time('calc-gas');
-    const gasPriceInETH = await this.gasPricePort.fetch();
+    const gasPriceInETH = await this.gasPricePort.fetch(entry.forceReload);
 
-    const estimatedGasInWEI = 70_000 * 2; // TODO: env!
+    const estimatedGasInWEI = LOCK_SUPPLY_GAS + CLAIM_TOKEN_GAS;
 
     const amountInWEI: CurrencyAmount = {
       unassignedNumber: estimatedGasInWEI.toString(),

@@ -25,11 +25,15 @@ const BRL_ISO_CODE = 'BRL';
 const USD_QUOTATION_DECIMALS = 4;
 const KNOWN_USDBRL_FLOOR = 4;
 const KNOWN_USDBRL_CEILING = 7;
-const QUOTATION_EXPIRATION_SECONDS = 30;
+const QUOTATION_EXPIRATION_SECONDS = 10;
 
 export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
   static instance: FetchableUsdBasisPort;
-  private constructor() {}
+  static cachedBasis: UsdQuoteBasis;
+
+  private constructor() {
+    FetchableUsdBasisHttpAdapter.cachedBasis = null;
+  }
 
   static getInstance() {
     if (!FetchableUsdBasisHttpAdapter.instance) {
@@ -40,7 +44,24 @@ export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
     return FetchableUsdBasisHttpAdapter.instance;
   }
 
-  async fetch(): Promise<UsdQuoteBasis> {
+  static getCachedBasis(): UsdQuoteBasis {
+    if (
+      FetchableUsdBasisHttpAdapter.cachedBasis &&
+      FetchableUsdBasisHttpAdapter.cachedBasis.expiration > new Date()
+    ) {
+      return FetchableUsdBasisHttpAdapter.cachedBasis;
+    }
+
+    return null;
+  }
+
+  async fetch(forceReload: boolean = false): Promise<UsdQuoteBasis> {
+    const cached = FetchableUsdBasisHttpAdapter.getCachedBasis();
+
+    if (cached && !forceReload) {
+      return cached;
+    }
+
     const quotation = await fetch(
       'https://economia.awesomeapi.com.br/json/last/usd',
     );
@@ -69,12 +90,14 @@ export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
       );
     }
 
-    return {
+    FetchableUsdBasisHttpAdapter.cachedBasis = {
       BRL: usdQuotation,
       expiration: new Date(
         new Date().getTime() + QUOTATION_EXPIRATION_SECONDS * 1_000,
       ),
     };
+
+    return FetchableUsdBasisHttpAdapter.cachedBasis;
   }
 
   private validatePartnerQuotation(quotation: PartnerQuotation): boolean {

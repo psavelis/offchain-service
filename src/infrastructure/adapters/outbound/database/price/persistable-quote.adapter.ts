@@ -52,12 +52,12 @@ export class PersistableQuoteDbAdapter implements PersistableQuotePort {
       id: quote.id,
       json: JSON.stringify(quote),
       amountOfTokens: this.parseCurrency(quote.finalAmountOfTokens),
-      totalPerToken: this.parseCurrency(quote.totalPerTokenInBrl),
-      netTotal: this.parseCurrency(quote.netTotalInBrl),
-      gasAmount: this.parseCurrency(quote.gasAmountInBrl),
-      grossTotal: this.parseCurrency(quote.grossTotalInBrl),
-      gatewayAmount: this.parseCurrency(quote.gatewayAmountInBrl),
-      total: this.parseCurrency(quote.totalInBrl),
+      totalPerToken: this.parseCurrency(quote.totalPerToken.BRL),
+      netTotal: this.parseCurrency(quote.netTotal.BRL),
+      gasAmount: this.parseCurrency(quote.gasAmount.BRL),
+      grossTotal: this.parseCurrency(quote.grossTotal.BRL),
+      gatewayAmount: this.parseCurrency(quote.gatewayAmount.BRL),
+      total: this.parseCurrency(quote.total.BRL),
     };
   }
 

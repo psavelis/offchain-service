@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:16.18
+FROM --platform=linux/amd64 946496025810.dkr.ecr.us-east-1.amazonaws.com/node:16.18
 
 COPY ./ /var/www
 
@@ -12,7 +12,7 @@ RUN npm prune --production
 
 
 
-FROM --platform=linux/amd64 node:16.18-alpine
+FROM --platform=linux/amd64 946496025810.dkr.ecr.us-east-1.amazonaws.com/node:16.18-alpine
 
 ENV NODE_ENV=production
 ENV APP_NAME=offchain-purchase-service-dev

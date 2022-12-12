@@ -76,8 +76,10 @@ export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
       );
     }
 
+    const [integer, decimals] = quotationRoot.USDBRL.ask.split('.');
+
     const usdQuotation: CurrencyAmount = {
-      unassignedNumber: quotationRoot.USDBRL.ask.replace('.', ''),
+      unassignedNumber: integer + decimals.padEnd(4, '0'),
       decimals: USD_QUOTATION_DECIMALS,
       isoCode: BRL_ISO_CODE,
     };

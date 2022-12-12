@@ -36,11 +36,11 @@ export class FixedPointCalculusAdapter implements CalculusPort {
     );
   }
 
-  toCurrency(
+  toCurrency<C extends CurrencyIsoCode>(
     fixedNumber: FixedNumber,
     decimals: number,
-    isoCode: CurrencyIsoCode,
-  ): CurrencyAmount {
+    isoCode: C,
+  ): CurrencyAmount<C> {
     const fixedString = fixedNumber.toString();
     if (fixedNumber.isNegative()) {
       throw new Error(`Possible Underflow ${fixedString}}`);
@@ -53,7 +53,10 @@ export class FixedPointCalculusAdapter implements CalculusPort {
     };
   }
 
-  sum(a: CurrencyAmount, b: CurrencyAmount): CurrencyAmount {
+  sum<T extends CurrencyIsoCode = CurrencyIsoCode>(
+    a: CurrencyAmount<T>,
+    b: CurrencyAmount<T>
+  ): CurrencyAmount<T> {
     const bigNumberResult = this.toFixedNumber(a).addUnsafe(
       this.toFixedNumber(b),
     );
@@ -65,11 +68,11 @@ export class FixedPointCalculusAdapter implements CalculusPort {
     );
   }
 
-  divide(
-    dividend: CurrencyAmount,
-    divisor: CurrencyAmount,
-    outCurrency: CurrencyIsoCode,
-  ): CurrencyAmount {
+  divide<C extends CurrencyIsoCode, T extends CurrencyIsoCode = CurrencyIsoCode, U extends CurrencyIsoCode = T>(
+    dividend: CurrencyAmount<T>,
+    divisor: CurrencyAmount<U>,
+    outCurrency: C,
+  ): CurrencyAmount<C> {
     const division = this.toFixedNumber(dividend).divUnsafe(
       this.toFixedNumber(divisor),
     );
@@ -77,11 +80,11 @@ export class FixedPointCalculusAdapter implements CalculusPort {
     return this.toCurrency(division, bigNumberDecimals, outCurrency);
   }
 
-  multiply(
-    a: CurrencyAmount,
-    b: CurrencyAmount,
-    outCurrency: CurrencyIsoCode,
-  ): CurrencyAmount {
+  multiply<C extends CurrencyIsoCode, T extends CurrencyIsoCode = CurrencyIsoCode, U extends CurrencyIsoCode = T>(
+    a: CurrencyAmount<T>,
+    b: CurrencyAmount<U>,
+    outCurrency: C,
+  ): CurrencyAmount<C> {
     const res = this.toFixedNumber(a).mulUnsafe(this.toFixedNumber(b));
 
     return this.toCurrency(res, bigNumberDecimals, outCurrency);

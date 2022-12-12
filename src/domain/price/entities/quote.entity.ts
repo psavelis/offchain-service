@@ -1,36 +1,32 @@
-import { CurrencyAmount } from '../value-objects/currency-amount.value-object';
+import { CurrencyAmount, CurrencyIsoCode, IsoCodes } from '../value-objects/currency-amount.value-object';
 
-export interface Quote {
+export interface Quote<T extends CurrencyIsoCode = CurrencyIsoCode> {
   id: string;
-  userCurrency: string;
-  userUnassignedNumber: string;
-  userDecimals: number;
 
-  userAmount: CurrencyAmount;
+  userAmount: CurrencyAmount<T>;
+  finalAmountOfTokens: CurrencyAmount<IsoCodes.KNN>;
+  total: {
+    [k in CurrencyIsoCode]: CurrencyAmount<k>
+  };
+  totalPerToken: {
+    [k in Exclude<CurrencyIsoCode, 'KNN'>]: CurrencyAmount<k>
+  };
+  gasAmount: {
+    [k in CurrencyIsoCode]: CurrencyAmount<k>
+  };
+  gatewayAmount: {
+    [k in CurrencyIsoCode]: CurrencyAmount<k>
+  };
+  netTotal: {
+    [k in CurrencyIsoCode]: CurrencyAmount<k>
+  };
+  grossTotal: {
+    [k in CurrencyIsoCode]: CurrencyAmount<k>
+  };
+  totalFeeAmount: {
+    [k in CurrencyIsoCode]: CurrencyAmount<k>
+  };
 
   createdAt: Date;
   expiresAt: Date;
-
-  finalAmountOfTokens: CurrencyAmount;
-  totalInBrl: CurrencyAmount;
-  totalPerTokenInBrl: CurrencyAmount;
-
-  gasAmountInUserCurrency: CurrencyAmount;
-  netTotalInUserCurrency: CurrencyAmount;
-  grossTotalInUserCurrency: CurrencyAmount;
-  totalPerTokenInUserCurrency: CurrencyAmount;
-
-  grossTotalInBrl: CurrencyAmount;
-  gatewayAmountInBrl: CurrencyAmount;
-  gasAmountInBrl: CurrencyAmount;
-  totalFeeAmountInBrl: CurrencyAmount;
-
-  gasAmountInEth: CurrencyAmount;
-
-  netTotalInBrl: CurrencyAmount;
-  netTotalInUsd: CurrencyAmount;
-  netTotalInEth: CurrencyAmount;
-  gatewayAmountInUserCurrency: CurrencyAmount;
-  totalInUserCurrency: CurrencyAmount;
-  totalFeeAmountInUserCurrency: CurrencyAmount;
 }

@@ -1,13 +1,10 @@
 version: 0.2
-env:
-  variables:
-    REPOSITORY_URI: 946496025810.dkr.ecr.us-east-1.amazonaws.com
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - APP_REPOSITORY_URI=$REPOSITORY_URI/offchain-purchase-service
+      - APP_REPOSITORY_URI=${DOCKER_REPOSITORY}offchain-purchase-service
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
       - $(aws ecr get-login --no-include-email)
@@ -17,7 +14,7 @@ phases:
     commands:
       - echo Build started on `date`
       - echo Building the Docker images...
-      - docker build --cache-from $APP_REPOSITORY_URI:latest -t $APP_REPOSITORY_URI:latest ./
+      - docker build --build-arg DOCKER_REPOSITORY=$DOCKER_REPOSITORY  --cache-from $APP_REPOSITORY_URI:latest -t $APP_REPOSITORY_URI:latest ./
       - docker tag $APP_REPOSITORY_URI:latest $APP_REPOSITORY_URI:$IMAGE_TAG
       - echo Build completed on `date`
   post_build:

@@ -1,3 +1,5 @@
+ARG DOCKER_REPOSITORY=''
+
 FROM --platform=linux/amd64 ${DOCKER_REPOSITORY}node:16.18
 
 COPY ./ /var/www

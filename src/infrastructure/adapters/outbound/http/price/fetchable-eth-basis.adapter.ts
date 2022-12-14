@@ -7,7 +7,7 @@ const BRL_ISO_CODE = 'BRL';
 const USD_ISO_CODE = 'USD';
 const QUOTATION_DECIMALS = 2;
 const QUOTATION_PRECISION = 1e2;
-const QUOTATION_EXPIRATION_SECONDS = 10;
+const QUOTATION_EXPIRATION_SECONDS = 45;
 
 const KNOWN_ETHBRL_FLOOR = 1_000;
 const KNOWN_ETHBRL_CEILING = 100_000;
@@ -56,6 +56,7 @@ export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
     }
 
     const quotation = await fetch(
+      // TODO: trocar essa api
       'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BRL,USD',
     );
 

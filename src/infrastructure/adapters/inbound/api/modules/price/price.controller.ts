@@ -12,7 +12,7 @@ export class PriceController {
     @Inject(CreateQuote)
     readonly createQuote: CreateQuoteInteractor,
   ) {
-    const job = new CronJob('*/7 * * * * *', () => {
+    const job = new CronJob('*/45 * * * * *', () => {
       return this.createQuote.execute({
         amount: {
           unassignedNumber: '1',

@@ -6,6 +6,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "migrations:create": "ts-node -r dotenv/config node_modules/.bin/knex --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts migrate:make -x ts",
+    "migrations:down": "ts-node -r dotenv/config node_modules/.bin/knex migrate:down --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations:prod": "knex migrate:latest --knexfile dist/infrastructure/adapters/outbound/database/knex-postgres.config.js"
   },
@@ -37,10 +38,12 @@
     "passport-local": "^1.0.0",
     "pg": "^8.8.0",
     "pino": "^8.7.0",
+    "qrcode-pix": "5.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.5.7",
     "ts-jest": "^29.0.3",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "uuid-encoder": "^1.2.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",

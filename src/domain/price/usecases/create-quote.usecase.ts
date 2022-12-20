@@ -54,9 +54,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     };
 
     this.getQuotation = supportedQuotationStrats;
-
-    // TODO: outbound port para gas
-    // readonly estimateGasPort: EstimateGasPort,
   }
 
   async execute(entry: CreateQuoteDto): Promise<Quote> {
@@ -67,11 +64,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     ]);
 
     const {
-      amount: {
-        isoCode: userCurrency,
-        decimals: userDecimals,
-        unassignedNumber: userUnassignedNumber,
-      },
+      amount: { isoCode: userCurrency },
     } = entry;
 
     const userQuotation: QuotationAggregate = this.getQuotation[userCurrency](
@@ -133,77 +126,41 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     };
 
     quote.grossTotal = {
-      USD: this.calculusPort.sum(
-        quote.netTotal.USD,
-        quote.gasAmount.USD,
-      ),
-      ETH: this.calculusPort.sum(
-        quote.netTotal.ETH,
-        quote.gasAmount.ETH,
-      ),
-      BRL: this.calculusPort.sum(
-        quote.netTotal.BRL,
-        quote.gasAmount.BRL,
-      ),
-      KNN: this.calculusPort.sum(
-        quote.netTotal.KNN,
-        quote.gasAmount.KNN,
-      ),
+      USD: this.calculusPort.sum(quote.netTotal.USD, quote.gasAmount.USD),
+      ETH: this.calculusPort.sum(quote.netTotal.ETH, quote.gasAmount.ETH),
+      BRL: this.calculusPort.sum(quote.netTotal.BRL, quote.gasAmount.BRL),
+      KNN: this.calculusPort.sum(quote.netTotal.KNN, quote.gasAmount.KNN),
     };
 
     quote.total = {
-      USD: this.calculusPort.sum(
-        quote.grossTotal.USD,
-        quote.gatewayAmount.USD,
-      ),
-      ETH: this.calculusPort.sum(
-        quote.grossTotal.ETH,
-        quote.gatewayAmount.ETH,
-      ),
-      BRL: this.calculusPort.sum(
-        quote.grossTotal.BRL,
-        quote.gatewayAmount.BRL,
-      ),
-      KNN: this.calculusPort.sum(
-        quote.grossTotal.KNN,
-        quote.gatewayAmount.KNN,
-      ),
+      USD: this.calculusPort.sum(quote.grossTotal.USD, quote.gatewayAmount.USD),
+      ETH: this.calculusPort.sum(quote.grossTotal.ETH, quote.gatewayAmount.ETH),
+      BRL: this.calculusPort.sum(quote.grossTotal.BRL, quote.gatewayAmount.BRL),
+      KNN: this.calculusPort.sum(quote.grossTotal.KNN, quote.gatewayAmount.KNN),
     };
 
     quote.totalFeeAmount = {
-      USD: this.calculusPort.sum(
-        quote.gasAmount.USD,
-        quote.gatewayAmount.USD,
-      ),
-      ETH: this.calculusPort.sum(
-        quote.gasAmount.ETH,
-        quote.gatewayAmount.ETH,
-      ),
-      BRL: this.calculusPort.sum(
-        quote.gasAmount.BRL,
-        quote.gatewayAmount.BRL,
-      ),
-      KNN: this.calculusPort.sum(
-        quote.gasAmount.KNN,
-        quote.gatewayAmount.KNN,
-      ),
+      USD: this.calculusPort.sum(quote.gasAmount.USD, quote.gatewayAmount.USD),
+      ETH: this.calculusPort.sum(quote.gasAmount.ETH, quote.gatewayAmount.ETH),
+      BRL: this.calculusPort.sum(quote.gasAmount.BRL, quote.gatewayAmount.BRL),
+      KNN: this.calculusPort.sum(quote.gasAmount.KNN, quote.gatewayAmount.KNN),
     };
 
     quote.totalPerToken = {
       USD: this.calculusPort.divide(
         quote.total.USD,
         quote.finalAmountOfTokens,
-        IsoCodes.USD
+        IsoCodes.USD,
       ),
       ETH: this.calculusPort.divide(
         quote.total.ETH,
         quote.finalAmountOfTokens,
-        IsoCodes.ETH
+        IsoCodes.ETH,
       ),
       BRL: this.calculusPort.divide(
         quote.total.BRL,
         quote.finalAmountOfTokens,
-        IsoCodes.BRL
+        IsoCodes.BRL,
       ),
     };
 

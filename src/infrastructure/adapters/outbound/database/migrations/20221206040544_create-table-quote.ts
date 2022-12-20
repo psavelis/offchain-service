@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
     table.float('grossTotal').notNullable();
     table.float('gatewayAmount').notNullable();
     table.float('total').notNullable();
-    table.datetime('create_at').defaultTo(knex.fn.now());
+    table.datetime('created_at').defaultTo(knex.fn.now());
   });
 }
 

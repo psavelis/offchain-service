@@ -23,6 +23,9 @@ const getPostgresConfig = (settings: Settings) => {
       directory: path.join(__dirname, 'migrations'),
       schemaName,
       tableName: 'migrations',
+      loadExtensions: [
+        path.extname(__filename)
+      ]
     },
     searchPath: [schemaName, 'public'],
   };

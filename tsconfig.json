@@ -14,7 +14,12 @@
     "skipLibCheck": true
   },
   "exclude": ["node_modules", "dist"],
-  "files": ["src/main.ts"],
+  "include": [
+    "src/infrastructure/adapters/outbound/database/migrations/**/*.ts"
+  ],
+  "files": [
+    "src/main.ts"
+  ],
   "paths": {
     "@domain/*": ["./src/domain/*"],
     "@infrastructure/*": ["./src/infrastructure/*"]

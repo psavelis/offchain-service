@@ -6,7 +6,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "migrations:create": "ts-node -r dotenv/config node_modules/.bin/knex --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts migrate:make -x ts",
-    "migrations": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts"
+    "migrations": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
+    "migrations:prod": "knex migrate:latest --knexfile dist/infrastructure/adapters/outbound/database/knex-postgres.config.js"
   },
   "_moduleAliases": {
     "@domain": "dist/domain",

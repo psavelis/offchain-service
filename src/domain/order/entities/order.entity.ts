@@ -1,4 +1,5 @@
 import { IsoCodes } from '../../price/value-objects/currency-amount.value-object';
+import { CryptoWallet, Email } from '../dtos/create-order.dto';
 
 export enum PaymentOption {
   BrazilianPix = 1,
@@ -10,6 +11,8 @@ export interface Order {
   isoCode: IsoCodes;
   endToEndId: string;
   total: number;
+  userIdentifier: string;
+  identifierType: Email | CryptoWallet;
 
   // TODO: revisar campos necessarios
   // isoCode: IsoCodes;

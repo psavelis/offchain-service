@@ -18,7 +18,11 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     readonly generatePixPort: GeneratePixPort,
   ) {}
 
-  async execute({ amount }: CreateOrderDto): Promise<BrazilianPixOrderDto> {
+  async execute({
+    amount,
+    userIdentifier,
+    identifierType,
+  }: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     const orderId = Id.new();
     const endToEndId = Convert.toBase36(orderId);
     const total = Number(
@@ -34,6 +38,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         isoCode: IsoCodes.BRL,
         total,
         endToEndId,
+        userIdentifier,
+        identifierType,
       }),
       this.generatePixPort.generate(total, endToEndId, orderDescription),
     ]);

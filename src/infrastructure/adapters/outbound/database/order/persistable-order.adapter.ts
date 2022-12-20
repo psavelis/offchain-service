@@ -24,13 +24,23 @@ export class PersistableOrderDbAdapter implements PersistableOrderPort {
   }
 
   async save(order: Order): Promise<Order> {
-    const { id, endToEndId, isoCode, paymentOption, total } = order;
+    const {
+      id,
+      endToEndId,
+      isoCode,
+      paymentOption,
+      total,
+      userIdentifier,
+      identifierType,
+    } = order;
 
     await this.db().table('order').insert({
       id,
       end_to_end_id: endToEndId,
       iso_code: isoCode,
       payment_option: paymentOption,
+      user_identifier: userIdentifier,
+      identifier_type: identifierType,
       total,
     });
 

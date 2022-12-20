@@ -9,6 +9,8 @@ export async function up(knex: Knex): Promise<void> {
     table.string('iso_code').notNullable();
     table.string('end_to_end_id').notNullable();
     table.string('total').notNullable();
+    table.string('user_identifier').notNullable();
+    table.string('identifier_type').notNullable();
     table.datetime('created_at').defaultTo(knex.fn.now());
 
     // TODO: indexes

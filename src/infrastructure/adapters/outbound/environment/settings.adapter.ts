@@ -42,7 +42,6 @@ export class SettingsAdapter {
         key: this.envString('PIX_KEY'),
         name: this.envString('PIX_NAME'),
         city: this.envString('PIX_CITY'),
-        cep: this.envString('PIX_CEP'),
       },
       db: {
         database: this.envString('POSTGRES_DB'),

@@ -32,7 +32,6 @@ export class GeneratePixQrCodeAdapter implements GeneratePixPort {
       city: this.settings.pix.city,
       transactionId: endToEndId,
       message,
-      cep: this.settings.pix.cep,
       value,
     });
 

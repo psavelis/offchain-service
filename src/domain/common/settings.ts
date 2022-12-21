@@ -3,7 +3,6 @@ export interface Settings {
     key: string;
     name: string;
     city: string;
-    cep: string;
   };
   price: {
     quoteExpirationSeconds: number;

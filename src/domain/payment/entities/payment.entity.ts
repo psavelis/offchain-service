@@ -5,8 +5,7 @@ export enum PaymentOption {
 }
 
 export enum PaymentDirection {
-  CREDIT = 1,
-  DEBIT = 2,
+  CREDIT = 1, // Quando alteraria?
 }
 
 export type PaymentCurrency = 'KNN' | 'BRL' | 'USD' | 'ETH';
@@ -19,5 +18,4 @@ export class Payment {
   fiatAmount: number;
   direction: PaymentDirection;
   currency: PaymentCurrency;
-  details: string;
 }

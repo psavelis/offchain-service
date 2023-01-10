@@ -1,8 +1,5 @@
 import { CurrencyAmount } from '../../price/value-objects/currency-amount.value-object';
-import { PaymentOption } from '../entities/order.entity';
-
-export type Email = 'EA';
-export type CryptoWallet = 'CW';
+import { CryptoWallet, Email, PaymentOption } from '../entities/order.entity';
 
 export interface CreateOrderDto {
   amount: CurrencyAmount;

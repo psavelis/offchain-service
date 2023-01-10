@@ -3,7 +3,7 @@ const encoder = new UuidEncoder('base36');
 import { v4 as uuidv4 } from 'uuid';
 
 export class Id {
-  static new(): string {
+  static createUnique(): string {
     return uuidv4();
   }
 }

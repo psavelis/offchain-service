@@ -90,6 +90,22 @@ export class Order extends Entity<OrderProps> {
     return this.props.status === status;
   }
 
+  public getIdentifierType() {
+    return this.props.identifierType;
+  }
+
+  public getUserIdentifier() {
+    return this.props.userIdentifier;
+  }
+
+  public getPaymentOption() {
+    return this.props.paymentOption;
+  }
+
+  public getIsoCode() {
+    return this.props.isoCode;
+  }
+
   public getEndToEndId(): string {
     return this.props.endToEndId;
   }

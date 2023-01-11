@@ -5,7 +5,12 @@ const tableName = 'payment';
 export async function up(knex: Knex): Promise<void> {
   return knex.schema.createTable(tableName, (table) => {
     table.string('id').primary();
-    table.string('order_id').nullable().references('id').inTable('order');
+    table
+      .string('order_id')
+      .nullable()
+      .unique({ indexName: 'ix_payment_order_id' })
+      .references('id')
+      .inTable('order');
     table
       .string('provider_id')
       .notNullable()

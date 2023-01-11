@@ -37,16 +37,16 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
         );
 
       return {
-        ...this.getBaseDto(order),
+        ...this.parseDto(order),
         payload,
         base64,
       };
     }
 
-    return this.getBaseDto(order);
+    return this.parseDto(order);
   }
 
-  private getBaseDto(entity: Order): OrderDto {
+  private parseDto(entity: Order): OrderDto {
     return {
       orderId: entity.getId(),
       status: entity.getStatusDescription(),

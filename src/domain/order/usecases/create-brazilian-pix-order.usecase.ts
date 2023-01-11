@@ -65,6 +65,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   }
 
   static validate() {
+    // TODO: validar formato da wallet e email
     // TODO: validar minvalue =
     // TODO: validar identifier
     // TODO: validar isocode

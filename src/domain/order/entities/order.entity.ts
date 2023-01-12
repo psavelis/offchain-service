@@ -1,6 +1,6 @@
 import {
   CurrencyAmount,
-  IsoCodes,
+  CurrencyIsoCode,
 } from '../../price/value-objects/currency-amount.value-object';
 import { Entity, Props } from '../../common/entity';
 import { Convert } from 'src/domain/common/uuid';
@@ -23,27 +23,31 @@ export enum OrderStatus {
 export type Email = 'EA';
 export type CryptoWallet = 'CW';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0;
-const DEFAULT_ORDER_EXPIRATION = 7200 * 1_000;
+const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0; // TODO:  parametrizar!
+const DEFAULT_ORDER_EXPIRATION = 7200 * 1_000; // TODO: parametrizar!
 
 const statusDictionary: Record<OrderStatus, string> = {
   [OrderStatus.Requested]: 'Aguardando Pagamento',
   [OrderStatus.Confirmed]: 'Em Processamento',
   [OrderStatus.Locked]: 'Reservado',
   [OrderStatus.Challenged]: 'Reservado',
-  [OrderStatus.Owned]: 'Finalizado',
-  [OrderStatus.Claimed]: 'Finalizado',
-  [OrderStatus.Expired]: 'Cancelado',
+  [OrderStatus.Owned]: 'Resgate Autorizado',
+  [OrderStatus.Claimed]: 'Resgatado',
+  [OrderStatus.Expired]: 'Expirado',
   [OrderStatus.Canceled]: 'Cancelado',
 };
 
 export interface OrderProps extends Props {
   paymentOption: PaymentOption;
-  isoCode: IsoCodes;
+  isoCode: CurrencyIsoCode;
   total: number;
   amountOfTokens: CurrencyAmount;
   userIdentifier: string;
   identifierType: Email | CryptoWallet;
+
+  parentId?: string;
+  clientIp?: string;
+  clientAgent?: string;
 
   endToEndId?: string;
   status?: OrderStatus;
@@ -51,11 +55,14 @@ export interface OrderProps extends Props {
 }
 
 export class Order extends Entity<OrderProps> {
+  private payments?: number;
+
   constructor(props: OrderProps, id?: string) {
     super(props, id);
 
     if (id) {
       this.checkBindings();
+
       return;
     }
 
@@ -71,23 +78,27 @@ export class Order extends Entity<OrderProps> {
       );
     }
 
-    this.setStatus(OrderStatus.Requested);
+    if (!this.props.status) this.setStatus(OrderStatus.Requested);
   }
 
   private checkBindings() {
-    if (this.props.endToEndId === Order.toEndId(this._id)) {
-      return;
+    if (this.props.endToEndId !== Order.toEndId(this._id)) {
+      throw new Error('Unable to load order');
     }
 
-    throw new Error('Unable to load order');
+    this.props.total = Number(this.props.total);
   }
 
   public setStatus(newStatus: OrderStatus) {
     this.props.status = newStatus;
   }
 
-  public inStatus(status: OrderStatus): boolean {
-    return this.props.status === status;
+  public inStatus(...status: OrderStatus[]): boolean {
+    return status.includes(this.props.status);
+  }
+
+  public isExpired() {
+    return this.props.expiresAt?.getTime() < new Date().getTime();
   }
 
   public getIdentifierType() {
@@ -102,7 +113,7 @@ export class Order extends Entity<OrderProps> {
     return this.props.paymentOption;
   }
 
-  public getIsoCode() {
+  public getIsoCode(): CurrencyIsoCode {
     return this.props.isoCode;
   }
 
@@ -112,6 +123,30 @@ export class Order extends Entity<OrderProps> {
 
   public getTotal(): number {
     return this.props.total;
+  }
+
+  public getParentId() {
+    return this.props.parentId;
+  }
+
+  public getExpiresAt() {
+    return this.props.expiresAt;
+  }
+
+  public getAmountOfTokens(): CurrencyAmount {
+    return this.props.amountOfTokens;
+  }
+
+  public getClientAgent() {
+    return this.props.clientAgent;
+  }
+
+  public getClientIp() {
+    return this.props.clientIp;
+  }
+
+  public getStatus() {
+    return this.props.status;
   }
 
   public getStatusDescription(): string {
@@ -125,10 +160,18 @@ export class Order extends Entity<OrderProps> {
   static toEndId(uuid: string): string {
     const base36 = Convert.toBase36(uuid).toUpperCase();
 
-    if (base36.length === 25) {
+    if (base36.length === 25 || base36.length === 24) {
       return base36;
     }
 
     throw new Error('Invalid order identifier');
+  }
+
+  public setPayments(entries: number = 1) {
+    this.payments = (this.payments || 0) + entries;
+  }
+
+  public hasPayments() {
+    return (this.payments ?? 0) > 0;
   }
 }

@@ -3,16 +3,33 @@ import { Order, PaymentOption } from '../entities/order.entity';
 import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
-import { IsoCodes } from '../../price/value-objects/currency-amount.value-object';
+import {
+  CurrencyAmount,
+  CurrencyIsoCode,
+  IsoCodes,
+} from '../../price/value-objects/currency-amount.value-object';
 import { formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 
+const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0;
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
 };
+const identifiers = {
+  CriptoWallet: 'CW',
+  EmailAddress: 'EA',
+};
 
+const allowedIsoCodes = [
+  IsoCodes.BRL,
+  IsoCodes.ETH,
+  IsoCodes.KNN,
+  IsoCodes.USD,
+];
+
+const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
 export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   constructor(
     readonly settings: Settings,
@@ -38,14 +55,16 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       ),
     );
 
-    const order: Order = await this.persistableOrderPort.save(
+    CreateBrazilianPixOrderUseCase.validateMinimumAmount(quote.total.BRL);
+
+    const order: Order = await this.persistableOrderPort.create(
       new Order({
         paymentOption: PaymentOption.BrazilianPix,
         isoCode: IsoCodes.BRL,
         total,
         userIdentifier,
         identifierType,
-        amountOfTokens: amount,
+        amountOfTokens: quote.total.KNN,
       }),
     );
 
@@ -64,12 +83,41 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     };
   }
 
-  static validate() {
-    // TODO: validar formato da wallet e email
-    // TODO: validar minvalue =
-    // TODO: validar identifier
-    // TODO: validar isocode
-    // TODO: vallidar total order.total >= 60$ etc
-    // TODO: considerar validações x momento do recalculo async (ex.: pagamento identificado apos expiracao)
+  static validate({ amount, userIdentifier, identifierType }: CreateOrderDto) {
+    if (!allowedIdentifiers.includes(identifierType)) {
+      throw new Error('invalid identifierType');
+    }
+
+    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodes)) {
+      throw new Error('invalid isoCode');
+    }
+
+    if (identifiers.CriptoWallet === identifierType) {
+      // TODO: validação de wallet válida! (apenas regex: (opcional: validar onchain?)
+    }
+
+    if (identifiers.EmailAddress === identifierType) {
+      // TODO: validação de email! (apenas regex)
+    }
+
+    if (amount.isoCode === IsoCodes.BRL) {
+      CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
+    }
+  }
+
+  private static validateMinimumAmount(
+    amount: CurrencyAmount<CurrencyIsoCode>,
+  ) {
+    const truncated = Number(
+      formatDecimals(
+        amount.unassignedNumber,
+        amount.decimals,
+        DEFAULT_BRL_TRUNCATE_OPTIONS,
+      ),
+    );
+
+    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL) {
+      throw new Error('amount below minimum total');
+    }
   }
 }

@@ -1,4 +1,10 @@
 export interface Settings {
+  statementProvider: {
+    clientKey: string;
+    clientCert: string;
+    path: string;
+    hostname: string;
+  };
   pix: {
     key: string;
     name: string;

@@ -65,6 +65,12 @@ export class SettingsAdapter {
         quoteExpirationSeconds: this.envNumber('QUOTE_EXPIRATION_SECONDS'),
         persistQuotes: JSON.parse(this.envString('PERSIST_QUOTES')),
       },
+      statementProvider: {
+        clientKey: this.envString('STATEMENT_PROVIDER_CLIENT_KEY'),
+        clientCert: this.envString('STATEMENT_PROVIDER_CLIENT_CERT'),
+        path: this.envString('STATEMENT_PROVIDER_PATH'),
+        hostname: this.envString('STATEMENT_PROVIDER_HOSTNAME'),
+      },
     };
   }
 }

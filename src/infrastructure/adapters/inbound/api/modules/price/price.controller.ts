@@ -13,14 +13,22 @@ export class PriceController {
     readonly createQuote: CreateQuoteInteractor,
   ) {
     const job = new CronJob('*/45 * * * * *', () => {
-      return this.createQuote.execute({
-        amount: {
-          unassignedNumber: '1',
-          decimals: 0,
-          isoCode: 'USD',
-        },
-        forceReload: true,
-      });
+      return this.createQuote
+        .execute({
+          amount: {
+            unassignedNumber: '1',
+            decimals: 0,
+            isoCode: 'USD',
+          },
+          forceReload: true,
+        })
+        .catch((err) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(err);
+          } else {
+            throw err;
+          }
+        });
     });
 
     job.start();

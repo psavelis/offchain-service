@@ -1,21 +1,29 @@
-export enum PaymentOption {
-  FASTER_PAYMENT_PROVIDER = 1,
-  CARD_PROVIDER = 2,
-  RPC_PROVIDER = 3,
+import { Entity, Props } from '../../common/entity';
+
+export interface PaymentProps extends Props {
+  orderId: string;
+  clearingId: string;
+  providerId: string;
+  providerTimestamp: string;
+  effectiveDate: string;
+  total: number;
+  sequence?: number;
 }
 
-export enum PaymentDirection {
-  CREDIT = 1, // Quando alteraria?
-}
+export class Payment extends Entity<PaymentProps> {
+  constructor(props: PaymentProps, id?: string) {
+    super(props, id);
 
-export type PaymentCurrency = 'KNN' | 'BRL' | 'USD' | 'ETH';
+    if (id) {
+      return;
+    }
+  }
 
-export class Payment {
-  id: string;
-  transactionId?: string;
-  option: PaymentOption;
-  cryptoAmount: string;
-  fiatAmount: number;
-  direction: PaymentDirection;
-  currency: PaymentCurrency;
+  public getOrderId(): string {
+    return this.props.orderId;
+  }
+
+  public getSequence(): number {
+    return this.props.sequence ?? 0;
+  }
 }

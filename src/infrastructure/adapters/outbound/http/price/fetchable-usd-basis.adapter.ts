@@ -63,6 +63,7 @@ export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
     }
 
     const quotation = await fetch(
+      // TODO: parametrizar
       'https://economia.awesomeapi.com.br/json/last/usd',
     );
 

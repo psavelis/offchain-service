@@ -1,8 +1,13 @@
 import { Knex } from 'knex';
 import { KnexPostgresDatabase } from '../knex-postgres.db';
 import { PersistableOrderPort } from '../../../../../domain/order/ports/persistable-order.port';
-import { Order } from '../../../../../domain/order/entities/order.entity';
+import {
+  Order,
+  OrderProps,
+} from '../../../../../domain/order/entities/order.entity';
+import * as mapper from './order-entity.mapper';
 
+const tableName = 'order';
 export class PersistableOrderDbAdapter implements PersistableOrderPort {
   static instance: PersistableOrderDbAdapter;
   private db: () => Knex<any, any[]>;
@@ -23,17 +28,17 @@ export class PersistableOrderDbAdapter implements PersistableOrderPort {
     return PersistableOrderDbAdapter.instance;
   }
 
-  async save(order: Order): Promise<Order> {
-    await this.db().table('order').insert({
-      id: order.getId(),
-      end_to_end_id: order.getEndToEndId(),
-      iso_code: order.getIsoCode(),
-      payment_option: order.getPaymentOption(),
-      user_identifier: order.getUserIdentifier(),
-      identifier_type: order.getIdentifierType(),
-      total: order.getTotal(),
-    });
+  async create(order: Order): Promise<Order> {
+    const [record] = await this.db()
+      .table(tableName)
+      .insert(mapper.parseEntity(order))
+      .returning('*');
 
-    return order;
+    const orderProps: OrderProps = record,
+      { id } = record;
+
+    const created = new Order(orderProps, id);
+
+    return created;
   }
 }

@@ -1,56 +1,138 @@
-import { Order } from '../../order/entities/order.entity';
+import { LoggablePort } from '../../common/ports/loggable.port';
+import { Order, OrderStatus } from '../../order/entities/order.entity';
+import { CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
+import { Payment } from '../../payment/entities/payment.entity';
+import { CreatePaymentInteractor } from '../../payment/interactors/create-payment-interactor';
+import { ConfirmationRecord } from '../dtos/confirmation-record.dto';
+import { Clearing } from '../entities/clearing.entity';
 import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
+import { Transaction } from '../value-objects/transaction.value-object';
 
+const findableKeyword = '#payment-process';
 export class ProcessStatementTransactionUseCase
   implements ProcessStatementTransactionInteractor
 {
+  // TODO: adicionar readonly createOrderInteractor: CreateOrderInteractor // para o recalculo
   constructor(
+    readonly logger: LoggablePort,
     readonly createPaymentInteractor: CreatePaymentInteractor,
-    readonly orderTransitionInteractor: OrderTransitionInteractor,
-    readonly dispatchSupplyInteractor: DispatchSupplyInteractor,
+    readonly orderTransitionInteractor: CreateOrderTransitionInteractor,
   ) {}
 
-  tryConfirm(order: Order, payment) {
+  async execute(
+    order: Order,
+    transaction: Transaction,
+    clearing: Clearing,
+  ): Promise<ConfirmationRecord | undefined> {
+    let matchingOrder = order;
+
     try {
-      const amountNotExact = order.getTotal().toFixed(2) !== payment.total;
+      const {
+        providerPaymentId,
+        providerTimestamp,
+        effectiveDate,
+        value: amountPaid,
+      } = transaction;
+      const expectedAmount = matchingOrder.getTotal().toFixed(2);
+
+      const amountNotExact = expectedAmount !== amountPaid;
 
       if (amountNotExact) {
-        // todo: opt 1) notificar incorreto e retornar undefined para ignorar
+        this.logger.warning(
+          `${findableKeyword} incorrect amount: ${
+            transaction.providerPaymentId
+          }: order ${matchingOrder.getId()} expects '${expectedAmount}' (order.total: ${matchingOrder.getTotal()}) but received '${amountPaid}'`,
+          {
+            order,
+            transaction,
+          },
+        );
+
         return undefined;
-
-        // todo: opt 2) create new order, add parent_id () // o recalculo possibilita maior flexibilidade (recreate-quote-usecase*)
       }
 
-      let boundedOrder = order;
-      if (order.hasPayments()) {
-        return undefined; // check if payments already exists (by unique id), create new order, add parent_id (recreate-quote-usecase*)
+      if (!matchingOrder.inStatus(OrderStatus.Requested)) {
+        this.logger.warning(
+          `${findableKeyword} invalid order status: ${
+            transaction.providerPaymentId
+          }: order ${matchingOrder.getId()} cannot be processed on ${matchingOrder.getStatus()}`,
+          {
+            order,
+            transaction,
+          },
+        );
+
+        return undefined;
       }
 
-      if (order.isExpired()) {
+      if (matchingOrder.hasPayments()) {
+        this.logger.warning(
+          `${findableKeyword} duplicated: ${
+            transaction.providerPaymentId
+          }: order ${matchingOrder.getId()} already paid`,
+          {
+            order,
+            transaction,
+          },
+        );
+
+        return undefined;
+      }
+
+      if (matchingOrder.isExpired()) {
+        this.logger.warning(
+          `${findableKeyword} order expired: ${
+            transaction.providerPaymentId
+          }: order ${matchingOrder.getId()} expired at ${matchingOrder
+            .getExpiresAt()
+            ?.toISOString()} but paid at ${new Date().toISOString()}`,
+          {
+            order,
+            transaction,
+          },
+        );
         // create new order, add parent_id (recreate-quote-usecase*)
+        // TODO: new value = valuePaid - (estimatedGasValue - order.gasValue* adicionar campo )
+        // TODO: aqui podemos gravar também o diff do valor do gas atual x valor pago
+        // matchingOrder = .execute()
+        // TODO: atualizar a anterior (parent), para expired
+        return undefined;
       }
 
-      // --- usecase de validação de supply e destino --> estimate-dispatch-supply.interactor
-      // TODO: (verificar se existe supply disponível -- ja serve como healthcheck do provider), se estiver fora, atualizar a clearing como failing e finalizar // se não possuir estoque, atualizar como outofstock
-      //        se supply insuficiente, notificar
-      // TODO: validar se possui saldo suficiente em ETH, notificar
-      // TODO: validar se endereço existe é uma carteira valida ou smart contract
-      // TODO: fazer get de payment pelo order (para ver se é dup -- opcional)
-      // --- usecase de validação de supply e destino
+      const payment: Payment = await this.createPaymentInteractor.execute(
+        new Payment({
+          orderId: matchingOrder.getId(),
+          clearingId: clearing.getId(),
+          providerId: providerPaymentId,
+          providerTimestamp,
+          effectiveDate,
+          total: Number(amountPaid),
+        }),
+      );
 
-      // TODO: insert payment // CreatePaymentInteractor
-      // TODO: update order status // orderTransitionInteractor
-      // TODO: update claim lock // dispatchSupply => //
-      // TODO: update order status // orderTransitionInteractor
+      matchingOrder.setStatus(OrderStatus.Confirmed);
 
-      // TODO: se for email, notificar o lock e instruções para o claim
+      await this.orderTransitionInteractor.execute(matchingOrder, {
+        reason: `confirmation #${payment.getSequence()} streamed from ${clearing.getId()} (${clearing.getHash()}) and bound to ${providerPaymentId})`,
+      });
+
+      return {
+        payment,
+        order: matchingOrder,
+      };
     } catch (err) {
-      // TODO:  log!!!
-      // catch CreatePaymentInteractor (concurrency ou duplicated payment)
-      // catch CreatePaymentInteractor (concurrency ou duplicated payment)
+      this.logger.debug(
+        `skipping ${
+          transaction.providerPaymentId
+        }: order ${matchingOrder.getId()} already processed`,
+        {
+          err,
+          order,
+          transaction,
+        },
+      );
+
       return undefined;
     }
-
-    throw new Error('Method not implemented.');
   }
 }

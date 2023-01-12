@@ -3,7 +3,7 @@ export enum IsoCodes {
   ETH = 'ETH',
   KNN = 'KNN',
   USD = 'USD',
-};
+}
 
 export type CurrencyIsoCode = `${IsoCodes}`;
 

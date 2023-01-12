@@ -56,7 +56,7 @@ export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
     }
 
     const quotation = await fetch(
-      // TODO: trocar essa api
+      // TODO: parametrizar
       'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BRL,USD',
     );
 

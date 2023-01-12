@@ -19,7 +19,9 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
   ): Promise<BrazilianPixOrderDto | OrderDto | undefined> {
     const endToEndId = Order.toEndId(orderId);
 
-    const order: Order = await this.fetchableOrderPort.fetchByEndId(endToEndId);
+    const order: Order | undefined = await this.fetchableOrderPort.fetchByEndId(
+      endToEndId,
+    );
 
     if (!order?.getTotal()) {
       return undefined;

@@ -10,7 +10,7 @@ export async function bootstrap(host: string, prefix: string, port: number) {
     cors: {
       origin: [process.env.CORS_ORIGIN],
       methods: ['POST', 'PUT', 'DELETE', 'GET'],
-    }
+    },
   });
 
   app.setGlobalPrefix(prefix);
@@ -18,9 +18,7 @@ export async function bootstrap(host: string, prefix: string, port: number) {
 
   const config = new DocumentBuilder()
     .setTitle(apiName)
-    .setDescription(
-      'API for offchain-purchase (sales and stock-control collateral)',
-    )
+    .setDescription('API for offchain-purchases')
     .setVersion('1.0')
     .addTag('purchase')
     .build();

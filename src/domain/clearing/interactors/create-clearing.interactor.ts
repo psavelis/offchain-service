@@ -1,5 +1,7 @@
+import { Clearing } from '../entities/clearing.entity';
+
 export const CreateClearing = Symbol('CREATE_CLEARING');
 
 export interface CreateClearingInteractor {
-  execute();
+  execute(): Promise<Clearing>;
 }

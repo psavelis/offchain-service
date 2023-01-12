@@ -1,117 +1,236 @@
+import { LoggablePort } from '../../common/ports/loggable.port';
+import { Clearing, ClearingStatus } from '../entities/clearing.entity';
 import { Order } from '../../order/entities/order.entity';
-import { Payment } from '../../payment/entities/payment.entity';
+import { Statement } from '../value-objects/statement.value-object';
+import { Transaction } from '../value-objects/transaction.value-object';
+import { CreateClearingInteractor } from '../interactors/create-clearing.interactor';
+import { FetchOrderBatchInteractor } from '../../order/interactors/fetch-order-batch.interactor';
+import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
+import { FetchableClearingPort } from '../ports/fetchable-clearing.port';
+import { PersistableClearingPort } from '../ports/persistable-clearing.port';
+
+import {
+  FetchableStatementPort,
+  StatementParameter,
+} from '../ports/fetchable-statement.port';
+
 import {
   ConfirmationRecord,
   ProviderPaymentId,
 } from '../dtos/confirmation-record.dto';
-import { Clearing } from '../entities/clearing.entity';
-import { PartnerStatement } from '../entities/partner-statement.entity';
-import { CreateClearingInteractor } from '../interactors/create-clearing.interactor';
-import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
 
-const DEFAULT_START_OFFSET_MS = 1_000 * 8 * 60 ** 2;
-const MAX_CACHE_SIZE = 2048;
+import {
+  EndToEndId,
+  OrderDictionary,
+} from '../../order/dtos/order-dictionary.dto';
+
+const MAX_CACHED_KEYS = 2000;
 
 export class CreateClearingUseCase implements CreateClearingInteractor {
-  private skipCache: Record<ProviderPaymentId, boolean>;
+  private cache: Record<ProviderPaymentId, boolean>;
 
   constructor(
+    readonly logger: LoggablePort,
     readonly fetchableClearingPort: FetchableClearingPort,
     readonly fetchableStatementPort: FetchableStatementPort,
     readonly persistableClearingPort: PersistableClearingPort,
+    readonly fetchOrderBatchInteractor: FetchOrderBatchInteractor,
     readonly processTransactionInteractor: ProcessStatementTransactionInteractor,
   ) {
-    this.skipCache = {};
+    this.cache = {};
   }
 
-  async execute() {
-    const lastRan: Clearing = await this.fetchableClearingPort.fetchLast();
-    const lastOffset = lastRan?.getOffset();
-    const newOffset = new Date();
+  private resizeCache() {
+    if (Object.keys(this.cache).length > MAX_CACHED_KEYS) {
+      this.cache = {};
+    }
+  }
 
-    const target = lastOffset
-      ? new Date(Date.parse(lastOffset) - DEFAULT_START_OFFSET_MS)
-      : new Date(newOffset.getTime());
+  public async execute() {
+    const lastClearing: Clearing | undefined =
+      await this.fetchableClearingPort.fetchLast();
 
-    let statement: PartnerStatement =
-      await this.fetchableStatementPort.fetchOffset(target, newOffset);
+    const statementParameter =
+      this.fetchableStatementPort.getStatementParameter(lastClearing);
 
-    // TODO: fazer catch do fetchOffset, se estiver fora, criar a clearing como failing e finalizar
+    let statement: Statement;
 
-    const currentHash = statement.getHash();
+    try {
+      statement = await this.fetchableStatementPort.fetch(statementParameter);
+    } catch (err) {
+      await this.persistableClearingPort.create(
+        new Clearing({
+          hash: String(),
+          target: statementParameter.target,
+          offset: statementParameter.offset,
+          status: ClearingStatus.Faulted,
+          remarks: `statement unavailable: ${err} ($${JSON.stringify(err)})`,
+        }),
+      );
 
-    const notChanged = lastRan?.getHash && currentHash === lastRan.getHash();
+      throw err;
+    }
+
+    const hash = statement.getHash();
+
+    const notChanged = lastClearing?.getHash && hash === lastClearing.getHash();
 
     if (notChanged) {
+      return lastClearing;
+    }
+
+    const clearing = await this.createClearing(
+      hash,
+      statementParameter,
+      statement,
+    );
+
+    this.logger.debug('clearing completed', clearing);
+
+    return clearing;
+  }
+
+  private async createClearing(
+    hash: string,
+    statementParameter: StatementParameter,
+    statement: Statement,
+  ) {
+    let clearing: Clearing = await this.persistableClearingPort.create(
+      new Clearing({
+        hash,
+        target: statementParameter.target,
+        offset: statementParameter.offset,
+      }),
+    );
+
+    const processedPayments: Record<ProviderPaymentId, ConfirmationRecord> = {};
+
+    clearing = await this.processStatement(
+      statement,
+      clearing,
+      processedPayments,
+    );
+
+    await this.persistableClearingPort.update(clearing);
+
+    this.resizeCache();
+
+    return clearing;
+  }
+
+  private async processStatement(
+    initialStatement: Statement,
+    clearing: Clearing,
+    processedPayments: Record<string, ConfirmationRecord>,
+  ): Promise<Clearing> {
+    let currentStatement = initialStatement;
+
+    try {
+      do {
+        const endIds = currentStatement.transactions
+          .map((transaction: Transaction) => {
+            const alreadyProcessed = this.cache[transaction.providerPaymentId];
+
+            if (alreadyProcessed) {
+              return String(0);
+            }
+
+            return transaction.endToEndId;
+          })
+          .filter(isValid);
+
+        const orders: Record<EndToEndId, Order> =
+          await this.fetchOrderBatchInteractor.fetchMany(endIds);
+
+        const processPromises: Array<Promise<void>> =
+          currentStatement.transactions.map((transaction: Transaction) => {
+            return this.processStatementTransaction(
+              transaction,
+              clearing,
+              orders,
+              processedPayments,
+            );
+          });
+
+        await Promise.all(processPromises); // TODO: melhoria: chunk split,?
+
+        clearing.addPayments(processedPayments);
+
+        if (currentStatement.lastPage) {
+          break;
+        }
+
+        currentStatement = await this.fetchableStatementPort.fetchNext(
+          currentStatement,
+        );
+      } while (currentStatement.currentPage <= currentStatement.totalPages);
+    } catch (err) {
+      clearing.setStatus(ClearingStatus.Faulted);
+      clearing.setRemarks(`fault: ${err} ($${JSON.stringify(err)})`);
+
+      return clearing;
+    }
+
+    if (Object.keys(processedPayments).length === 0) {
+      clearing.setStatus(ClearingStatus.Empty);
+
+      return clearing;
+    }
+
+    clearing.setStatus(ClearingStatus.RanToCompletion);
+
+    return clearing;
+  }
+
+  private async processStatementTransaction(
+    transaction: Transaction,
+    clearing: Clearing,
+    orders: OrderDictionary,
+    processedPayments: Record<ProviderPaymentId, ConfirmationRecord>,
+  ): Promise<void> {
+    const { endToEndId, providerPaymentId } = transaction;
+
+    if (this.cache[providerPaymentId]) {
       return;
     }
 
-    if (Object.keys(this.skipCache).length > MAX_CACHE_SIZE) {
-      this.skipCache = {};
+    const order: Order = orders[endToEndId];
+
+    if (!order) {
+      // TODO: melhoria: inserir em tabelas de 'não-identificados'?
+      this.logger.warning(
+        `NotFound: Unknown endToEndId '${endToEndId}' (ProviderID: ${providerPaymentId}).`,
+        { hash: clearing.getHash(), id: clearing.getId() },
+      );
+
+      this.cache[providerPaymentId] = true;
+      return;
     }
 
-    const clearing: Clearing = await this.persistableClearingPort.create(
-      new Clearing({}),
-    );
-
-    let currentPage = 1;
-
-    const confirmedPayments: Record<ProviderPaymentId, ConfirmationRecord> = {};
-
-    do {
-      const orders: Record<EndToEndId, Order> = {}; // TODO: pegar todos os ids de order, validar (retirar que estiverem no skipcache) e fazer busca
-      await Promise.all(
-        // TODO: reducer// for
-        statement.transactions.map(async (trx: PartnerTransaction) => {
-          const endToEndId: EndToEndId = trx.transactionId;
-          const idempodencyKey: ProviderPaymentId = trx.providerPaymentId;
-
-          if (this.skipCache[idempodencyKey]) {
-            return;
-          }
-
-          const order: Order = orders[endToEndId];
-
-          if (!order) {
-            // TODO: logar inconsistência / notificar => pago sem order valida (esse é qd pix manual) => não tem como identificar para quem lockar ou enviar os tokens
-            this.skipCache[idempodencyKey] = true;
-            return;
-          }
-
-          const result: ConfirmationRecord | undefined =
-            await this.processTransactionInteractor.tryConfirm(order, trx);
-
-          this.skipCache[idempodencyKey] = true;
-
-          if (result) {
-            confirmedPayments[idempodencyKey] = result;
-            return;
-          }
-        }),
-      ); // todo: catch para atualizar a clearing como failing e finalizar
-
-      clearing.addPayments(confirmedPayments);
-
-      if (statement.isLastPage()) {
-        break;
-      }
-
-      // TODO: ajustar o contexto de paginação
-      // TODO: fetch proximas páginas (while ultimaPagina: false)
-      currentPage++;
-
-      statement = await this.fetchableStatementPort.appendPage(
-        statement,
-        currentPage,
+    const result: ConfirmationRecord | undefined =
+      await this.processTransactionInteractor.execute(
+        order,
+        transaction,
+        clearing,
       );
-    } while (currentPage <= statement.getTotalPages());
 
-    // todo: UPDATE CLEARING STATS
-    await this.persistableClearingPort.update(clearing);
+    this.cache[providerPaymentId] = true;
+
+    if (result) {
+      processedPayments[providerPaymentId] = result;
+
+      this.logger.info(
+        `Confirmed: ${endToEndId} (ProviderID: ${providerPaymentId}) => OrderID: ${order.getId()})`,
+      );
+
+      return;
+    }
   }
 }
 
-export type EndToEndId = string;
+const isValid = (id): boolean => {
+  if (id?.length !== 25) return false;
+  // TODO: fazer validação do base36?
 
-const hasOrder = (payment: Payment) =>
-  payment?.getOrderId && payment.getOrderId(); // TODO: jogar para o payment, .hasOrder
+  return true;
+};

@@ -1,4 +1,6 @@
 import { Entity, Props } from '../../common/entity';
+import { Order } from '../../order/entities/order.entity';
+import { Payment } from '../../payment/entities/payment.entity';
 
 export enum ClearingStatus {
   Empty = 1,
@@ -6,22 +8,26 @@ export enum ClearingStatus {
   RanToCompletion = 3,
 }
 
+export interface Result {
+  order: Order;
+  payment: Payment;
+}
+
 export interface ClearingProps extends Props {
-  length: number; // success = (totalElementos - invalid/dups)
-  hash: string; // totalPaginas, totalElementos, ultimaPagina, primeiraPagina, tamanhoPagina, numeroDeElementos, target, offset
+  hash: string;
   target: string;
   offset: string;
-  status: ClearingStatus;
-  ids?: string[];
+  createdAt?: Date;
+  status?: ClearingStatus;
   endedAt?: Date;
-  total?: number;
+  durationMs?: number;
+  totalEntries?: number;
+  totalAmount?: number;
   remarks?: string;
+  sequence?: number;
 }
 
 export class Clearing extends Entity<ClearingProps> {
-  getHash() {
-    throw new Error('Method not implemented.');
-  }
   constructor(props: ClearingProps, id?: string) {
     super(props, id);
 
@@ -29,7 +35,7 @@ export class Clearing extends Entity<ClearingProps> {
       return;
     }
 
-    this.setStatus(ClearingStatus.Empty);
+    this.props.status = this.props.status ?? ClearingStatus.Empty;
   }
 
   public setStatus(newStatus: ClearingStatus) {
@@ -38,5 +44,67 @@ export class Clearing extends Entity<ClearingProps> {
 
   public getOffset(): string {
     return this.props.offset;
+  }
+
+  public getHash(): string {
+    return this.props.hash;
+  }
+
+  public setRemarks(remarks: string) {
+    this.props.remarks = remarks;
+  }
+
+  public getSequence() {
+    return this.props.sequence;
+  }
+
+  public getRemarks() {
+    return this.props.remarks;
+  }
+
+  public getTotalAmount() {
+    return this.props.totalAmount;
+  }
+
+  public getTotalEntries() {
+    return this.props.totalEntries;
+  }
+
+  public getDurationMs() {
+    return this.props.durationMs;
+  }
+
+  public getEndedAt() {
+    return this.props.endedAt;
+  }
+
+  public getCreatedAt() {
+    return this.props.createdAt;
+  }
+
+  public getStatus() {
+    return this.props.status;
+  }
+
+  public getTarget() {
+    return this.props.target;
+  }
+
+  public addPayments(processedPayments: Record<string, Result>) {
+    const ids = Object.keys(processedPayments);
+
+    this.props.totalEntries = ids.length;
+    this.props.totalAmount = 0;
+    this.props.endedAt = new Date();
+    this.props.durationMs =
+      this.props.endedAt!.getTime() - this.props.createdAt!.getTime();
+
+    for (const id of ids) {
+      const processed = processedPayments[id];
+
+      if (!processed) return;
+
+      this.props.totalAmount += processed.order.getTotal();
+    }
   }
 }

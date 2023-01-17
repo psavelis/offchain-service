@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Inject, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Ip,
+  Param,
+  Post,
+  Req,
+} from '@nestjs/common';
 import { BrazilianPixOrderDto } from 'src/domain/order/dtos/brazilian-pix-order.dto';
 import { OrderDto } from 'src/domain/order/dtos/order.dto';
 import { CreateOrderDto } from '../../../../../../domain/order/dtos/create-order.dto';
@@ -22,8 +31,12 @@ export class OrderController {
   ) {}
 
   @Post('')
-  postOrder(@Body() entry: CreateOrderDto) {
-    return this.createOrder.execute(entry);
+  postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
+    return this.createOrder.execute({
+      ...entry,
+      clientAgent: req?.headers['user-agent'],
+      clientIp: ip,
+    });
   }
 
   @Get(':id')

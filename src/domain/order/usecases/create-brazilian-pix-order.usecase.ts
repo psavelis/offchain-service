@@ -42,6 +42,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     amount,
     userIdentifier,
     identifierType,
+    clientAgent,
+    clientIp,
   }: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     const quote = await this.createQuoteInteractor.execute({
       amount,
@@ -65,6 +67,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         userIdentifier,
         identifierType,
         amountOfTokens: quote.total.KNN,
+        clientAgent,
+        clientIp,
       }),
     );
 

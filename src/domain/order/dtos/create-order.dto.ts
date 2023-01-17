@@ -9,4 +9,6 @@ export interface CreateOrderDto {
   paymentOption: PaymentOption;
   userIdentifier: string;
   identifierType: Email | CryptoWallet;
+  clientAgent?: string;
+  clientIp?: string;
 }

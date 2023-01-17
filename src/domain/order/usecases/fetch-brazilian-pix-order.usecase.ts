@@ -51,7 +51,8 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
   private parseDto(entity: Order): OrderDto {
     return {
       orderId: entity.getId(),
-      status: entity.getStatusDescription(),
+      status: entity.getStatus(),
+      statusDescription: entity.getStatusDescription(),
       total: entity.getTotal(),
     };
   }

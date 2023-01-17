@@ -76,7 +76,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
 
     return {
       orderId: order.getId(),
-      status: order.getStatusDescription(),
+      status: order.getStatus(),
+      statusDescription: order.getStatusDescription(),
       total: order.getTotal(),
       payload,
       base64,

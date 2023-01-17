@@ -1,6 +1,8 @@
+import { OrderStatus } from '../entities/order.entity';
+
 export interface OrderDto {
   orderId: string;
   total: number;
-  status: string;
-  // TODO: adicionar numero de reserva/numero fiscal (gerado pos pagamento)
+  status: OrderStatus;
+  statusDescription: string;
 }

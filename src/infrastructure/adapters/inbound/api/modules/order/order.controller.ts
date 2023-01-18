@@ -8,6 +8,7 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { BrazilianPixOrderDto } from 'src/domain/order/dtos/brazilian-pix-order.dto';
 import { OrderDto } from 'src/domain/order/dtos/order.dto';
 import { CreateOrderDto } from '../../../../../../domain/order/dtos/create-order.dto';
@@ -31,6 +32,7 @@ export class OrderController {
   ) {}
 
   @Post('')
+  @Throttle(3, 60)
   postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
     return this.createOrder.execute({
       ...entry,

@@ -19,7 +19,7 @@ export async function up(knex: Knex): Promise<void> {
     table.decimal('total_amount', 14, 2).nullable();
     table.text('remarks').nullable();
 
-    table.increments('sequence', { primaryKey: false });
+    table.integer('sequence').unsigned().nullable();
   });
 }
 

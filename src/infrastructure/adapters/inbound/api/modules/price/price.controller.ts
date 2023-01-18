@@ -1,4 +1,5 @@
 import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { CronJob } from 'cron';
 import { CreateQuoteDto } from '../../../../../../domain/price/dtos/create-quote.dto';
 import {

@@ -17,6 +17,11 @@ const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0;
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
 };
+
+const DEFAULT_KNN_TRUNCATE_OPTIONS = {
+  truncateDecimals: 8,
+};
+
 const identifiers = {
   CriptoWallet: 'CW',
   EmailAddress: 'EA',
@@ -38,16 +43,10 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     readonly generatePixPort: GeneratePixPort,
   ) {}
 
-  async execute({
-    amount,
-    userIdentifier,
-    identifierType,
-    clientAgent,
-    clientIp,
-  }: CreateOrderDto): Promise<BrazilianPixOrderDto> {
-    const quote = await this.createQuoteInteractor.execute({
-      amount,
-    });
+  async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
+    CreateBrazilianPixOrderUseCase.validate(request);
+
+    const quote = await this.createQuoteInteractor.execute(request);
 
     const total = Number(
       formatDecimals(
@@ -59,16 +58,43 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
 
     CreateBrazilianPixOrderUseCase.validateMinimumAmount(quote.total.BRL);
 
+    const totalGas = Number(
+      formatDecimals(
+        quote.gasAmount.BRL.unassignedNumber,
+        quote.gasAmount.BRL.decimals,
+        DEFAULT_BRL_TRUNCATE_OPTIONS,
+      ),
+    );
+
+    const totalNet = Number(
+      formatDecimals(
+        quote.netTotal.BRL.unassignedNumber,
+        quote.netTotal.BRL.decimals,
+        DEFAULT_BRL_TRUNCATE_OPTIONS,
+      ),
+    );
+
+    const totalKnn = Number(
+      formatDecimals(
+        quote.finalAmountOfTokens.unassignedNumber,
+        quote.finalAmountOfTokens.decimals,
+        DEFAULT_KNN_TRUNCATE_OPTIONS,
+      ),
+    );
+
     const order: Order = await this.persistableOrderPort.create(
       new Order({
         paymentOption: PaymentOption.BrazilianPix,
         isoCode: IsoCodes.BRL,
         total,
-        userIdentifier,
-        identifierType,
+        userIdentifier: request.userIdentifier,
+        identifierType: request.identifierType,
         amountOfTokens: quote.total.KNN,
-        clientAgent,
-        clientIp,
+        clientAgent: request.clientAgent,
+        clientIp: request.clientIp,
+        totalGas,
+        totalNet,
+        totalKnn,
       }),
     );
 
@@ -88,28 +114,6 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     };
   }
 
-  static validate({ amount, userIdentifier, identifierType }: CreateOrderDto) {
-    if (!allowedIdentifiers.includes(identifierType)) {
-      throw new Error('invalid identifierType');
-    }
-
-    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodes)) {
-      throw new Error('invalid isoCode');
-    }
-
-    if (identifiers.CriptoWallet === identifierType) {
-      // TODO: validação de wallet válida! (apenas regex: (opcional: validar onchain?)
-    }
-
-    if (identifiers.EmailAddress === identifierType) {
-      // TODO: validação de email! (apenas regex)
-    }
-
-    if (amount.isoCode === IsoCodes.BRL) {
-      CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
-    }
-  }
-
   private static validateMinimumAmount(
     amount: CurrencyAmount<CurrencyIsoCode>,
   ) {
@@ -123,6 +127,40 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
 
     if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL) {
       throw new Error('amount below minimum total');
+    }
+  }
+
+  static validate({ amount, userIdentifier, identifierType }: CreateOrderDto) {
+    if (!allowedIdentifiers.includes(identifierType)) {
+      throw new Error('invalid identifierType');
+    }
+
+    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodes)) {
+      throw new Error('invalid isoCode');
+    }
+
+    if (!userIdentifier) {
+      throw new Error('userIdentifier required');
+    }
+
+    if (identifiers.CriptoWallet === identifierType) {
+      if (!userIdentifier.match(/(\b0x[a-f0-9]{40}\b)/g)) {
+        throw new Error('invalid wallet address');
+      }
+    }
+
+    if (identifiers.EmailAddress === identifierType) {
+      if (
+        !userIdentifier.match(
+          /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/g,
+        )
+      ) {
+        throw new Error('invalid email address');
+      }
+    }
+
+    if (amount.isoCode === IsoCodes.BRL) {
+      CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
     }
   }
 }

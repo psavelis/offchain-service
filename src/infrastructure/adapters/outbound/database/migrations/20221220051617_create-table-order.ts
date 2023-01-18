@@ -9,10 +9,13 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('payment_option').notNullable();
     table.string('iso_code').notNullable();
     table
-      .string('end_to_end_id')
+      .string('end_to_end_id', 25)
       .notNullable()
       .unique({ indexName: 'ix_order_end_to_end_id' });
     table.decimal('total', 14, 2).notNullable();
+    table.decimal('total_gas', 14, 2).notNullable();
+    table.decimal('total_net', 14, 2).notNullable();
+    table.decimal('total_knn', 20, 8).notNullable();
     table.json('amount_of_tokens').notNullable();
     table.string('user_identifier').notNullable();
     table.string('identifier_type').notNullable();

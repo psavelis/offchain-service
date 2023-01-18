@@ -23,7 +23,31 @@ export class Payment extends Entity<PaymentProps> {
     return this.props.orderId;
   }
 
+  public getClearingId(): string {
+    return this.props.clearingId;
+  }
+
+  public getProviderId(): string {
+    return this.props.providerId;
+  }
+
+  public getProviderTimestamp(): string {
+    return this.props.providerTimestamp;
+  }
+
+  public getEffectiveDate(): string {
+    return this.props.effectiveDate;
+  }
+
   public getSequence(): number {
     return this.props.sequence ?? 0;
+  }
+
+  public getTotal(): number {
+    return this.props.total;
+  }
+
+  public getCreatedAt() {
+    return this.props.createdAt;
   }
 }

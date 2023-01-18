@@ -1,25 +1,5 @@
 import { Order } from '../../../../../domain/order/entities/order.entity';
 
-export const parseRow = (row: any) => {
-  return new Order(
-    {
-      amountOfTokens: row.amount_of_tokens,
-      clientAgent: row.client_agent,
-      clientIp: row.client_ip,
-      endToEndId: row.end_to_end_id,
-      expiresAt: row.expires_at,
-      identifierType: row.identifier_type,
-      isoCode: row.iso_code,
-      parentId: row.parent_id,
-      paymentOption: row.payment_option,
-      status: row.status,
-      total: row.total,
-      userIdentifier: row.user_identifier,
-    },
-    row.id,
-  );
-};
-
 export const parseEntity = (order: Order) => {
   return {
     amount_of_tokens: order.getAmountOfTokens(),
@@ -27,6 +7,7 @@ export const parseEntity = (order: Order) => {
     client_ip: order.getClientIp(),
     end_to_end_id: order.getEndToEndId(),
     expires_at: order.getExpiresAt(),
+    created_at: order.getCreatedAt(),
     id: order.getId(),
     identifier_type: order.getIdentifierType(),
     iso_code: order.getIsoCode(),
@@ -35,5 +16,8 @@ export const parseEntity = (order: Order) => {
     status: order.getStatus(),
     total: order.getTotal(),
     user_identifier: order.getUserIdentifier(),
+    total_gas: order.getTotalGas(),
+    total_knn: order.getTotalKnn(),
+    total_net: order.getTotalNet(),
   };
 };

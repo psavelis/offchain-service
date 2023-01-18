@@ -28,8 +28,7 @@ export type CalculationStrategy = (
   ethQuotation: EthQuoteBasis,
 ) => QuotationAggregate;
 
-const LOCK_SUPPLY_GAS = 65_361;
-const CLAIM_TOKEN_GAS = 54_981;
+const estimatedGasInWEI = 65_361;
 
 export interface CalculationStrategyAggregate
   extends Record<CurrencyIsoCode, CalculationStrategy> {}
@@ -219,8 +218,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     ethQuotation: EthQuoteBasis,
   ): Promise<QuotationAggregate> {
     const gasPriceInETH = await this.gasPricePort.fetch(entry.forceReload);
-
-    const estimatedGasInWEI = LOCK_SUPPLY_GAS + CLAIM_TOKEN_GAS;
 
     const amountInWEI: CurrencyAmount = {
       unassignedNumber: estimatedGasInWEI.toString(),

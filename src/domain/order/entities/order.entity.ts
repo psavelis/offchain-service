@@ -41,6 +41,9 @@ export interface OrderProps extends Props {
   paymentOption: PaymentOption;
   isoCode: CurrencyIsoCode;
   total: number;
+  totalGas: number;
+  totalNet: number;
+  totalKnn: number;
   amountOfTokens: CurrencyAmount;
   userIdentifier: string;
   identifierType: Email | CryptoWallet;
@@ -87,6 +90,27 @@ export class Order extends Entity<OrderProps> {
     }
 
     this.props.total = Number(this.props.total);
+    this.props.totalGas = Number(this.props.totalGas);
+    this.props.totalKnn = Number(this.props.totalKnn);
+    this.props.totalNet = Number(this.props.totalNet);
+  }
+
+  static toEndId(uuid: string): string {
+    const base36 = Convert.toBase36(uuid).toUpperCase();
+
+    if (base36.length === 25 || base36.length === 24) {
+      return base36;
+    }
+
+    throw new Error('Invalid order identifier');
+  }
+
+  public setPayments(entries: number = 1) {
+    this.payments = (this.payments || 0) + entries;
+  }
+
+  public hasPayments() {
+    return (this.payments ?? 0) > 0;
   }
 
   public setStatus(newStatus: OrderStatus) {
@@ -125,12 +149,28 @@ export class Order extends Entity<OrderProps> {
     return this.props.total;
   }
 
+  public getTotalGas(): number {
+    return this.props.totalGas;
+  }
+
+  public getTotalNet(): number {
+    return this.props.totalNet;
+  }
+
+  public getTotalKnn(): number {
+    return this.props.totalKnn;
+  }
+
   public getParentId() {
     return this.props.parentId;
   }
 
   public getExpiresAt() {
     return this.props.expiresAt;
+  }
+
+  public getCreatedAt() {
+    return this.props.createdAt;
   }
 
   public getAmountOfTokens(): CurrencyAmount {
@@ -155,23 +195,5 @@ export class Order extends Entity<OrderProps> {
 
   static getStatusDescription(status: OrderStatus): string {
     return statusDictionary[status];
-  }
-
-  static toEndId(uuid: string): string {
-    const base36 = Convert.toBase36(uuid).toUpperCase();
-
-    if (base36.length === 25 || base36.length === 24) {
-      return base36;
-    }
-
-    throw new Error('Invalid order identifier');
-  }
-
-  public setPayments(entries: number = 1) {
-    this.payments = (this.payments || 0) + entries;
-  }
-
-  public hasPayments() {
-    return (this.payments ?? 0) > 0;
   }
 }

@@ -58,13 +58,17 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     try {
       statement = await this.fetchableStatementPort.fetch(statementParameter);
     } catch (err) {
+      const remarks = `statement unavailable: ${err} ($${JSON.stringify(err)})`;
+
+      this.logger.error(err, remarks, statementParameter);
+
       await this.persistableClearingPort.create(
         new Clearing({
           hash: String(),
           target: statementParameter.target,
           offset: statementParameter.offset,
           status: ClearingStatus.Faulted,
-          remarks: `statement unavailable: ${err} ($${JSON.stringify(err)})`,
+          remarks,
         }),
       );
 
@@ -111,9 +115,18 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       processedPayments,
     );
 
-    await this.persistableClearingPort.update(clearing);
-
     this.resizeCache();
+
+    const deleteEmptyClearing =
+      !clearing.getTotalAmount() && !clearing.getTotalEntries();
+
+    if (deleteEmptyClearing) {
+      await this.persistableClearingPort.remove(clearing);
+
+      return clearing;
+    }
+
+    await this.persistableClearingPort.update(clearing);
 
     return clearing;
   }
@@ -220,7 +233,7 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       processedPayments[providerPaymentId] = result;
 
       this.logger.info(
-        `Confirmed: ${endToEndId} (ProviderID: ${providerPaymentId}) => OrderID: ${order.getId()})`,
+        `Confirmed: #${result.payment.getSequence()} (ProviderID: ${providerPaymentId}) => OrderID: ${order.getId()})`,
       );
 
       return;
@@ -229,8 +242,8 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
 }
 
 const isValid = (id): boolean => {
-  if (id?.length !== 25) return false;
-  // TODO: fazer validação do base36?
+  if (id?.length !== 25 && id?.length !== 24) return false;
 
+  // TODO: hashear base36 => uuidv4
   return true;
 };

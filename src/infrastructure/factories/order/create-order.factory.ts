@@ -2,10 +2,10 @@ import { Settings } from '../../../domain/common/settings';
 import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
 import { PersistableOrderDbAdapter } from '../../adapters/outbound/database/order/persistable-order.adapter';
 import { GeneratePixQrCodeAdapter } from '../../adapters/outbound/qrcodes/order/generate-pix-qrcode.adapter';
-import { KnexPostgresDatabase } from 'src/infrastructure/adapters/outbound/database/knex-postgres.db';
-import { CreateOrderInteractor } from 'src/domain/order/interactors/create-order.interactor';
+import { KnexPostgresDatabase } from '../../../infrastructure/adapters/outbound/database/knex-postgres.db';
+import { CreateOrderInteractor } from '../../../domain/order/interactors/create-order.interactor';
 
-import { CreateBrazilianPixOrderUseCase } from 'src/domain/order/usecases/create-brazilian-pix-order.usecase';
+import { CreateBrazilianPixOrderUseCase } from '../../../domain/order/usecases/create-brazilian-pix-order.usecase';
 import { CreateQuoteFactory } from '../price/create-quote.factory';
 
 export class CreateOrderFactory {

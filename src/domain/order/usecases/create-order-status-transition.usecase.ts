@@ -1,4 +1,5 @@
 import { Order } from '../entities/order.entity';
+import { PersistableOrderStatusTransitionPort } from '../ports/persistable-order-status-transition.port';
 import {
   CreateOrderTransitionInteractor,
   TransitionInfo,
@@ -7,7 +8,11 @@ import {
 export class CreateOrderStatusTransitionUseCase
   implements CreateOrderTransitionInteractor
 {
-  execute(entity: Order, info: TransitionInfo): Promise<void> {
-    throw new Error('Method not implemented.');
+  constructor(
+    readonly persistableOrderStatusTransitionPort: PersistableOrderStatusTransitionPort,
+  ) {}
+
+  execute(order: Order, info: TransitionInfo): Promise<void> {
+    return this.persistableOrderStatusTransitionPort.create(order, info);
   }
 }

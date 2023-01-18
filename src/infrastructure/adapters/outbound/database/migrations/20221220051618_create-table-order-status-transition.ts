@@ -8,6 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('order_id').references('id').inTable('order');
     table.integer('from_status').notNullable();
     table.integer('to_status').notNullable();
+    table.text('reason').nullable();
     table.datetime('created_at').defaultTo(knex.fn.now());
   });
 }

@@ -15,7 +15,21 @@ const DEFAULT_START_OFFSET_MS = 1_000 * 3 * 60 ** 2;
 const FIRST_PAGE_INDEX = 0;
 
 export class FetchableStatementHttpAdapter implements FetchableStatementPort {
+  static instance: FetchableStatementHttpAdapter;
+
   constructor(readonly settings: Settings, readonly logger: LoggablePort) {}
+
+  static getInstance(
+    settings: Settings,
+    logger: LoggablePort,
+  ): FetchableStatementHttpAdapter {
+    if (!FetchableStatementHttpAdapter.instance) {
+      FetchableStatementHttpAdapter.instance =
+        new FetchableStatementHttpAdapter(settings, logger);
+    }
+
+    return FetchableStatementHttpAdapter.instance;
+  }
 
   private request(
     pageOffset: number,
@@ -24,10 +38,11 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
   ): Promise<PagedStatementDto> {
     const logger = this.logger;
     const settings = this.settings;
+
     return new Promise((resolve, reject) => {
       const options: https.RequestOptions = {
         method: 'GET',
-        hostname: settings.statementProvider.hostname,
+        hostname: 'teste.teste.com', //settings.statementProvider.hostname,
         path: `${settings.statementProvider.path}?pagina=${pageOffset}&tamanhoPagina=${STREAM_SIZE}&dataInicio=${target}&dataFim=${dateOffset}&tipoOperacao=C&tipoTransacao=PIX`,
         headers: {
           accept: 'application/json',
@@ -55,9 +70,19 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 
         res.on('end', function () {
           const body = Buffer.concat(chunks);
-          const statement: PagedStatementDto = JSON.parse(body.toString());
 
-          return resolve(statement);
+          try {
+            const statement: PagedStatementDto = JSON.parse(body.toString());
+
+            return resolve(statement);
+          } catch (err) {
+            logger.error(
+              err,
+              `[statement-adapter] parse http-response error: ${target}-${dateOffset} @ page ${pageOffset}`, // TODO: logar statusCode do erro etc
+            );
+
+            reject(err);
+          }
         });
       });
 

@@ -48,8 +48,6 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       .where({ ['end_to_end_id']: endToEndId })
       .first();
 
-    console.log('record =>', record);
-
     if (!record?.id) {
       return;
     }

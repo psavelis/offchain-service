@@ -7,6 +7,7 @@
     "start:debug": "nest start --debug --watch",
     "migrations:create": "ts-node -r dotenv/config node_modules/.bin/knex --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts migrate:make -x ts",
     "migrations:down": "ts-node -r dotenv/config node_modules/.bin/knex migrate:down --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
+    "migrations:down-all": "ts-node -r dotenv/config node_modules/.bin/knex migrate:rollback --all --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations:prod": "knex migrate:latest --knexfile dist/infrastructure/adapters/outbound/database/knex-postgres.config.js"
   },
@@ -25,6 +26,7 @@
     "@nestjs/platform-express": "^9.1.6",
     "@nestjs/schedule": "^2.1.0",
     "@nestjs/swagger": "^6.1.3",
+    "@nestjs/throttler": "^3.1.0",
     "alchemy-sdk": "^2.2.3",
     "babel-jest": "^29.3.1",
     "cron": "^2.1.0",

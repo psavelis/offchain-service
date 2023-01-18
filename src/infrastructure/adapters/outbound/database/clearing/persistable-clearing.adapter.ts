@@ -47,11 +47,13 @@ export class PersistableClearingDbAdapter implements PersistableClearingPort {
     const newRecord = mapper.parseEntity(entity);
 
     const fields = Object.keys(newRecord)
-      .filter((field) => field !== 'id')
-      .map((field) => `${field} = :${field}`);
+      .filter((field) => field !== 'id' && field !== 'sequence')
+      .map((field) => `"${field}" = :${field}`);
 
     await this.db().raw(
-      `update clearing set ${fields.join(', ')} where id = :id`,
+      `update clearing set ${fields.join(
+        ', ',
+      )}, "sequence" = ((SELECT MAX(COALESCE(sequence, 0)) FROM clearing) + 1) where id = :id`,
       newRecord,
     );
 
@@ -62,5 +64,11 @@ export class PersistableClearingDbAdapter implements PersistableClearingPort {
       .first();
 
     return mapper.parseRow(record);
+  }
+
+  remove(entity: Clearing): Promise<void> {
+    return this.db().raw(`delete from clearing where id = :id`, {
+      id: entity.getId(),
+    });
   }
 }

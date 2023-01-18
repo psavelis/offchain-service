@@ -71,6 +71,13 @@ export class SettingsAdapter {
         path: this.envString('STATEMENT_PROVIDER_PATH'),
         hostname: this.envString('STATEMENT_PROVIDER_HOSTNAME'),
       },
+      oauthProvider: {
+        path: this.envString('STATEMENT_PROVIDER_OAUTH_PATH'),
+        clientId: this.envString('STATEMENT_PROVIDER_CLIENT_ID'),
+        clientSecret: this.envString('STATEMENT_PROVIDER_CLIENT_SECRET'),
+        scope: this.envString('STATEMENT_PROVIDER_SCOPE'),
+        grantType: this.envString('STATEMENT_PROVIDER_GRANT_TYPE'),
+      },
     };
   }
 }

@@ -1,4 +1,11 @@
 export interface Settings {
+  oauthProvider: {
+    path: string;
+    clientId: string;
+    clientSecret: string;
+    scope: string;
+    grantType: string;
+  };
   statementProvider: {
     clientKey: string;
     clientCert: string;

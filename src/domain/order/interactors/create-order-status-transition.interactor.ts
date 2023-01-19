@@ -1,8 +1,5 @@
 import { Order } from '../entities/order.entity';
-
-export interface TransitionInfo {
-  reason: string;
-}
+import { TransitionInfo } from '../dtos/transition-info.dto';
 
 export interface CreateOrderTransitionInteractor {
   execute(entity: Order, info: TransitionInfo): Promise<void>;

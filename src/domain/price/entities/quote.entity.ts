@@ -1,4 +1,8 @@
-import { CurrencyAmount, CurrencyIsoCode, IsoCodes } from '../value-objects/currency-amount.value-object';
+import {
+  CurrencyAmount,
+  CurrencyIsoCode,
+  IsoCodes,
+} from '../value-objects/currency-amount.value-object';
 
 export interface Quote<T extends CurrencyIsoCode = CurrencyIsoCode> {
   id: string;
@@ -6,25 +10,16 @@ export interface Quote<T extends CurrencyIsoCode = CurrencyIsoCode> {
   userAmount: CurrencyAmount<T>;
   finalAmountOfTokens: CurrencyAmount<IsoCodes.KNN>;
   total: {
-    [k in CurrencyIsoCode]: CurrencyAmount<k>
+    [k in CurrencyIsoCode]: CurrencyAmount<k>;
   };
   totalPerToken: {
-    [k in Exclude<CurrencyIsoCode, 'KNN'>]: CurrencyAmount<k>
+    [k in Exclude<CurrencyIsoCode, 'KNN'>]: CurrencyAmount<k>;
   };
   gasAmount: {
-    [k in CurrencyIsoCode]: CurrencyAmount<k>
-  };
-  gatewayAmount: {
-    [k in CurrencyIsoCode]: CurrencyAmount<k>
+    [k in CurrencyIsoCode]: CurrencyAmount<k>;
   };
   netTotal: {
-    [k in CurrencyIsoCode]: CurrencyAmount<k>
-  };
-  grossTotal: {
-    [k in CurrencyIsoCode]: CurrencyAmount<k>
-  };
-  totalFeeAmount: {
-    [k in CurrencyIsoCode]: CurrencyAmount<k>
+    [k in CurrencyIsoCode]: CurrencyAmount<k>;
   };
 
   createdAt: Date;

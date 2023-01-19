@@ -6,14 +6,26 @@ import {
 export interface CalculusPort {
   sum<T extends CurrencyIsoCode = CurrencyIsoCode>(
     a: CurrencyAmount<T>,
-    b: CurrencyAmount<T>
+    b: CurrencyAmount<T>,
   ): CurrencyAmount<T>;
-  divide<C extends CurrencyIsoCode, T extends CurrencyIsoCode = CurrencyIsoCode, U extends CurrencyIsoCode = T>(
+  sub<T extends CurrencyIsoCode = CurrencyIsoCode>(
+    a: CurrencyAmount<T>,
+    b: CurrencyAmount<T>,
+  ): CurrencyAmount<T>;
+  divide<
+    C extends CurrencyIsoCode,
+    T extends CurrencyIsoCode = CurrencyIsoCode,
+    U extends CurrencyIsoCode = T,
+  >(
     dividend: CurrencyAmount<T>,
     divisor: CurrencyAmount<U>,
     outCurrency: C,
   ): CurrencyAmount<C>;
-  multiply<C extends CurrencyIsoCode, T extends CurrencyIsoCode = CurrencyIsoCode, U extends CurrencyIsoCode = T>(
+  multiply<
+    C extends CurrencyIsoCode,
+    T extends CurrencyIsoCode = CurrencyIsoCode,
+    U extends CurrencyIsoCode = T,
+  >(
     multiplicand: CurrencyAmount<T>,
     multiplier: CurrencyAmount<U>,
     outCurrency: C,

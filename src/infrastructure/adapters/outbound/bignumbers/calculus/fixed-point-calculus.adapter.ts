@@ -55,7 +55,7 @@ export class FixedPointCalculusAdapter implements CalculusPort {
 
   sum<T extends CurrencyIsoCode = CurrencyIsoCode>(
     a: CurrencyAmount<T>,
-    b: CurrencyAmount<T>
+    b: CurrencyAmount<T>,
   ): CurrencyAmount<T> {
     const bigNumberResult = this.toFixedNumber(a).addUnsafe(
       this.toFixedNumber(b),
@@ -68,7 +68,26 @@ export class FixedPointCalculusAdapter implements CalculusPort {
     );
   }
 
-  divide<C extends CurrencyIsoCode, T extends CurrencyIsoCode = CurrencyIsoCode, U extends CurrencyIsoCode = T>(
+  sub<T extends CurrencyIsoCode = CurrencyIsoCode>(
+    a: CurrencyAmount<T>,
+    b: CurrencyAmount<T>,
+  ): CurrencyAmount<T> {
+    const bigNumberResult = this.toFixedNumber(a).subUnsafe(
+      this.toFixedNumber(b),
+    );
+
+    return this.toCurrency(
+      bigNumberResult,
+      bigNumberDecimals,
+      a.isoCode || b.isoCode,
+    );
+  }
+
+  divide<
+    C extends CurrencyIsoCode,
+    T extends CurrencyIsoCode = CurrencyIsoCode,
+    U extends CurrencyIsoCode = T,
+  >(
     dividend: CurrencyAmount<T>,
     divisor: CurrencyAmount<U>,
     outCurrency: C,
@@ -80,7 +99,11 @@ export class FixedPointCalculusAdapter implements CalculusPort {
     return this.toCurrency(division, bigNumberDecimals, outCurrency);
   }
 
-  multiply<C extends CurrencyIsoCode, T extends CurrencyIsoCode = CurrencyIsoCode, U extends CurrencyIsoCode = T>(
+  multiply<
+    C extends CurrencyIsoCode,
+    T extends CurrencyIsoCode = CurrencyIsoCode,
+    U extends CurrencyIsoCode = T,
+  >(
     a: CurrencyAmount<T>,
     b: CurrencyAmount<U>,
     outCurrency: C,

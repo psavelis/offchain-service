@@ -62,17 +62,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       this.usdPort.fetch(entry.forceReload),
     ]);
 
-    const {
-      amount: { isoCode: userCurrency },
-    } = entry;
-
-    const userQuotation: QuotationAggregate = this.getQuotation[userCurrency](
-      entry.amount,
-      usdBasis,
-      knnBasis,
-      ethBasis,
-    );
-
     const userEstimatedGasFee: QuotationAggregate = await this.calculateGas(
       entry,
       usdBasis,
@@ -80,9 +69,12 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       ethBasis,
     );
 
-    const userGatewayFee: QuotationAggregate = await this.calculateGatewayFee(
-      userQuotation,
-      userEstimatedGasFee,
+    const {
+      amount: { isoCode: userCurrency },
+    } = entry;
+
+    const userQuotation: QuotationAggregate = this.getQuotation[userCurrency](
+      this.calculusPort.sub(entry.amount, userEstimatedGasFee[userCurrency]),
       usdBasis,
       knnBasis,
       ethBasis,
@@ -103,13 +95,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
         this.settings.price.quoteExpirationSeconds * 1_000,
     );
 
-    quote.netTotal = {
-      USD: userQuotation.USD,
-      ETH: userQuotation.ETH,
-      BRL: userQuotation.BRL,
-      KNN: userQuotation.KNN,
-    };
-
     quote.gasAmount = {
       USD: userEstimatedGasFee.USD,
       ETH: userEstimatedGasFee.ETH,
@@ -117,32 +102,18 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       KNN: userEstimatedGasFee.KNN,
     };
 
-    quote.gatewayAmount = {
-      USD: userGatewayFee.USD,
-      ETH: userGatewayFee.ETH,
-      BRL: userGatewayFee.BRL,
-      KNN: userGatewayFee.KNN,
+    quote.total = {
+      USD: userQuotation.USD,
+      ETH: userQuotation.ETH,
+      BRL: userQuotation.BRL,
+      KNN: userQuotation.KNN,
     };
 
-    quote.grossTotal = {
-      USD: this.calculusPort.sum(quote.netTotal.USD, quote.gasAmount.USD),
+    quote.netTotal = {
+      USD: this.calculusPort.sum(quote.total.USD, quote.gasAmount.USD),
       ETH: this.calculusPort.sum(quote.netTotal.ETH, quote.gasAmount.ETH),
       BRL: this.calculusPort.sum(quote.netTotal.BRL, quote.gasAmount.BRL),
       KNN: this.calculusPort.sum(quote.netTotal.KNN, quote.gasAmount.KNN),
-    };
-
-    quote.total = {
-      USD: this.calculusPort.sum(quote.grossTotal.USD, quote.gatewayAmount.USD),
-      ETH: this.calculusPort.sum(quote.grossTotal.ETH, quote.gatewayAmount.ETH),
-      BRL: this.calculusPort.sum(quote.grossTotal.BRL, quote.gatewayAmount.BRL),
-      KNN: this.calculusPort.sum(quote.grossTotal.KNN, quote.gatewayAmount.KNN),
-    };
-
-    quote.totalFeeAmount = {
-      USD: this.calculusPort.sum(quote.gasAmount.USD, quote.gatewayAmount.USD),
-      ETH: this.calculusPort.sum(quote.gasAmount.ETH, quote.gatewayAmount.ETH),
-      BRL: this.calculusPort.sum(quote.gasAmount.BRL, quote.gatewayAmount.BRL),
-      KNN: this.calculusPort.sum(quote.gasAmount.KNN, quote.gatewayAmount.KNN),
     };
 
     quote.totalPerToken = {
@@ -170,45 +141,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       });
     }
     return quote;
-  }
-
-  private async calculateGatewayFee(
-    userQuotation: QuotationAggregate,
-    userEstimatedGasFee: QuotationAggregate,
-    usdQuotation: UsdQuoteBasis,
-    knnQuotation: KnnQuoteBasis,
-    ethQuotation: EthQuoteBasis,
-  ): Promise<QuotationAggregate> {
-    const gatewayFeeInBrl = await this.calculateGatewayFeeInBrl(
-      userQuotation,
-      userEstimatedGasFee,
-    );
-
-    return this.calculateBRL(
-      gatewayFeeInBrl,
-      usdQuotation,
-      knnQuotation,
-      ethQuotation,
-    );
-  }
-
-  private calculateGatewayFeeInBrl(
-    userQuotation: QuotationAggregate,
-    userEstimatedGasFee: QuotationAggregate,
-  ): Promise<CurrencyAmount<IsoCodes.BRL>> {
-    const gatewayFeeInBrl: CurrencyAmount = {
-      unassignedNumber: '0',
-      decimals: 2,
-      isoCode: IsoCodes.BRL,
-    }; // TODO: parametrizar calculo do gateway
-
-    const result = this.calculusPort.multiply(
-      this.calculusPort.sum(userQuotation.BRL, userEstimatedGasFee.BRL),
-      gatewayFeeInBrl,
-      IsoCodes.BRL,
-    );
-
-    return Promise.resolve(result);
   }
 
   async calculateGas(

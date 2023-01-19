@@ -13,7 +13,7 @@ import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0;
+const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2;
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
 };

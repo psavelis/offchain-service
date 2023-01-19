@@ -115,7 +115,7 @@ export class ProcessStatementTransactionUseCase
       matchingOrder.setStatus(OrderStatus.Confirmed);
 
       await this.orderTransitionInteractor.execute(matchingOrder, {
-        reason: `confirmation #${payment.getSequence()} streamed from ${clearing.getId()} (${clearing.getHash()}) and bound to ${providerPaymentId})`,
+        reason: `#${payment.getSequence()} streamed from ${clearing.getId()} with external: ${providerPaymentId}`,
       });
 
       return {

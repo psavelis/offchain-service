@@ -14,8 +14,6 @@ export interface FlattenedQuote {
   totalPerToken: number;
   netTotal: number;
   gasAmount: number;
-  grossTotal: number;
-  gatewayAmount: number;
   total: number;
 }
 
@@ -55,8 +53,6 @@ export class PersistableQuoteDbAdapter implements PersistableQuotePort {
       totalPerToken: this.parseCurrency(quote.totalPerToken.BRL),
       netTotal: this.parseCurrency(quote.netTotal.BRL),
       gasAmount: this.parseCurrency(quote.gasAmount.BRL),
-      grossTotal: this.parseCurrency(quote.grossTotal.BRL),
-      gatewayAmount: this.parseCurrency(quote.gatewayAmount.BRL),
       total: this.parseCurrency(quote.total.BRL),
     };
   }

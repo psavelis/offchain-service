@@ -10,8 +10,6 @@ export async function up(knex: Knex): Promise<void> {
     table.float('totalPerToken').notNullable();
     table.float('netTotal').notNullable();
     table.float('gasAmount').notNullable();
-    table.float('grossTotal').notNullable();
-    table.float('gatewayAmount').notNullable();
     table.float('total').notNullable();
     table.datetime('created_at').defaultTo(knex.fn.now());
   });

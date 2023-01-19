@@ -3,8 +3,6 @@ export class QuoteResponseDto {
   usdPrice: number;
   knnPriceInUsd: number;
   gasBaseFee: number;
-  gatewayBaseFee: number;
-  // TODO: persistir
 
   currency: string;
   amount: number;

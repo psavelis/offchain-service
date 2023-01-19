@@ -25,11 +25,20 @@ import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecas
 import { CreateOrderTransitionInteractor } from '../../../domain/order/interactors/create-order-status-transition.interactor';
 import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbound/database/order/persistable-order-status-transition.adapter';
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
+import { Clearing } from 'src/domain/clearing/entities/clearing.entity';
 
 export class CreateClearingFactory {
   static instance: CreateClearingInteractor;
 
   static getInstance(): CreateClearingInteractor {
+    const loadAdapter = process.env.LOAD_ADAPTERS.includes('clearing-cron');
+
+    if (!loadAdapter) {
+      return {
+        execute: () => Promise.resolve({} as Clearing),
+      };
+    }
+
     if (!this.instance) {
       const logger: LoggablePort = PinoLogger.getInstance();
       const settings: Settings = SettingsAdapter.getInstance().getSettings();

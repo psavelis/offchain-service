@@ -25,6 +25,7 @@ ENV CORS_ORIGIN=*
 ENV QUOTE_EXPIRATION_SECONDS=3600
 ENV PERSIST_QUOTES=false
 ENV RPC_NETWORK=eth-mainnet
+ENV LOAD_ADAPTERS=rest-api,clearing-cron,settlement-cron
 
 WORKDIR /var/www
 

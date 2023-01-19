@@ -1,9 +1,7 @@
 import { Order } from '../entities/order.entity';
 import { PersistableOrderStatusTransitionPort } from '../ports/persistable-order-status-transition.port';
-import {
-  CreateOrderTransitionInteractor,
-  TransitionInfo,
-} from '../interactors/create-order-status-transition.interactor';
+import { CreateOrderTransitionInteractor } from '../interactors/create-order-status-transition.interactor';
+import { TransitionInfo } from '../dtos/transition-info.dto';
 
 export class CreateOrderStatusTransitionUseCase
   implements CreateOrderTransitionInteractor

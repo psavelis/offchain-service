@@ -89,8 +89,6 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       statement,
     );
 
-    this.logger.debug('clearing completed', clearing);
-
     return clearing;
   }
 
@@ -178,8 +176,9 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
         );
       } while (currentStatement.currentPage <= currentStatement.totalPages);
     } catch (err) {
+      this.logger.error(err, 'clearing fault', clearing);
       clearing.setStatus(ClearingStatus.Faulted);
-      clearing.setRemarks(`fault: ${err} ($${JSON.stringify(err)})`);
+      clearing.setRemarks(`fault: ${err}`);
 
       return clearing;
     }

@@ -29,6 +29,7 @@ export class ProcessStatementTransactionUseCase
     try {
       const {
         providerPaymentId,
+        providerPaymentEndToEndId,
         providerTimestamp,
         effectiveDate,
         value: amountPaid,
@@ -104,6 +105,7 @@ export class ProcessStatementTransactionUseCase
           orderId: matchingOrder.getId(),
           clearingId: clearing.getId(),
           providerId: providerPaymentId,
+          providerEndToEndId: providerPaymentEndToEndId,
           providerTimestamp,
           effectiveDate,
           total: Number(amountPaid),

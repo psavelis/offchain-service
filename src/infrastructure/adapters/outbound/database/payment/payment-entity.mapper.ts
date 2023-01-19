@@ -6,6 +6,7 @@ export const parseEntity = (payment: Payment) => {
     order_id: payment.getOrderId(),
     clearing_id: payment.getClearingId(),
     provider_id: payment.getProviderId(),
+    provider_end_to_end_id: payment.getProviderEndToEndId(),
     provider_timestamp: payment.getProviderTimestamp(),
     effective_date: payment.getEffectiveDate(),
     total: payment.getTotal(),

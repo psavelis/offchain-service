@@ -122,7 +122,18 @@ export class Order extends Entity<OrderProps> {
   }
 
   public isExpired() {
-    return this.props.expiresAt?.getTime() < new Date().getTime();
+    if (this.inStatus(OrderStatus.Expired, OrderStatus.Canceled)) {
+      return true;
+    }
+
+    if (
+      this.inStatus(OrderStatus.Requested) &&
+      this.props.expiresAt?.getTime() < new Date().getTime()
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   public getIdentifierType() {

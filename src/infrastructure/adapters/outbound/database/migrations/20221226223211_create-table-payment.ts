@@ -15,6 +15,7 @@ export async function up(knex: Knex): Promise<void> {
       .string('provider_id')
       .notNullable()
       .unique({ indexName: 'ix_payment_provider_id' });
+    table.string('provider_end_to_end_id');
     table
       .string('clearing_id')
       .notNullable()
@@ -22,7 +23,9 @@ export async function up(knex: Knex): Promise<void> {
       .inTable('clearing');
     table.string('provider_timestamp').notNullable();
     table.string('effective_date').notNullable();
-    table.increments('sequence', { primaryKey: false });
+    table
+      .increments('sequence', { primaryKey: false })
+      .index('ix_payment_sequence');
 
     table.decimal('total', 14, 2).notNullable();
 

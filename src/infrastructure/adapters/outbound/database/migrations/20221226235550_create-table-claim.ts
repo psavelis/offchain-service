@@ -18,22 +18,17 @@ export async function up(knex: Knex): Promise<void> {
       .unique({ indexName: 'ix_claim_order_id' })
       .references('id')
       .inTable('order');
-
-    table.json('amount_of_tokens').notNullable();
-
-    // Insert, dps update quando tiver o retorno dos dados do block e tx
-    // POST-ONCHAIN-FIELDS
-    table.string('transaction_hash').nullable();
-    table.integer('block_id').nullable();
-    table.string('event_timestamp').nullable();
-    table.integer('event_id').nullable();
-    // POST-ONCHAIN-FIELDS
-
-    table.string('chain_id').notNullable();
-    table.string('network_name').notNullable();
+    table.string('uint256_amount').notNullable();
     table.datetime('created_at').defaultTo(knex.fn.now());
 
-    // TODO: indexes
+    // updated after receipt
+    table
+      .string('transaction_hash')
+      .nullable()
+      .unique({ indexName: 'ix_lock_receipt_transaction_hash' })
+      .references('transaction_hash')
+      .inTable('receipt');
+    table.datetime('updated_at').nullable();
   });
 }
 

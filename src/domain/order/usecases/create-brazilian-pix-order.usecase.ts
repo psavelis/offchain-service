@@ -89,7 +89,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         total,
         userIdentifier: request.userIdentifier,
         identifierType: request.identifierType,
-        amountOfTokens: quote.total.KNN,
+        amountOfTokens: quote.finalAmountOfTokens,
         clientAgent: request.clientAgent,
         clientIp: request.clientIp,
         totalGas,
@@ -109,6 +109,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       status: order.getStatus(),
       statusDescription: order.getStatusDescription(),
       total: order.getTotal(),
+      expired: false,
       payload,
       base64,
     };
@@ -162,5 +163,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     if (amount.isoCode === IsoCodes.BRL) {
       CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
     }
+
+    // TODO: validar supply (cachear(!))
+    // TODO: criar base type pra trafegar mensagens de erro tratadas para o front
   }
 }

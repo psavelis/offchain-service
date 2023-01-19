@@ -5,4 +5,5 @@ export interface OrderDto {
   total: number;
   status: OrderStatus;
   statusDescription: string;
+  expired: boolean;
 }

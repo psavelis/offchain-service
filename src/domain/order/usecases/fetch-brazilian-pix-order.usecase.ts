@@ -30,7 +30,7 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
     const isPendingPayment =
       order.inStatus(OrderStatus.Requested) && !order.hasPayments();
 
-    if (isPendingPayment) {
+    if (isPendingPayment && !order.isExpired()) {
       const { payload, base64 }: StaticPix =
         await this.generatePixPort.generate(
           order.getTotal(),
@@ -53,6 +53,7 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
       orderId: entity.getId(),
       status: entity.getStatus(),
       statusDescription: entity.getStatusDescription(),
+      expired: entity.isExpired(),
       total: entity.getTotal(),
     };
   }

@@ -257,6 +257,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
             new Transaction(
               t.idTransacao,
               t.detalhes?.txId,
+              t.detalhes?.endToEndId,
               t.valor,
               t.dataInclusao,
               t.dataTransacao,

@@ -4,6 +4,7 @@ export interface PaymentProps extends Props {
   orderId: string;
   clearingId: string;
   providerId: string;
+  providerEndToEndId: string;
   providerTimestamp: string;
   effectiveDate: string;
   total: number;
@@ -29,6 +30,10 @@ export class Payment extends Entity<PaymentProps> {
 
   public getProviderId(): string {
     return this.props.providerId;
+  }
+
+  public getProviderEndToEndId(): string {
+    return this.props.providerEndToEndId;
   }
 
   public getProviderTimestamp(): string {

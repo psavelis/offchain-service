@@ -1,6 +1,7 @@
-import { ethers, Signer } from 'ethers';
+import { ContractReceipt, ContractTransaction, ethers, Signer } from 'ethers';
 import { KannaPreSale, KannaPreSale__factory } from './protocol';
 import { Settings } from '../../../../domain/common/settings';
+import { OnChainReceipt } from '../../../../domain/supply/dtos/onchain-receipt.dto';
 export interface IKannaProtocolProvider {
   preSale(): Promise<KannaPreSale>;
 }

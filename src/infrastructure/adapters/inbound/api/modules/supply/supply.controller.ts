@@ -12,7 +12,6 @@ export class SupplyController {
     readonly fetchAvailableSupply: FetchAvailableSupplyInteractor,
   ) {}
 
-  // @UseGuards(AuthGuard('bearer'))
   @Get()
   getAvailableSupply() {
     return this.fetchAvailableSupply.fetch();

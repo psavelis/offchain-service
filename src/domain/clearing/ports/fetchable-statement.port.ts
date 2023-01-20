@@ -10,4 +10,5 @@ export interface FetchableStatementPort {
   fetch({ target, offset }: StatementParameter): Promise<Statement>;
   fetchNext(current: Statement): Promise<Statement>;
   getStatementParameter(last: Clearing | undefined): StatementParameter;
+  getToken(): Promise<string>;
 }

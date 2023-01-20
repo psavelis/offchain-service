@@ -14,7 +14,7 @@ export class ClearingController {
     @Inject(CreateClearing)
     readonly createClearing: CreateClearingInteractor,
   ) {
-    const job = new CronJob('*/8 * * * * *', () => {
+    const job = new CronJob('*/15 * * * * *', () => {
       if (running) {
         return;
       }

@@ -4,13 +4,13 @@ import {
   StatementParameter,
 } from '../../../../../domain/clearing/ports/fetchable-statement.port';
 import { Statement } from '../../../../../domain/clearing/value-objects/statement.value-object';
-import * as https from 'https';
 import { PagedStatementDto, StatementTransaction } from './paged-statement.dto';
 import { Settings } from '../../../../../domain/common/settings';
 import { Transaction } from '../../../../../domain/clearing/value-objects/transaction.value-object';
 import { LoggablePort } from '../../../../../domain/common/ports/loggable.port';
+import https from 'https';
 
-const STREAM_SIZE = 200;
+const STREAM_SIZE = 1000;
 const DEFAULT_START_OFFSET_MS = 1_000 * 3 * 60 ** 2;
 const FIRST_PAGE_INDEX = 0;
 
@@ -26,7 +26,7 @@ const transactionType = 'PIX';
 export class FetchableStatementHttpAdapter implements FetchableStatementPort {
   static instance: FetchableStatementHttpAdapter;
   private token: OAuthToken;
-  private agent: https.Agent;
+  private agent: any;
 
   constructor(readonly settings: Settings, readonly logger: LoggablePort) {}
 
@@ -42,43 +42,40 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     return FetchableStatementHttpAdapter.instance;
   }
 
-  private async getToken(): Promise<string> {
+  public getToken(): Promise<string> {
     if (this.token?.expires_in && this.token?.expires_in > new Date()) {
-      return this.token.access_token;
+      return Promise.resolve(this.token.access_token);
     }
 
-    const headers = {
-      ['Content-Type']: 'application/x-www-form-urlencoded',
-    };
-
-    const logger = this.logger;
-
-    const {
-      hostname,
-      clientCert: cert,
-      clientKey: key,
-    } = this.settings.statementProvider;
-
+    const { hostname, clientCert, clientKey } = this.settings.statementProvider;
     const { path, clientId, clientSecret, scope, grantType } =
       this.settings.oauthProvider;
 
-    const options: https.RequestOptions = {
+    const postData = new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      scope: scope,
+      grant_type: grantType,
+    }).toString();
+
+    const options = {
       method: 'POST',
-      port: 443,
       hostname,
-      path: `${path}?client_id=${clientId}&client_secret=${clientSecret}&scope=${scope}&grant_type=${grantType}`,
-      headers,
-      agent: false,
-      cert,
-      key,
+      path,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      maxRedirects: 20,
+      cert: Buffer.from(clientCert, 'ascii'),
+      key: Buffer.from(clientKey, 'ascii'),
     };
 
     return new Promise((resolve, reject) => {
-      const req = https.request(options, function (res) {
-        const chunks: any[] = [];
+      const req = https.request(options, (res) => {
+        const chunks = [];
 
         res.on('error', (err) => {
-          logger.error(err, '[statement-oauth] https request error');
+          console.error(err, '[statement-oauth] https request error');
 
           reject(err);
         });
@@ -87,7 +84,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
           chunks.push(chunk);
         });
 
-        res.on('end', function () {
+        res.on('end', () => {
           const body = Buffer.concat(chunks);
 
           try {
@@ -102,18 +99,24 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 
             return resolve(access_token);
           } catch (err) {
-            logger.error(err, '[statement-oauth] https response parse error');
+            this.logger.error(
+              err,
+              '[statement-oauth] https response parse error',
+            );
 
             reject(err);
           }
         });
       });
 
+      req.write(postData);
+
       req.end();
     });
   }
 
   private request(
+    token: string,
     pageOffset: number,
     target: string,
     dateOffset: string,
@@ -123,8 +126,8 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     const {
       path: basePath,
       hostname,
-      clientCert: cert,
-      clientKey: key,
+      clientCert,
+      clientKey,
     } = this.settings.statementProvider;
 
     const path = `${basePath}?pagina=${pageOffset}&tamanhoPagina=${STREAM_SIZE}&dataInicio=${target}&dataFim=${dateOffset}&tipoOperacao=${operationType}&tipoTransacao=${transactionType}`;
@@ -135,30 +138,22 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
       hostname,
       path,
       headers: {
-        authorization: `Bearer ${this.getToken()}`,
+        authorization: `Bearer ${token}`,
       },
-      cert,
-      key,
-      agent: null as https.Agent,
+      cert: Buffer.from(clientCert, 'ascii'),
+      key: Buffer.from(clientKey, 'ascii'),
     };
 
     if (!this.agent) {
       this.agent = new https.Agent(options);
     }
 
-    options.agent = this.agent;
-
-    const paramsDescription = `${target}-${dateOffset} @ page ${pageOffset}`;
-
     return new Promise((resolve, reject) => {
       const req = https.request(options, function (res) {
-        const chunks: any[] = [];
+        const chunks = [];
 
         res.on('error', (err) => {
-          logger.error(
-            err,
-            `[statement-adapter] https-request error: ${paramsDescription}`,
-          );
+          console.error(err, '[statement-oauth] https request error');
 
           reject(err);
         });
@@ -171,14 +166,11 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
           const body = Buffer.concat(chunks);
 
           try {
-            const statement: PagedStatementDto = JSON.parse(body.toString());
+            const statement = JSON.parse(body.toString());
 
             return resolve(statement);
           } catch (err) {
-            logger.error(
-              err,
-              `[statement-adapter] parse http-response error: ${paramsDescription}`,
-            );
+            console.error(err, '[statement-oauth] https response parse error');
 
             reject(err);
           }
@@ -209,7 +201,9 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
   }
 
   async fetch({ target, offset }: StatementParameter): Promise<Statement> {
+    const token = await this.getToken();
     const pagedStatement: PagedStatementDto = await this.request(
+      token,
       FIRST_PAGE_INDEX,
       target,
       offset,
@@ -225,7 +219,10 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 
   async fetchNext(fromStatement: Statement): Promise<Statement> {
     const nextPage = fromStatement.currentPage + 1;
+
+    const token = await this.getToken();
     const pagedStatement: PagedStatementDto = await this.request(
+      token,
       nextPage,
       fromStatement.target,
       fromStatement.offset,

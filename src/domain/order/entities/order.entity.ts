@@ -23,7 +23,7 @@ export enum OrderStatus {
 export type Email = 'EA';
 export type CryptoWallet = 'CW';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0; // TODO:  parametrizar!
+const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2; // TODO:  parametrizar!
 const DEFAULT_ORDER_EXPIRATION = 7200 * 1_000; // TODO: parametrizar!
 
 const statusDictionary: Record<OrderStatus, string> = {
@@ -69,7 +69,7 @@ export class Order extends Entity<OrderProps> {
       return;
     }
 
-    if (props.total <= DEFAULT_ORDER_MINIMUM_TOTAL) {
+    if (props.total < DEFAULT_ORDER_MINIMUM_TOTAL) {
       throw new Error('Invalid order total');
     }
 

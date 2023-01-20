@@ -58,7 +58,7 @@ export class OrderController {
   }
 
   @Sse(':id/watch')
-  @Throttle(3, 60)
+  @Throttle(10, 60)
   watchOrder(@Param('id') id: string): Observable<MessageEvent> {
     return interval(1000 * 10).pipe(
       switchMap((_) => this.fetchOrder.fetch(id)),

@@ -77,9 +77,12 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
 
     const hash = statement.getHash();
 
-    const notChanged = lastClearing?.getHash && hash === lastClearing.getHash();
+    const notChanged =
+      (lastClearing?.getHash && hash === lastClearing.getHash()) ||
+      !statement.transactions?.length;
 
     if (notChanged) {
+      this.logger.debug('skip: ', { statement, statementParameter });
       return lastClearing;
     }
 

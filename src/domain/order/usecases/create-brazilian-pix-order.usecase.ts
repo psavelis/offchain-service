@@ -12,6 +12,7 @@ import { formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
+import { LoggablePort } from 'src/domain/common/ports/loggable.port';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2;
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
@@ -37,6 +38,7 @@ const allowedIsoCodes = [
 const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
 export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   constructor(
+    readonly logger: LoggablePort,
     readonly settings: Settings,
     readonly createQuoteInteractor: CreateQuoteInteractor,
     readonly persistableOrderPort: PersistableOrderPort,
@@ -46,7 +48,15 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     CreateBrazilianPixOrderUseCase.validate(request);
 
-    const quote = await this.createQuoteInteractor.execute(request);
+    const quote = await this.createQuoteInteractor
+      .execute(request)
+      .catch((err) => {
+        this.logger.error(err, '[quote-error]');
+      });
+
+    if (!quote) {
+      return;
+    }
 
     const total = Number(
       formatDecimals(

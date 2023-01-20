@@ -43,7 +43,11 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
   }
 
   public getToken(): Promise<string> {
-    if (this.token?.expires_in && this.token?.expires_in > new Date()) {
+    if (
+      this.token?.expires_in &&
+      this.token?.expires_in > new Date() &&
+      this.token.access_token
+    ) {
       return Promise.resolve(this.token.access_token);
     }
 
@@ -171,6 +175,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
             const statement = JSON.parse(body.toString());
             this.logger.debug('[statement-end]', {
               statement,
+              token: this.token,
               body: body.toString(),
             });
 

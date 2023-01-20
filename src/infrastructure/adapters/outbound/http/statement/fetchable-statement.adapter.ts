@@ -149,7 +149,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     }
 
     return new Promise((resolve, reject) => {
-      const req = https.request(options, function (res) {
+      const req = https.request(options, (res) => {
         const chunks = [];
 
         res.on('error', (err) => {
@@ -162,12 +162,15 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
           chunks.push(chunk);
         });
 
-        res.on('end', function () {
+        res.on('end', () => {
           const body = Buffer.concat(chunks);
 
           try {
             const statement = JSON.parse(body.toString());
-            this.logger.debug({ statement, body: body.toString() });
+            this.logger.debug('[statement-end]', {
+              statement,
+              body: body.toString(),
+            });
 
             return resolve(statement);
           } catch (err) {

@@ -90,6 +90,8 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
           try {
             const { access_token, expires_in } = JSON.parse(body.toString());
 
+            this.logger.debug('[statement-access-token]', body.toString());
+
             this.token = {
               access_token,
               expires_in: new Date(

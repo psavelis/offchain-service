@@ -25,7 +25,6 @@ export async function up(knex: Knex): Promise<void> {
     table
       .string('transaction_hash')
       .nullable()
-      .unique({ indexName: 'ix_lock_receipt_transaction_hash' })
       .references('transaction_hash')
       .inTable('receipt');
     table.datetime('updated_at').nullable();

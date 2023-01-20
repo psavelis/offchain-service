@@ -169,10 +169,6 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 
           try {
             const statement = JSON.parse(body.toString());
-            this.logger.debug('[statement-end]', {
-              statement,
-              body: body.toString(),
-            });
 
             return resolve(statement);
           } catch (err) {

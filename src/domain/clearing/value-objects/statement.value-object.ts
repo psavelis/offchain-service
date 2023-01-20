@@ -11,9 +11,7 @@ export class Statement {
     public target: string,
     public offset: string,
     public transactions: Transaction[],
-  ) {
-    console.log({ transactions: this.transactions });
-  }
+  ) {}
 
   getHash(): string {
     return `${this.totalPages}|${this.totalStatementEntries}|${this.target}|${this.offset}`;

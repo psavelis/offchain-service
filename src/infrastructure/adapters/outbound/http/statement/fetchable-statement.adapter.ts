@@ -249,7 +249,6 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     statement: PagedStatementDto,
   ): Statement {
     try {
-      console.log({ statement, json: JSON.stringify(statement) });
       return new Statement(
         pageNumber,
         statement.totalPaginas,

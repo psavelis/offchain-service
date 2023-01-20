@@ -27,7 +27,7 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
       onchainAddress,
       uint256Amount,
       uint256Nonce,
-      false, // TODO: TYPECHAIN atualizar
+      false, // TODO: TYPECHAIN atualizar  // TODO: revisar EIP 1559
     );
 
     const receipt: ContractReceipt = await transaction.wait();

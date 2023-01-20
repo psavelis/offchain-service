@@ -7,7 +7,10 @@ export async function up(knex: Knex): Promise<void> {
     table.increments('id', { primaryKey: true });
     table.integer('chain_id').nullable();
     table.integer('block_number').nullable();
-    table.string('transaction_hash').notNullable();
+    table
+      .string('transaction_hash')
+      .unique({ indexName: 'ix_receipt_transaction_hash' })
+      .notNullable();
     table
       .string('order_id')
       .notNullable()

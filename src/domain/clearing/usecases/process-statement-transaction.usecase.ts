@@ -130,7 +130,6 @@ export class ProcessStatementTransactionUseCase
         {
           err,
           order,
-          transaction,
         },
       );
 

@@ -82,7 +82,6 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       !statement.transactions?.length;
 
     if (notChanged) {
-      this.logger.debug('skip: ', { statement, statementParameter });
       return lastClearing;
     }
 

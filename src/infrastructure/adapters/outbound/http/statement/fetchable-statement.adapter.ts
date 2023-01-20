@@ -167,6 +167,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 
           try {
             const statement = JSON.parse(body.toString());
+            this.logger.debug({ statement, body: body.toString() });
 
             return resolve(statement);
           } catch (err) {
@@ -243,6 +244,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     statement: PagedStatementDto,
   ): Statement {
     try {
+      console.log({ statement, json: JSON.stringify(statement) });
       return new Statement(
         pageNumber,
         statement.totalPaginas,

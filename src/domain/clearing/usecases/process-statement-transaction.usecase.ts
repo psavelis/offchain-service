@@ -43,10 +43,6 @@ export class ProcessStatementTransactionUseCase
           `${findableKeyword} incorrect amount: ${
             transaction.providerPaymentId
           }: order ${matchingOrder.getId()} expects '${expectedAmount}' (order.total: ${matchingOrder.getTotal()}) but received '${amountPaid}'`,
-          {
-            order,
-            transaction,
-          },
         );
 
         return undefined;
@@ -57,10 +53,6 @@ export class ProcessStatementTransactionUseCase
           `${findableKeyword} invalid order status: ${
             transaction.providerPaymentId
           }: order ${matchingOrder.getId()} cannot be processed on ${matchingOrder.getStatus()}`,
-          {
-            order,
-            transaction,
-          },
         );
 
         return undefined;
@@ -71,10 +63,6 @@ export class ProcessStatementTransactionUseCase
           `${findableKeyword} duplicated: ${
             transaction.providerPaymentId
           }: order ${matchingOrder.getId()} already paid`,
-          {
-            order,
-            transaction,
-          },
         );
 
         return undefined;
@@ -87,10 +75,6 @@ export class ProcessStatementTransactionUseCase
           }: order ${matchingOrder.getId()} expired at ${matchingOrder
             .getExpiresAt()
             ?.toISOString()} but paid at ${new Date().toISOString()}`,
-          {
-            order,
-            transaction,
-          },
         );
         // create new order, add parent_id (recreate-quote-usecase*)
         // TODO: new value = valuePaid - (estimatedGasValue - order.gasValue* adicionar campo )
@@ -129,7 +113,6 @@ export class ProcessStatementTransactionUseCase
         }: order ${matchingOrder.getId()} already processed`,
         {
           err,
-          order,
         },
       );
 

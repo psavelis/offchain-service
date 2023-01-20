@@ -43,6 +43,8 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
   }
 
   public getToken(): Promise<string> {
+    this.logger.debug('cached-token =>', this.token);
+
     if (
       this.token?.expires_in &&
       this.token?.expires_in > new Date() &&

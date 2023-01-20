@@ -43,8 +43,6 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
   }
 
   public getToken(): Promise<string> {
-    this.logger.debug('cached-token =>', this.token);
-
     if (
       this.token?.expires_in &&
       this.token?.expires_in > new Date() &&
@@ -96,8 +94,6 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
           try {
             const { access_token, expires_in } = JSON.parse(body.toString());
 
-            this.logger.debug('[statement-access-token]', body.toString());
-
             this.token = {
               access_token,
               expires_in: new Date(
@@ -129,8 +125,6 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     target: string,
     dateOffset: string,
   ): Promise<PagedStatementDto> {
-    const logger = this.logger;
-
     const {
       path: basePath,
       hostname,
@@ -177,7 +171,6 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
             const statement = JSON.parse(body.toString());
             this.logger.debug('[statement-end]', {
               statement,
-              token: this.token,
               body: body.toString(),
             });
 

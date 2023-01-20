@@ -73,8 +73,29 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       amount: { isoCode: userCurrency },
     } = entry;
 
+    let entryAmount: CurrencyAmount<CurrencyIsoCode> = entry.amount;
+
+    if (userCurrency === IsoCodes.BRL || userCurrency === IsoCodes.USD) {
+      entryAmount = this.calculusPort.sub(
+        entry.amount,
+        userEstimatedGasFee[userCurrency],
+      );
+    } else if (userCurrency === IsoCodes.KNN) {
+      entryAmount = this.calculusPort.sum(
+        entry.amount,
+        userEstimatedGasFee[userCurrency],
+      );
+    }
+
     const userQuotation: QuotationAggregate = this.getQuotation[userCurrency](
-      this.calculusPort.sub(entry.amount, userEstimatedGasFee[userCurrency]),
+      entryAmount,
+      usdBasis,
+      knnBasis,
+      ethBasis,
+    );
+
+    const entryQuotation: QuotationAggregate = this.getQuotation[userCurrency](
+      entry.amount,
       usdBasis,
       knnBasis,
       ethBasis,
@@ -84,10 +105,16 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     quote.userAmount = entry.amount;
 
-    quote.finalAmountOfTokens = {
-      ...userQuotation.KNN,
-      isoCode: IsoCodes.KNN,
-    };
+    quote.finalAmountOfTokens =
+      userCurrency === IsoCodes.KNN
+        ? {
+            ...entry.amount,
+            isoCode: IsoCodes.KNN,
+          }
+        : {
+            ...userQuotation.KNN,
+            isoCode: IsoCodes.KNN,
+          };
 
     quote.createdAt = new Date();
     quote.expiresAt = new Date(
@@ -95,26 +122,11 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
         this.settings.price.quoteExpirationSeconds * 1_000,
     );
 
-    quote.gasAmount = {
-      USD: userEstimatedGasFee.USD,
-      ETH: userEstimatedGasFee.ETH,
-      BRL: userEstimatedGasFee.BRL,
-      KNN: userEstimatedGasFee.KNN,
-    };
+    quote.gasAmount = userEstimatedGasFee;
 
-    quote.total = {
-      USD: userQuotation.USD,
-      ETH: userQuotation.ETH,
-      BRL: userQuotation.BRL,
-      KNN: userQuotation.KNN,
-    };
+    quote.total = entryQuotation;
 
-    quote.netTotal = {
-      USD: this.calculusPort.sum(quote.total.USD, quote.gasAmount.USD),
-      ETH: this.calculusPort.sum(quote.netTotal.ETH, quote.gasAmount.ETH),
-      BRL: this.calculusPort.sum(quote.netTotal.BRL, quote.gasAmount.BRL),
-      KNN: this.calculusPort.sum(quote.netTotal.KNN, quote.gasAmount.KNN),
-    };
+    quote.netTotal = userQuotation;
 
     quote.totalPerToken = {
       USD: this.calculusPort.divide(

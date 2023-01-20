@@ -18,9 +18,6 @@ interface OAuthToken {
   access_token: string;
   expires_in: Date;
 }
-const headers = {
-  accept: 'application/json',
-};
 
 const tokenClockSkew = 60;
 const operationType = 'C';
@@ -49,6 +46,10 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     if (this.token?.expires_in && this.token?.expires_in > new Date()) {
       return this.token.access_token;
     }
+
+    const headers = {
+      ['Content-Type']: 'application/x-www-form-urlencoded',
+    };
 
     const logger = this.logger;
 
@@ -133,7 +134,9 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
       port: 443,
       hostname,
       path,
-      headers: { ...headers, authorization: `Bearer ${this.getToken()}` },
+      headers: {
+        authorization: `Bearer ${this.getToken()}`,
+      },
       cert,
       key,
       agent: null as https.Agent,

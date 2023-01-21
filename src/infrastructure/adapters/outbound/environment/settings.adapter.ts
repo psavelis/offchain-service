@@ -78,6 +78,13 @@ export class SettingsAdapter {
         scope: this.envString('STATEMENT_PROVIDER_SCOPE'),
         grantType: this.envString('STATEMENT_PROVIDER_GRANT_TYPE'),
       },
+      smtp: {
+        sender: this.envString('SMTP_SENDER'),
+        host: this.envString('SMTP_HOST'),
+        port: this.envString('SMTP_PORT'),
+        username: this.envString('SMTP_USERNAME'),
+        password: this.envString('SMTP_PASSWORD'),
+      }
     };
   }
 }

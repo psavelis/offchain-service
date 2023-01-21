@@ -8,7 +8,9 @@ import { CreateOrderInteractor } from '../../../domain/order/interactors/create-
 import { CreateBrazilianPixOrderUseCase } from '../../../domain/order/usecases/create-brazilian-pix-order.usecase';
 import { CreateQuoteFactory } from '../price/create-quote.factory';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
+import { MailerPort } from 'src/domain/common/ports/mailer.port';
 import PinoLogger from 'src/infrastructure/adapters/outbound/log/logger';
+import Mailer from 'src/infrastructure/adapters/outbound/smtp/mailer.adapter';
 
 export class CreateOrderFactory {
   static instance: CreateOrderInteractor;
@@ -18,6 +20,7 @@ export class CreateOrderFactory {
       const logger: LoggablePort = PinoLogger.getInstance();
       const settings: Settings = SettingsAdapter.getInstance().getSettings();
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
+      const mailer: MailerPort = Mailer.getInstance(settings);
       const persistableOrderPort =
         PersistableOrderDbAdapter.getInstance(knexPostgresDb);
 
@@ -30,6 +33,7 @@ export class CreateOrderFactory {
         creteQuoteInboundPort,
         persistableOrderPort,
         generatePixPort,
+        mailer
       );
     }
 

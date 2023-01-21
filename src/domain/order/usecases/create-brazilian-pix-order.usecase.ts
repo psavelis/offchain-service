@@ -3,6 +3,7 @@ import { Order, PaymentOption } from '../entities/order.entity';
 import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
+import purchaseConfirmationTemplate from '../mails/purchase-confirmation.template';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
@@ -13,6 +14,7 @@ import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
+import { MailerPort } from 'src/domain/common/ports/mailer.port';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2;
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
@@ -43,6 +45,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     readonly createQuoteInteractor: CreateQuoteInteractor,
     readonly persistableOrderPort: PersistableOrderPort,
     readonly generatePixPort: GeneratePixPort,
+    readonly mailer: MailerPort
   ) {}
 
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
@@ -113,6 +116,20 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       order.getEndToEndId(),
       this.settings.pix.productDescription,
     );
+
+    if (request.identifierType === 'EA') {
+      this.mailer.sendMail({
+        to: request.userIdentifier,
+        subject: 'Novo Pedido',
+        html: this.mailer.parserTemplate(purchaseConfirmationTemplate, {
+          orderNumber: order.getId(),
+          knnAmount: quote.finalAmountOfTokens.unassignedNumber,
+          brlAmount: total,
+          date: (new Date()).toLocaleDateString(),
+          transaction: 'trasactionHash'
+        }),
+      });
+    }
 
     return {
       orderId: order.getId(),

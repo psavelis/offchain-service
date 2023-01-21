@@ -39,4 +39,11 @@ export interface Settings {
     network: string;
     providerApiKey: string;
   };
+  smtp: {
+    sender: string;
+    host: string;
+    port: string;
+    username: string;
+    password: string;
+  };
 }

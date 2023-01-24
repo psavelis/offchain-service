@@ -14,9 +14,8 @@ import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
-import { MailerPort } from 'src/domain/common/ports/mailer.port';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2;
+const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2; // TODO: alterar para 60.0
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
 };
@@ -45,7 +44,6 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     readonly createQuoteInteractor: CreateQuoteInteractor,
     readonly persistableOrderPort: PersistableOrderPort,
     readonly generatePixPort: GeneratePixPort,
-    readonly mailer: MailerPort
   ) {}
 
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
@@ -117,26 +115,13 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       this.settings.pix.productDescription,
     );
 
-    if (request.identifierType === 'EA') {
-      this.mailer.sendMail({
-        to: request.userIdentifier,
-        subject: 'Novo Pedido',
-        html: this.mailer.parserTemplate(purchaseConfirmationTemplate, {
-          orderNumber: order.getId(),
-          knnAmount: quote.finalAmountOfTokens.unassignedNumber,
-          brlAmount: total,
-          date: (new Date()).toLocaleDateString(),
-          transaction: 'trasactionHash'
-        }),
-      });
-    }
-
     return {
       orderId: order.getId(),
       status: order.getStatus(),
       statusDescription: order.getStatusDescription(),
       total: order.getTotal(),
       expired: false,
+      expiration: order.getExpiresAt(),
       payload,
       base64,
     };

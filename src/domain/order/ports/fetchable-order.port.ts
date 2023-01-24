@@ -1,4 +1,5 @@
 import { EndToEndId } from '../dtos/order-dictionary.dto';
+import { OrderWithPayment } from '../dtos/order-with-payment.dto';
 import { Order } from '../entities/order.entity';
 
 export interface FetchableOrderPort {
@@ -7,4 +8,8 @@ export interface FetchableOrderPort {
   fetchManyByEndId(
     endToEndIds: EndToEndId[],
   ): Promise<Record<EndToEndId, Order>>;
+
+  fetchPendingSettlement(
+    limit: number,
+  ): Promise<Record<number, OrderWithPayment>>;
 }

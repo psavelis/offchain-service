@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 import { FetchableSupplyPort } from '../../../../../domain/supply/ports/fetchable-supply.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol';
+import { KannaPreSale } from '../protocol/contracts';
 
 export class FetchAvailableSupplyAdapter implements FetchableSupplyPort {
   constructor(readonly provider: IKannaProtocolProvider) {}

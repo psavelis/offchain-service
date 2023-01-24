@@ -27,16 +27,18 @@ import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbou
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
 import { Clearing } from 'src/domain/clearing/entities/clearing.entity';
 
+const disabled = {
+  execute: () => Promise.resolve({} as Clearing),
+};
+
 export class CreateClearingFactory {
   static instance: CreateClearingInteractor;
 
   static getInstance(): CreateClearingInteractor {
-    const loadAdapter = process.env.LOAD_ADAPTERS.includes('clearing-cron');
+    const loadAdapter = process.env.LOAD_ADAPTERS?.includes('clearing-cron');
 
     if (!loadAdapter) {
-      return {
-        execute: () => Promise.resolve({} as Clearing),
-      };
+      return disabled;
     }
 
     if (!this.instance) {

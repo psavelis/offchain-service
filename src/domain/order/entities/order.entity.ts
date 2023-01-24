@@ -24,7 +24,7 @@ export type Email = 'EA';
 export type CryptoWallet = 'CW';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = 4.2; // TODO:  parametrizar!
-const DEFAULT_ORDER_EXPIRATION = 7200 * 1_000; // TODO: parametrizar!
+const DEFAULT_ORDER_EXPIRATION = 900 * 1_000; // TODO: parametrizar!
 
 const statusDictionary: Record<OrderStatus, string> = {
   [OrderStatus.Requested]: 'Aguardando Pagamento',
@@ -58,7 +58,7 @@ export interface OrderProps extends Props {
 }
 
 export class Order extends Entity<OrderProps> {
-  private payments?: number;
+  private paymentCount?: number;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -105,12 +105,12 @@ export class Order extends Entity<OrderProps> {
     throw new Error('Invalid order identifier');
   }
 
-  public setPayments(entries: number = 1) {
-    this.payments = (this.payments || 0) + entries;
+  public setPaymentCount(entries: number = 1) {
+    this.paymentCount = (this.paymentCount || 0) + entries;
   }
 
   public hasPayments() {
-    return (this.payments ?? 0) > 0;
+    return (this.paymentCount ?? 0) > 0;
   }
 
   public setStatus(newStatus: OrderStatus) {

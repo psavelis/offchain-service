@@ -1,4 +1,5 @@
 import { BigNumber, ContractReceipt, ContractTransaction } from 'ethers';
+import { Settings } from '../../../../../domain/common/settings';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
@@ -7,11 +8,22 @@ import { ClaimSupplyDto } from '../../../../../domain/supply/dtos/claim-supply.d
 import { OnChainReceipt } from '../../../../../domain/supply/dtos/onchain-receipt.dto';
 import { ClaimSupplyPort } from '../../../../../domain/supply/ports/claim-supply.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol';
+import { KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
+import { Network, Alchemy, AlchemySettings } from 'alchemy-sdk';
 
 export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
-  constructor(readonly provider: IKannaProtocolProvider) {}
+  static instance: ClaimSupplyPort;
+
+  private constructor(readonly provider: IKannaProtocolProvider) {}
+
+  static getInstance(provider: IKannaProtocolProvider) {
+    if (!ClaimSupplyRpcAdapter.instance) {
+      ClaimSupplyRpcAdapter.instance = new ClaimSupplyRpcAdapter(provider);
+    }
+
+    return ClaimSupplyRpcAdapter.instance;
+  }
 
   async claim({
     onchainAddress,
@@ -27,7 +39,6 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
       onchainAddress,
       uint256Amount,
       uint256Nonce,
-      false, // TODO: TYPECHAIN atualizar  // TODO: revisar EIP 1559
     );
 
     const receipt: ContractReceipt = await transaction.wait();
@@ -50,7 +61,6 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
       onchainAddress,
       uint256Amount,
       uint256Nonce,
-      false, // TODO: TYPECHAIN atualizar
     );
   }
 

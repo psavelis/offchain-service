@@ -10,7 +10,7 @@ export interface LockProps extends Props {
   updatedAt?: Date;
 }
 
-export class Lock extends Entity<LockProps> {
+export class LockEntity extends Entity<LockProps> {
   constructor(props: LockProps, id?: string) {
     super(props, id);
 
@@ -41,6 +41,10 @@ export class Lock extends Entity<LockProps> {
 
   public getTransactionHash(): string | undefined {
     return this.props.transactionHash;
+  }
+
+  public setTransactionHash(transactionHash: string): void {
+    this.props.transactionHash = transactionHash;
   }
 
   public getUpdatedAt(): Date | undefined {

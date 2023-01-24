@@ -51,7 +51,7 @@ export class PersistableClaimDbAdapter implements PersistableClaimPort {
     };
 
     await this.db().raw(
-      `update "claim" as c set c.updated_at = :updatedAt, c.transaction_hash = :transactionHash where c.id = :claimId;`,
+      `update "claim" set updated_at = :updatedAt, transaction_hash = :transactionHash where id = :claimId;`,
       param,
     );
   }

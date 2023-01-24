@@ -8,7 +8,7 @@ import {
 
 import * as mapper from './lock-entity.mapper';
 
-const tableName = 'claim';
+const tableName = 'lock';
 export class PersistableLockDbAdapter implements PersistableLockPort {
   static instance: PersistableLockDbAdapter;
   private db: () => Knex<any, any[]>;
@@ -51,7 +51,7 @@ export class PersistableLockDbAdapter implements PersistableLockPort {
     };
 
     await this.db().raw(
-      `update "lock" as c set c.updated_at = :updatedAt, c.transaction_hash = :transactionHash where c.id = :lockId;`,
+      `update "lock" set updated_at = :updatedAt, transaction_hash = :transactionHash where id = :lockId;`,
       param,
     );
   }

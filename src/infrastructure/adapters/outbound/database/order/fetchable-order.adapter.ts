@@ -125,22 +125,22 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     ];
 
     const query = `select "order"."id",
-      "order"."parent_id" as "parent_id",
-      "order"."payment_option" as "payment_option",
-      "order"."iso_code" as "iso_code", 
-      "order"."end_to_end_id" as "end_to_end_id",
+      "order"."parent_id" as "parentId",
+      "order"."payment_option" as "paymentOption",
+      "order"."iso_code" as "isoCode", 
+      "order"."end_to_end_id" as "endToEndId",
       "order"."total",
-      "order"."amount_of_tokens" as "amount_of_tokens",
-      "order"."user_identifier" as "user_identifier",
-      "order"."identifier_type" as "identifier_type",
-      "order"."client_ip" as "client_ip",
-      "order"."client_agent" as "client_agent",
+      "order"."amount_of_tokens" as "amountOfTokens",
+      "order"."user_identifier" as "userIdentifier",
+      "order"."identifier_type" as "identifierType",
+      "order"."client_ip" as "clientIp",
+      "order"."client_agent" as "clientAgent",
       "order"."status",
-      "order"."created_at" as "created_at",
-      "order"."expires_at" as "expires_at",
-      "payment"."id" as "payment_id",
-      "payment"."sequence" as "payment_sequence",
-      "payment"."order_id" as "payment_order_id" 
+      "order"."created_at" as "createdAt",
+      "order"."expires_at" as "expiresAt",
+      "payment"."id" as "paymentId",
+      "payment"."sequence" as "paymentSequence",
+      "payment"."order_id" as "paymentOrderId" 
       from "order" 
       left join "lock" on "lock"."order_id" = "order"."id" 
       left join "claim" on "claim"."order_id" = "order"."id" 

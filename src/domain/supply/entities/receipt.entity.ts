@@ -1,4 +1,4 @@
-import { Entity, Props } from '../../common/entity';
+import { SequenceEntity, Props } from '../../common/sequence-entity';
 
 export interface ReceiptProps extends Props {
   chainId: number;
@@ -14,13 +14,9 @@ export interface ReceiptProps extends Props {
   maxFeePerGas: number;
 }
 
-export class Receipt extends Entity<ReceiptProps> {
-  constructor(props: ReceiptProps, id?: string) {
-    super(props, id);
-
-    if (id) {
-      return;
-    }
+export class Receipt extends SequenceEntity<ReceiptProps> {
+  constructor(props: ReceiptProps) {
+    super(props);
   }
 
   public getChainId() {

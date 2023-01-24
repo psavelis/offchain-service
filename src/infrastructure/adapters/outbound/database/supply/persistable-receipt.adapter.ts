@@ -35,10 +35,9 @@ export class PersistableReceiptDbAdapter implements PersistableReceiptPort {
       .insert(mapper.parseEntity(receipt))
       .returning('*');
 
-    const receiptProps: ReceiptProps = record,
-      { id } = record;
+    const receiptProps: ReceiptProps = record;
 
-    const created = new Receipt(receiptProps, id);
+    const created = new Receipt(receiptProps);
 
     return created;
   }

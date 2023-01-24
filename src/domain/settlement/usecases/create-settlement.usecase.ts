@@ -24,14 +24,14 @@ export class CreateSettlementUseCase implements CreateSettlementInteractor {
 
       try {
         this.logger.info(
-          `[init] settlement of #${sequence} started (${orderWithPayment.getId()})`,
+          `[init] settlement of #${sequence} started (${orderWithPayment.order.getId()})`,
         );
 
         await this.processOrderSettlementInteractor.execute(orderWithPayment);
       } catch (err) {
         this.logger.error(
           err,
-          `[error] settlement of #${sequence} FAILED (${orderWithPayment.getId()})`,
+          `[error] settlement of #${sequence} FAILED (${orderWithPayment.order.getId()})`,
         );
       }
     }

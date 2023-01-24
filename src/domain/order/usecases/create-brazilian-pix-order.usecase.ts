@@ -3,7 +3,7 @@ import { Order, PaymentOption } from '../entities/order.entity';
 import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
-import purchaseConfirmationTemplate from '../mails/purchase-confirmation.template';
+
 import {
   CurrencyAmount,
   CurrencyIsoCode,

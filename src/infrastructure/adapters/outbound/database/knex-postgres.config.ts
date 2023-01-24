@@ -19,13 +19,12 @@ const getPostgresConfig = (settings: Settings) => {
       password,
       user,
     },
+    pool: { min: 0, max: 30, acquireTimeoutMillis: 60 * 1000 },
     migrations: {
       directory: path.join(__dirname, 'migrations'),
       schemaName,
       tableName: 'migrations',
-      loadExtensions: [
-        path.extname(__filename)
-      ]
+      loadExtensions: [path.extname(__filename)],
     },
     searchPath: [schemaName, 'public'],
   };

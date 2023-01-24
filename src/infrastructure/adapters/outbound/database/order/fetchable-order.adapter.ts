@@ -118,26 +118,44 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     limit: number = 50,
   ): Promise<Record<number, OrderWithPayment>> {
     const fields = [
-      ...this.orderTableFields.map((field) => `"order".${field}`),
+      ...this.orderTableFields.map((field) => `order.${field}`),
       'payment.id as paymentId',
       'payment.sequence as paymentSequence',
       'payment.order_id as paymentOrderId',
     ];
 
-    const records = await this.db()
-      .select(fields)
-      .from(tableName)
-      .leftJoin('"lock"', '"lock".order_id', '=', '"order".id')
-      .leftJoin('"claim"', '"claim".order_id', '=', '"order".id')
-      .leftJoin('"receipt"', '"receipt".order_id', '=', '"receipt".id')
-      .innerJoin('payment', 'payment.order_id', '=', '"order".id')
-      .innerJoin('clearing', 'clearing.id', '=', 'payment.clearing_id')
-      .where('"order".status', OrderStatus.Confirmed)
-      .and.whereNull('"lock".id')
-      .and.whereNull('"claim".id')
-      .and.whereNull('"receipt".id')
-      .and.whereNotNull('payment.id')
-      .limit(limit);
+    const query = `select "order"."id",
+      "order"."parent_id" as "parent_id",
+      "order"."payment_option" as "payment_option",
+      "order"."iso_code" as "iso_code", 
+      "order"."end_to_end_id" as "end_to_end_id",
+      "order"."total",
+      "order"."amount_of_tokens" as "amount_of_tokens",
+      "order"."user_identifier" as "user_identifier",
+      "order"."identifier_type" as "identifier_type",
+      "order"."client_ip" as "client_ip",
+      "order"."client_agent" as "client_agent",
+      "order"."status",
+      "order"."created_at" as "created_at",
+      "order"."expires_at" as "expires_at",
+      "payment"."id" as "payment_id",
+      "payment"."sequence" as "payment_sequence",
+      "payment"."order_id" as "payment_order_id" 
+      from "order" 
+      left join "lock" on "lock"."order_id" = "order"."id" 
+      left join "claim" on "claim"."order_id" = "order"."id" 
+      inner join "payment" on "payment"."order_id" = "order"."id" 
+      inner join "clearing" on "clearing"."id" = "payment"."clearing_id" 
+      left join "receipt" on "receipt"."order_id" = "order"."id"
+      where "order"."status" = :status and "lock"."id" is null 
+      and "claim"."id" is null and "receipt"."id" is null and "payment"."id" is not null limit :limit`;
+
+    const param = {
+      status: OrderStatus.Confirmed,
+      limit,
+    };
+
+    const { rows: records } = await this.db().raw(query, param);
 
     if (!records?.length) {
       return [];

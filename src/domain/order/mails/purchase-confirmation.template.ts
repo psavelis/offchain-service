@@ -88,7 +88,7 @@ export default `
                             style="font-weight: 400; font-size: 12px;line-height: 20px;color: #95DE81;padding: 0px 12px; text-align: left;">
                             Você também pode verificar o registro de sua reserva de toknes KNN no <a
                                 href="{{transaction}}" target="_blank"
-                                style="text-decoration:underline;color:#95DE81">Etherscan</a>.</p>
+                                style="text-decoration:underline;color:#95DE81">Etherscan</a>. O resgate dos tokens adquiridos via Pix será liberado no dia 15/02/2023.</p>
                     </td>
                 </tr>
             </table>

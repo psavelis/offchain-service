@@ -36,6 +36,7 @@ export class PriceController {
   }
 
   @Post('quote')
+  @Throttle(30, 60)
   postQuote(@Body() entry: CreateQuoteDto) {
     return this.createQuote.execute({ ...entry, forceReload: false });
   }

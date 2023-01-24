@@ -59,14 +59,22 @@ export class ProcessOrderSettlementUseCase
     }etherscan.io/tx/${receipt.transactionHash}`;
 
     if (order.getIdentifierType() === 'EA') {
+      const brlFormatter = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'});
+      const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric',
+        hour12: false,
+        timeZone: 'America/Sao_Paulo'
+      });
+
       this.mailer.sendMail({
         to: order.getUserIdentifier(),
         subject: 'Sua reserva de KNN foi confirmada!',
         html: this.mailer.parserTemplate(purchaseConfirmationTemplate, {
           orderNumber: params.payment.sequence,
           knnAmount,
-          brlAmount: order.getTotal().toLocaleString(),
-          date: order.getCreatedAt()!.toLocaleDateString('pt-br'),
+          brlAmount: brlFormatter.format(order.getTotal()),
+          date: dateFormatter.format(order.getCreatedAt()),
           transaction: url,
         }),
       });

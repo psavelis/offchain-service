@@ -41,6 +41,7 @@ export interface Settings {
   };
   smtp: {
     sender: string;
+    replyTo: string;
     host: string;
     port: string;
     username: string;

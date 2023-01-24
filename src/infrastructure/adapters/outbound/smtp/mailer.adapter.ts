@@ -35,6 +35,7 @@ export default class MailerAdapter implements MailerPort {
   async sendMail(message: MailMessage): Promise<void> {
     await this.transporter.sendMail({
       from: this.settings.sender,
+      replyTo: this.settings.replyTo,
       ...message,
     });
   }

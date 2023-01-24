@@ -80,6 +80,7 @@ export class SettingsAdapter {
       },
       smtp: {
         sender: this.envString('SMTP_SENDER'),
+        replyTo: this.envString('SMTP_REPLYTO'),
         host: this.envString('SMTP_HOST'),
         port: this.envString('SMTP_PORT'),
         username: this.envString('SMTP_USERNAME'),

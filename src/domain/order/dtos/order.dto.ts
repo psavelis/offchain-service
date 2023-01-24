@@ -6,4 +6,5 @@ export interface OrderDto {
   status: OrderStatus;
   statusDescription: string;
   expired: boolean;
+  expiration: Date;
 }

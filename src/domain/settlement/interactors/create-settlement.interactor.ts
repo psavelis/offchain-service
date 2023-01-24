@@ -1,3 +1,5 @@
-// TODO: fetch paid orders, pending settlement
-// TODO: fetch
-// TODO: execute => process-order-settlement
+export const CreateSettlement = Symbol('CREATE_SETTLEMENT');
+
+export interface CreateSettlementInteractor {
+  execute(): Promise<void>;
+}

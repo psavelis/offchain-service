@@ -2,11 +2,11 @@ import { utils } from 'ethers';
 import { FetchableKnnBasisPort } from '../../../../../domain/price/ports/fetchable-knn-basis.port';
 import { KnnQuoteBasis } from '../../../../../domain/price/value-objects/knn-quote-basis.value-object';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol';
+import { KannaPreSale } from '../protocol/contracts';
 
 const ETH_QUOTATION_DECIMALS = 18;
 const CHAINLINK_USD_QUOTATION_DECIMALS = 8;
-const CACHE_TTL_MS = 1_000 * 10;
+const CACHE_TTL_MS = 1_000 * 300;
 
 export class FetchableKnnBasisJsonRpcAdapter implements FetchableKnnBasisPort {
   static instance: FetchableKnnBasisPort;

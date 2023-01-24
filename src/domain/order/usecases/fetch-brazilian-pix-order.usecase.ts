@@ -55,6 +55,7 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
       statusDescription: entity.getStatusDescription(),
       expired: entity.isExpired(),
       total: entity.getTotal(),
+      expiration: entity.getExpiresAt(),
     };
   }
 }

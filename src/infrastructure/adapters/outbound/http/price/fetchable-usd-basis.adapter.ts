@@ -25,7 +25,7 @@ const BRL_ISO_CODE = 'BRL';
 const USD_QUOTATION_DECIMALS = 4;
 const KNOWN_USDBRL_FLOOR = 4;
 const KNOWN_USDBRL_CEILING = 7;
-const QUOTATION_EXPIRATION_SECONDS = 45;
+const QUOTATION_EXPIRATION_SECONDS = 360;
 
 export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
   static instance: FetchableUsdBasisPort;

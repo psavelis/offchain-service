@@ -1,7 +1,12 @@
 import { Knex } from 'knex';
 import { KnexPostgresDatabase } from '../knex-postgres.db';
 import { PersistableClaimPort } from '../../../../../domain/supply/ports/persistable-claim.port';
-import { Claim } from '../../../../../domain/supply/entities/claim.entity';
+import {
+  Claim,
+  ClaimProps,
+} from '../../../../../domain/supply/entities/claim.entity';
+
+import * as mapper from './claim-entity.mapper';
 
 const tableName = 'claim';
 export class PersistableClaimDbAdapter implements PersistableClaimPort {
@@ -24,15 +29,30 @@ export class PersistableClaimDbAdapter implements PersistableClaimPort {
     return PersistableClaimDbAdapter.instance;
   }
 
-  async create(claim: Claim): Promise<void> {
-    // TODO: PERSIS
-    // await this.db().raw(
-    //   `insert into ${tableName} (order_id, from_status, to_status, reason) values (:orderId, (select o.status from "order" as o where o.id = :orderId), :toStatus, :reason);`,
-    //   param,
-    // );
-    // await this.db().raw(
-    //   `update "order" as o set status = :toStatus where o.id = :orderId;`,
-    //   param,
-    // );
+  async create(claim: Claim): Promise<Claim> {
+    const [record] = await this.db()
+      .table(tableName)
+      .insert(mapper.parseEntity(claim))
+      .returning('*');
+
+    const claimProps: ClaimProps = record,
+      { id } = record;
+
+    const created = new Claim(claimProps, id);
+
+    return created;
+  }
+
+  async update(claim: Claim): Promise<void> {
+    const param = {
+      claimId: claim.getId(),
+      updatedAt: new Date(),
+      transactionHash: claim.getTransactionHash(),
+    };
+
+    await this.db().raw(
+      `update "claim" as c set c.updated_at = :updatedAt, c.transaction_hash = :transactionHash where c.id = :claimId;`,
+      param,
+    );
   }
 }

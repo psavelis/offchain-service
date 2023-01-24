@@ -1,3 +1,4 @@
-// TODO: dispatch-supply.interactor
-// TODO: update order status // orderTransitionInteractor
-// TODO: se for email, notificar o lock e instruções para o claim (enviar notif SNS)
+import { OrderWithPayment } from '../../order/dtos/order-with-payment.dto';
+export interface ProcessOrderSettlementInteractor {
+  execute(order: OrderWithPayment): Promise<void>;
+}

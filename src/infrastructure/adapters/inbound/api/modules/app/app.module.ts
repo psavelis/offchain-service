@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { SupplyModule } from '../supply/supply.module';
+import { SettlementModule } from '../settlement/settlement.module';
 import { ClearingModule } from '../clearing/clearing.module';
 import { PriceModule } from '../price/price.module';
 import { HealthcheckModule } from '../healthcheck/healthcheck.module';
@@ -15,6 +16,7 @@ import { APP_GUARD } from '@nestjs/core';
     PriceModule,
     OrderModule,
     ClearingModule,
+    SettlementModule,
     ConfigModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,

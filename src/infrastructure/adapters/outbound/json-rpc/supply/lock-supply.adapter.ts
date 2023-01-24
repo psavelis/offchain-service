@@ -7,11 +7,21 @@ import { LockSupplyDto } from '../../../../../domain/supply/dtos/lock-supply.dto
 import { OnChainReceipt } from '../../../../../domain/supply/dtos/onchain-receipt.dto';
 import { LockSupplyPort } from '../../../../../domain/supply/ports/lock-supply.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol';
+import { KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
 
 export class LockSupplyRpcAdapter implements LockSupplyPort {
-  constructor(readonly provider: IKannaProtocolProvider) {}
+  static instance: LockSupplyPort;
+
+  private constructor(readonly provider: IKannaProtocolProvider) {}
+
+  static getInstance(provider: IKannaProtocolProvider) {
+    if (!LockSupplyRpcAdapter.instance) {
+      LockSupplyRpcAdapter.instance = new LockSupplyRpcAdapter(provider);
+    }
+
+    return LockSupplyRpcAdapter.instance;
+  }
 
   async lock({ nonce, amount }: LockSupplyDto): Promise<OnChainReceipt> {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);

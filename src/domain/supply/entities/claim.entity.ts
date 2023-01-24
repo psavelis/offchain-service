@@ -43,6 +43,10 @@ export class Claim extends Entity<ClaimProps> {
     return this.props.transactionHash;
   }
 
+  public setTransactionHash(transactionHash: string): void {
+    this.props.transactionHash = transactionHash;
+  }
+
   public getUpdatedAt(): Date | undefined {
     return this.props.updatedAt;
   }

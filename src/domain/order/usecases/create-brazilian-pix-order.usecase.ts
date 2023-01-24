@@ -124,6 +124,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       expiration: order.getExpiresAt(),
       payload,
       base64,
+      lockTransactionHash: undefined,
+      claimTransactionHash: undefined,
     };
   }
 

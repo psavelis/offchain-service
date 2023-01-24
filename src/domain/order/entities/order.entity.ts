@@ -59,6 +59,8 @@ export interface OrderProps extends Props {
 
 export class Order extends Entity<OrderProps> {
   private paymentCount?: number;
+  private claimTransactionHash?: string;
+  private lockTransactionHash?: string;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -206,5 +208,21 @@ export class Order extends Entity<OrderProps> {
 
   static getStatusDescription(status: OrderStatus): string {
     return statusDictionary[status];
+  }
+
+  public setClaimTransactionHash(claimTransactionHash: string) {
+    this.claimTransactionHash = claimTransactionHash;
+  }
+
+  public setLockTransactionHash(lockTransactionHash: string) {
+    this.lockTransactionHash = lockTransactionHash;
+  }
+
+  public getLockTransactionHash(): string {
+    return this.lockTransactionHash;
+  }
+
+  public getClaimTransactionHash(): string {
+    return this.claimTransactionHash;
   }
 }

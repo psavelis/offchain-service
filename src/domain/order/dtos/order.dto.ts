@@ -7,4 +7,6 @@ export interface OrderDto {
   statusDescription: string;
   expired: boolean;
   expiration: Date;
+  lockTransactionHash: string;
+  claimTransactionHash: string;
 }

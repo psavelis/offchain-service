@@ -46,31 +46,53 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
   }
 
   async fetchByEndId(endToEndId: string): Promise<Order | undefined> {
-    // TODO: cachear finalizadas (status claim+)
-    const record = await this.db()
-      .select(this.orderTableFields)
-      .from(tableName)
-      .where({ ['end_to_end_id']: endToEndId })
-      .first();
+    const query = `select "order"."id",
+      "order"."parent_id" as "parentId",
+      "order"."payment_option" as "paymentOption",
+      "order"."iso_code" as "isoCode", 
+      "order"."end_to_end_id" as "endToEndId",
+      "order"."total",
+      "order"."amount_of_tokens" as "amountOfTokens",
+      "order"."user_identifier" as "userIdentifier",
+      "order"."identifier_type" as "identifierType",
+      "order"."client_ip" as "clientIp",
+      "order"."client_agent" as "clientAgent",
+      "order"."status",
+      "order"."created_at" as "createdAt",
+      "order"."expires_at" as "expiresAt",
+      "lock"."transaction_hash" as "lockTransactionHash",
+      "claim"."transaction_hash" as "claimTransactionHash",
+      "payment"."sequence" as "paymentSequence" 
+      from "order" 
+      left join "lock" on "lock"."order_id" = "order"."id" 
+      left join "claim" on "claim"."order_id" = "order"."id"
+      left join "payment" on "payment"."order_id" = "order"."id" 
+      where "order".end_to_end_id = :endToEndId limit 1`;
 
-    if (!record?.id) {
-      return;
+    const param = { endToEndId: endToEndId };
+
+    const { rows: records } = await this.db().raw(query, param);
+
+    if (!records?.length) {
+      return undefined;
     }
 
-    const orderProps: OrderProps = record,
-      { id } = record;
-
-    const payments = (
-      await this.db()
-        .select(['id'])
-        .from('payment')
-        .where({ ['order_id']: id })
-    )?.length;
+    const [orderProps]: OrderProps[] = records,
+      [{ id, lockTransactionHash, paymentSequence, claimTransactionHash }] =
+        records;
 
     const order = new Order(orderProps, id);
 
-    if (payments) {
-      order.setPaymentCount(payments);
+    if (paymentSequence) {
+      order.setPaymentCount(1);
+    }
+
+    if (lockTransactionHash) {
+      order.setLockTransactionHash(lockTransactionHash);
+    }
+
+    if (claimTransactionHash) {
+      order.setClaimTransactionHash(claimTransactionHash);
     }
 
     return order;
@@ -117,13 +139,6 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
   async fetchPendingSettlement(
     limit: number = 50,
   ): Promise<Record<number, OrderWithPayment>> {
-    const fields = [
-      ...this.orderTableFields.map((field) => `order.${field}`),
-      'payment.id as paymentId',
-      'payment.sequence as paymentSequence',
-      'payment.order_id as paymentOrderId',
-    ];
-
     const query = `select "order"."id",
       "order"."parent_id" as "parentId",
       "order"."payment_option" as "paymentOption",

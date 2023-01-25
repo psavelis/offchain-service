@@ -14,9 +14,10 @@ export async function bootstrap(host: string, prefix: string, port: number) {
     },
   });
 
-  app.disable('x-powered-by');
-
   app.setGlobalPrefix(prefix);
+
+  app.disable('x-powered-by');
+  app.enable('trust proxy');
 
   const config = new DocumentBuilder()
     .setTitle(apiName)

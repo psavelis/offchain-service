@@ -79,7 +79,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
         const chunks = [];
 
         res.on('error', (err) => {
-          console.error(err, '[statement-oauth] https request error');
+          this.logger.error(err, '[statement-oauth] https request error');
 
           reject(err);
         });
@@ -111,6 +111,12 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
             reject(err);
           }
         });
+      });
+
+      req.setTimeout(1000 * 10);
+
+      req.on('timeout', () => {
+        req.destroy(new Error('Request timeout'));
       });
 
       req.write(postData);
@@ -177,6 +183,12 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
             reject(err);
           }
         });
+      });
+
+      req.setTimeout(1000 * 10);
+
+      req.on('timeout', () => {
+        req.destroy(new Error('Request timeout'));
       });
 
       req.end();

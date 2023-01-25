@@ -8,6 +8,7 @@ import { CreateOrderTransitionInteractor } from '../../order/interactors/create-
 import { MailerPort } from '../../common/ports/mailer.port';
 import purchaseConfirmationTemplate from '../../order/mails/purchase-confirmation.template';
 import { formatDecimals } from '../../common/util';
+import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
 
 const DEFAULT_KNN_DECIMALS = 8;
 const MAINNET_CHAIN_ID = 1;
@@ -18,6 +19,7 @@ export class ProcessOrderSettlementUseCase
   constructor(
     readonly settings: Settings,
     readonly logger: LoggablePort,
+    readonly encryptionPort: EncryptionPort,
     readonly dispatchSupplyInteractor: DispatchSupplyInteractor,
     readonly createOrderTransitionInteractor: CreateOrderTransitionInteractor,
     readonly mailer: MailerPort,
@@ -59,25 +61,47 @@ export class ProcessOrderSettlementUseCase
     }etherscan.io/tx/${receipt.transactionHash}`;
 
     if (order.getIdentifierType() === 'EA') {
-      const brlFormatter = Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'});
+      const brlFormatter = Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
+      });
       const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
-        year: 'numeric', month: 'numeric', day: 'numeric',
-        hour: 'numeric', minute: 'numeric',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
         hour12: false,
-        timeZone: 'America/Sao_Paulo'
+        timeZone: 'America/Sao_Paulo',
       });
 
-      this.mailer.sendMail({
-        to: order.getUserIdentifier(),
-        subject: 'Sua reserva de KNN foi confirmada!',
-        html: this.mailer.parserTemplate(purchaseConfirmationTemplate, {
-          orderNumber: params.payment.sequence,
-          knnAmount,
-          brlAmount: brlFormatter.format(order.getTotal()),
-          date: dateFormatter.format(order.getCreatedAt()),
-          transaction: url,
-        }),
-      });
+      const decryptedIdentifier = await this.encryptionPort
+        .decrypt(
+          order.getUserIdentifier(),
+          order.getId(),
+          this.settings.cbc.key,
+        )
+        .catch((err) => {
+          this.logger.error(err, '[decrypt identifier error]');
+
+          return order.getUserIdentifier();
+        });
+
+      this.mailer
+        .sendMail({
+          to: decryptedIdentifier,
+          subject: 'Sua reserva de KNN foi confirmada!',
+          html: this.mailer.parserTemplate(purchaseConfirmationTemplate, {
+            orderNumber: params.payment.sequence,
+            knnAmount,
+            brlAmount: brlFormatter.format(order.getTotal()),
+            date: dateFormatter.format(order.getCreatedAt()),
+            transaction: url,
+          }),
+        })
+        .catch((err) => {
+          this.logger.error(err, '[sendMail] failed');
+        });
     }
   }
 }

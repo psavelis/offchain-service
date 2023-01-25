@@ -30,6 +30,8 @@ import Mailer from '../../adapters/outbound/smtp/mailer.adapter';
 import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecases/create-order-status-transition.usecase';
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
 import { CreateOrderTransitionInteractor } from '../../../domain/order/interactors/create-order-status-transition.interactor';
+import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
+import { EncryptionAdapter } from '../../adapters/outbound/encryption/encryption.adapter';
 
 const disabled = {
   execute: () => Promise.resolve(),
@@ -83,10 +85,13 @@ export class CreateSettlementFactory {
           persistableLockPort,
         );
 
+      const encryptionPort: EncryptionPort = EncryptionAdapter.getInstance();
+
       const processOrderSettlementInteractor: ProcessOrderSettlementInteractor =
         new ProcessOrderSettlementUseCase(
           settings,
           logger,
+          encryptionPort,
           dispatchSupplyInteractor,
           createOrderTransitionInteractor,
           mailer,

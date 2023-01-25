@@ -107,6 +107,10 @@ export class Order extends Entity<OrderProps> {
     throw new Error('Invalid order identifier');
   }
 
+  public setUserIdentifier(userIdentifier: string) {
+    this.props.userIdentifier = userIdentifier;
+  }
+
   public setPaymentCount(entries: number = 1) {
     this.paymentCount = (this.paymentCount || 0) + entries;
   }

@@ -9,6 +9,8 @@ import { CreateBrazilianPixOrderUseCase } from '../../../domain/order/usecases/c
 import { CreateQuoteFactory } from '../price/create-quote.factory';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
 import PinoLogger from 'src/infrastructure/adapters/outbound/log/logger';
+import { EncryptionAdapter } from 'src/infrastructure/adapters/outbound/encryption/encryption.adapter';
+import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
 
 export class CreateOrderFactory {
   static instance: CreateOrderInteractor;
@@ -24,9 +26,12 @@ export class CreateOrderFactory {
       const creteQuoteInboundPort = CreateQuoteFactory.getInstance();
       const generatePixPort = GeneratePixQrCodeAdapter.getInstance(settings);
 
+      const encryptionPort: EncryptionPort = EncryptionAdapter.getInstance();
+
       this.instance = new CreateBrazilianPixOrderUseCase(
         logger,
         settings,
+        encryptionPort,
         creteQuoteInboundPort,
         persistableOrderPort,
         generatePixPort,

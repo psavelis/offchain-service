@@ -1,4 +1,7 @@
 export interface Settings {
+  cbc: {
+    key: string;
+  };
   oauthProvider: {
     path: string;
     clientId: string;

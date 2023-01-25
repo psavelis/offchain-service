@@ -85,7 +85,10 @@ export class SettingsAdapter {
         port: this.envString('SMTP_PORT'),
         username: this.envString('SMTP_USERNAME'),
         password: this.envString('SMTP_PASSWORD'),
-      }
+      },
+      cbc: {
+        key: this.envString('CBC_KEY'),
+      },
     };
   }
 }

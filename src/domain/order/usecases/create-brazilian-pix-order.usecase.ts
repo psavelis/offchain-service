@@ -3,6 +3,7 @@ import { Order, PaymentOption } from '../entities/order.entity';
 import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
+import { EncryptionPort } from '../../common/ports/encryption.port';
 
 import {
   CurrencyAmount,
@@ -41,6 +42,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   constructor(
     readonly logger: LoggablePort,
     readonly settings: Settings,
+    readonly encryptionPort: EncryptionPort,
     readonly createQuoteInteractor: CreateQuoteInteractor,
     readonly persistableOrderPort: PersistableOrderPort,
     readonly generatePixPort: GeneratePixPort,
@@ -93,21 +95,29 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       ),
     );
 
-    const order: Order = await this.persistableOrderPort.create(
-      new Order({
-        paymentOption: PaymentOption.BrazilianPix,
-        isoCode: IsoCodes.BRL,
-        total,
-        userIdentifier: request.userIdentifier,
-        identifierType: request.identifierType,
-        amountOfTokens: quote.finalAmountOfTokens,
-        clientAgent: request.clientAgent,
-        clientIp: request.clientIp,
-        totalGas,
-        totalNet,
-        totalKnn,
-      }),
+    let order = new Order({
+      paymentOption: PaymentOption.BrazilianPix,
+      isoCode: IsoCodes.BRL,
+      total,
+      userIdentifier: request.userIdentifier,
+      identifierType: request.identifierType,
+      amountOfTokens: quote.finalAmountOfTokens,
+      clientAgent: request.clientAgent,
+      clientIp: request.clientIp,
+      totalGas,
+      totalNet,
+      totalKnn,
+    });
+
+    const encryptedIdentifier = await this.encryptionPort.encrypt(
+      request.userIdentifier,
+      order.getId(),
+      this.settings.cbc.key,
     );
+
+    order.setUserIdentifier(encryptedIdentifier);
+
+    order = await this.persistableOrderPort.create(order);
 
     const { payload, base64 }: StaticPix = await this.generatePixPort.generate(
       order.getTotal(),

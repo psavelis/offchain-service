@@ -41,7 +41,7 @@ export class OrderController {
   ) {}
 
   @Post('')
-  @Throttle(3, 60)
+  @Throttle(10, 60)
   postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
     return this.createOrder.execute({
       ...entry,
@@ -58,7 +58,6 @@ export class OrderController {
   }
 
   @Sse(':id/watch')
-  @Throttle(10, 60)
   watchOrder(@Param('id') id: string): Observable<MessageEvent> {
     return interval(1000 * 10).pipe(
       switchMap((_) => this.fetchOrder.fetch(id)),

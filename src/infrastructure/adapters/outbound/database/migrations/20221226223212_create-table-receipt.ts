@@ -19,12 +19,12 @@ export async function up(knex: Knex): Promise<void> {
       .inTable('order');
     table.string('from').nullable();
     table.string('to').nullable().index('ix_receipt_to');
-    table.integer('gas_used').nullable().index('ix_receipt_gas_used');
-    table.integer('cumulative_gas_used').nullable();
-    table.integer('effective_gas_price').nullable();
+    table.string('gas_used').nullable().index('ix_receipt_gas_used');
+    table.string('cumulative_gas_used').nullable();
+    table.string('effective_gas_price').nullable();
     // EIP-1559
-    table.integer('max_priority_fee_per_gas').nullable();
-    table.integer('max_fee_per_gas').nullable();
+    table.string('max_priority_fee_per_gas').nullable();
+    table.string('max_fee_per_gas').nullable();
 
     table.datetime('created_at').defaultTo(knex.fn.now());
 

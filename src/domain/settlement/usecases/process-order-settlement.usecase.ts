@@ -82,7 +82,7 @@ export class ProcessOrderSettlementUseCase
           this.settings.cbc.key,
         )
         .catch((err) => {
-          this.logger.error(err, '[decrypt identifier error]');
+          this.logger.error(err, '[decrypt identifier error] email');
 
           return order.getUserIdentifier();
         });

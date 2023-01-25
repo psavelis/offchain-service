@@ -13,14 +13,20 @@ import { PersistableLockPort } from '../ports/persistable-lock.port';
 import { OnChainReceipt } from '../dtos/onchain-receipt.dto';
 import { PersistableReceiptPort } from '../ports/persistable-receipt.port';
 import { Receipt } from '../entities/receipt.entity';
+import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
+import { Settings } from 'src/domain/common/settings';
+import { LoggablePort } from 'src/domain/common/ports/loggable.port';
 
 const Email = 'EA';
 const CryptoWallet = 'CW';
 
 export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
   constructor(
+    readonly logger: LoggablePort,
+    readonly settings: Settings,
     readonly claimSupplyPort: ClaimSupplyPort,
     readonly lockSupplyPort: LockSupplyPort,
+    readonly encryptionPort: EncryptionPort,
     readonly persistableClaimPort: PersistableClaimPort,
     readonly persistableReceiptPort: PersistableReceiptPort,
     readonly persistableLockPort: PersistableLockPort,
@@ -32,8 +38,20 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
   }: OrderWithPayment): Promise<OrderWithReceipt> {
     const identifierType = order.getIdentifierType();
     if (identifierType === CryptoWallet) {
+      const decryptedAddress = await this.encryptionPort
+        .decrypt(
+          order.getUserIdentifier(),
+          order.getId(),
+          this.settings.cbc.key,
+        )
+        .catch((err) => {
+          this.logger.error(err, '[decrypt identifier error ] wallet');
+
+          return order.getUserIdentifier();
+        });
+
       const claimPayload: ClaimSupplyDto = {
-        onchainAddress: order.getUserIdentifier(),
+        onchainAddress: decryptedAddress,
         amount: order.getAmountOfTokens(),
         nonce: payment.sequence,
       };

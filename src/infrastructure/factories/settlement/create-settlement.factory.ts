@@ -75,17 +75,19 @@ export class CreateSettlementFactory {
         new CreateOrderStatusTransitionUseCase(
           persistableOrderStatusTransitionPort,
         );
+      const encryptionPort: EncryptionPort = EncryptionAdapter.getInstance();
 
       const dispatchSupplyInteractor: DispatchSupplyInteractor =
         new DispatchSupplyUseCase(
+          logger,
+          settings,
           claimSupplyPort,
           lockSupplyPort,
+          encryptionPort,
           persistableClaimPort,
           persistableReceiptPort,
           persistableLockPort,
         );
-
-      const encryptionPort: EncryptionPort = EncryptionAdapter.getInstance();
 
       const processOrderSettlementInteractor: ProcessOrderSettlementInteractor =
         new ProcessOrderSettlementUseCase(

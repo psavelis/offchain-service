@@ -8,7 +8,7 @@ import { CreateClearingInteractor } from '../../../domain/clearing/interactors/c
 
 import { CreateClearingUseCase } from '../../../domain/clearing/usecases/create-clearing.usecase';
 import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import PinoLogger from '../../adapters/outbound/log/logger';
+import Logger from '../../adapters/outbound/log/logger';
 import { FetchableStatementPort } from '../../../domain/clearing/ports/fetchable-statement.port';
 import { FetchableStatementHttpAdapter } from '../../adapters/outbound/http/statement/fetchable-statement.adapter';
 import { FetchOrderBatchInteractor } from '../../../domain/order/interactors/fetch-order-batch.interactor';
@@ -42,7 +42,7 @@ export class CreateClearingFactory {
     }
 
     if (!this.instance) {
-      const logger: LoggablePort = PinoLogger.getInstance();
+      const logger: LoggablePort = Logger.getInstance();
       const settings: Settings = SettingsAdapter.getInstance().getSettings();
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
       const persistableClearingPort =

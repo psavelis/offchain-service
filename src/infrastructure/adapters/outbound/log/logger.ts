@@ -1,40 +1,57 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Pino from 'pino';
+import { Level } from 'pino';
 import { LoggablePort } from '../../../../domain/common/ports/loggable.port';
 
-export default class PinoLogger implements LoggablePort {
-  private readonly logger;
+import PinoLogger from './pino-logger';
+import DiscordLogger from './discord-logger';
 
-  private static instance: PinoLogger;
+export default class Logger implements LoggablePort {
+  private static instance: Logger;
 
-  static getInstance(): PinoLogger {
+  static getInstance(): Logger {
     if (this.instance) {
       return this.instance;
     }
 
-    return new this();
+    const level = process.env.LOG_LEVEL as Level;
+
+    return new this([
+      new PinoLogger(
+        process.env.APP_NAME,
+        level
+      ),
+      new DiscordLogger(
+        process.env.APP_NAME,
+        process.env.DISCORD_LOG_WEBHOOK,
+        (process.env.DISCORD_LOG_LEVEL ?? level) as Level
+      ),
+    ]);
   }
 
-  private constructor() {
-    const level = process.env.LOG_LEVEL;
-    const name = process.env.APP_NAME;
-
-    this.logger = Pino({ name, level });
+  private constructor(private readonly ports: LoggablePort[]) {
   }
 
   public debug(msg: string, params?: any): void {
-    this.logger.debug(params, msg);
+    for (const port of this.ports) {
+      port.debug(msg, params);
+    }
   }
 
   public info(msg: string, params?: any): void {
-    this.logger.info(params, msg);
+    for (const port of this.ports) {
+      port.info(msg, params);
+    }
   }
 
   public warning(msg: string, params?: any): void {
-    this.logger.warn(params, msg);
+    for (const port of this.ports) {
+      port.warning(msg, params);
+    }
   }
 
   public error(error: Error, msg: string, params?: any): void {
-    this.logger.error(error, msg, params);
+    for (const port of this.ports) {
+      port.error(error, msg, params);
+    }
   }
 }

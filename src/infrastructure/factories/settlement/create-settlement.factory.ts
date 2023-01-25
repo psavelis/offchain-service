@@ -8,7 +8,7 @@ import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-post
 import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
 import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
 import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbound/database/order/persistable-order-status-transition.adapter';
-import PinoLogger from '../../adapters/outbound/log/logger';
+import Logger from '../../adapters/outbound/log/logger';
 import { FetchOrderBatchUseCase } from '../../../domain/order/usecases/fetch-order-batch.usecase';
 import { FetchableOrderPort } from '../../../domain/order/ports/fetchable-order.port';
 import { ProcessOrderSettlementUseCase } from '../../../domain/settlement/usecases/process-order-settlement.usecase';
@@ -47,7 +47,7 @@ export class CreateSettlementFactory {
     }
 
     if (!this.instance) {
-      const logger: LoggablePort = PinoLogger.getInstance();
+      const logger: LoggablePort = Logger.getInstance();
       const settings: Settings = SettingsAdapter.getInstance().getSettings();
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
       const kannaProvider = KannaProvider.getInstance(settings);

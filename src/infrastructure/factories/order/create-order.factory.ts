@@ -8,7 +8,7 @@ import { CreateOrderInteractor } from '../../../domain/order/interactors/create-
 import { CreateBrazilianPixOrderUseCase } from '../../../domain/order/usecases/create-brazilian-pix-order.usecase';
 import { CreateQuoteFactory } from '../price/create-quote.factory';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
-import PinoLogger from 'src/infrastructure/adapters/outbound/log/logger';
+import Logger from 'src/infrastructure/adapters/outbound/log/logger';
 import { EncryptionAdapter } from 'src/infrastructure/adapters/outbound/encryption/encryption.adapter';
 import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
 
@@ -17,7 +17,7 @@ export class CreateOrderFactory {
 
   static getInstance(): CreateOrderInteractor {
     if (!this.instance) {
-      const logger: LoggablePort = PinoLogger.getInstance();
+      const logger: LoggablePort = Logger.getInstance();
       const settings: Settings = SettingsAdapter.getInstance().getSettings();
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
       const persistableOrderPort =

@@ -59,6 +59,7 @@ export interface OrderProps extends Props {
 
 export class Order extends Entity<OrderProps> {
   private paymentCount?: number;
+  private paymentSequence?: number;
   private claimTransactionHash?: string;
   private lockTransactionHash?: string;
 
@@ -115,6 +116,10 @@ export class Order extends Entity<OrderProps> {
     this.paymentCount = (this.paymentCount || 0) + entries;
   }
 
+  public setPaymentSquence(sequence: number) {
+    this.paymentSequence = sequence;
+  }
+
   public hasPayments() {
     return (this.paymentCount ?? 0) > 0;
   }
@@ -152,6 +157,10 @@ export class Order extends Entity<OrderProps> {
 
   public getPaymentOption() {
     return this.props.paymentOption;
+  }
+
+  public getPaymentSequence() {
+    return this.paymentSequence;
   }
 
   public getIsoCode(): CurrencyIsoCode {

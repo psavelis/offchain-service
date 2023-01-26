@@ -84,6 +84,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     const order = new Order(orderProps, id);
 
     if (paymentSequence) {
+      order.setPaymentSquence(paymentSequence);
       order.setPaymentCount(1);
     }
 

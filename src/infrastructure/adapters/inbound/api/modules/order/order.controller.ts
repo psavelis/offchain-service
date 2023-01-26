@@ -31,6 +31,11 @@ import {
   FetchOrderInteractor,
 } from '../../../../../../domain/order/interactors/fetch-order.interactor';
 
+import {
+  SendOrderReceipt,
+  SendOrderReceiptInteractor,
+} from '../../../../../../domain/order/interactors/send-order-receipt.interactor';
+
 @Controller('order')
 export class OrderController {
   constructor(
@@ -38,6 +43,8 @@ export class OrderController {
     readonly createOrder: CreateOrderInteractor,
     @Inject(FetchOrder)
     readonly fetchOrder: FetchOrderInteractor,
+    @Inject(SendOrderReceipt)
+    readonly sendOrderReceipt: SendOrderReceiptInteractor,
   ) {}
 
   @Post('')
@@ -55,6 +62,15 @@ export class OrderController {
     @Param('id') id: string,
   ): Promise<BrazilianPixOrderDto | OrderDto | undefined> {
     return this.fetchOrder.fetch(id);
+  }
+
+  @Post(':id/receipt')
+  async sendReceipt(
+    @Param('id') id: string,
+  ) {
+    await this.sendOrderReceipt.send(id);
+
+    return { status: 'ok' };
   }
 
   @Sse(':id/watch')

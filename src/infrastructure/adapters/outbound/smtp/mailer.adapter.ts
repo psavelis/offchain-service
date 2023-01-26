@@ -3,6 +3,7 @@ import { Settings } from '../../../../domain/common/settings';
 import {
   MailerPort,
   MailMessage,
+  Stringable,
 } from '../../../../domain/common/ports/mailer.port';
 
 export default class MailerAdapter implements MailerPort {
@@ -42,7 +43,7 @@ export default class MailerAdapter implements MailerPort {
 
   parserTemplate(
     template: string,
-    variables: Record<string, string | number>,
+    variables: Record<string, Stringable>,
   ): string {
     let parsed = template;
 

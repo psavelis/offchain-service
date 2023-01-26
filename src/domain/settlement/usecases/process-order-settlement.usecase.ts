@@ -46,20 +46,6 @@ export class ProcessOrderSettlementUseCase
       reason: `#${params.payment.sequence} settled from payment: ${params.payment.id} and txn: ${receipt.transactionHash}`,
     });
 
-    const amountOfTokens = order.getAmountOfTokens();
-
-    const knnAmount = formatDecimals(
-      amountOfTokens.unassignedNumber,
-      amountOfTokens.decimals,
-      {
-        truncateDecimals: DEFAULT_KNN_DECIMALS,
-      },
-    );
-
-    const url = `https://${
-      receipt.chainId === MAINNET_CHAIN_ID ? '' : 'goerli.'
-    }etherscan.io/tx/${receipt.transactionHash}`;
-
     if (order.getIdentifierType() === 'EA') {
       const brlFormatter = Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -86,6 +72,20 @@ export class ProcessOrderSettlementUseCase
 
           return order.getUserIdentifier();
         });
+
+      const amountOfTokens = order.getAmountOfTokens();
+
+      const knnAmount = formatDecimals(
+        amountOfTokens.unassignedNumber,
+        amountOfTokens.decimals,
+        {
+          truncateDecimals: DEFAULT_KNN_DECIMALS,
+        },
+      );
+
+      const url = `https://${
+        receipt.chainId === MAINNET_CHAIN_ID ? '' : 'goerli.'
+      }etherscan.io/tx/${receipt.transactionHash}`;
 
       this.mailer
         .sendMail({

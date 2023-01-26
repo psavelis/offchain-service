@@ -1,3 +1,5 @@
+export const Loggable = Symbol('LOGGABLE');
+
 export interface LoggablePort {
   debug(msg: string, params?: any): void;
 

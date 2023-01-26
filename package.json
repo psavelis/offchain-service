@@ -9,7 +9,9 @@
     "migrations:down": "ts-node -r dotenv/config node_modules/.bin/knex migrate:down --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations:down-all": "ts-node -r dotenv/config node_modules/.bin/knex migrate:rollback --all --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
-    "migrations:prod": "knex migrate:latest --knexfile dist/infrastructure/adapters/outbound/database/knex-postgres.config.js"
+    "migrations:prod": "knex migrate:latest --knexfile dist/infrastructure/adapters/outbound/database/knex-postgres.config.js",
+    "healthcheck": "ts-node src/cli.ts healthcheck",
+    "healthcheck:prod": "node dist/cli.js healthcheck"
   },
   "_moduleAliases": {
     "@domain": "dist/domain",
@@ -37,6 +39,7 @@
     "knex": "^2.3.0",
     "knex-stringcase": "^1.4.6",
     "module-alias": "^2.2.2",
+    "nest-commander": "^3.4.0",
     "node-discord-logger": "^1.2.2",
     "nodemailer": "^6.9.0",
     "passport": "^0.6.0",

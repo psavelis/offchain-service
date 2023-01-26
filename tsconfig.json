@@ -18,7 +18,8 @@
     "src/infrastructure/adapters/outbound/database/migrations/**/*.ts"
   ],
   "files": [
-    "src/main.ts"
+    "src/main.ts",
+    "src/cli.ts"
   ],
   "paths": {
     "@domain/*": ["./src/domain/*"],

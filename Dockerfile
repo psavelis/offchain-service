@@ -37,4 +37,6 @@ COPY --from=0 /var/www/dist /var/www/dist
 
 EXPOSE 3000
 
+HEALTHCHECK --timeout=10s --start-period=30s --retries=5 CMD npm run healthcheck:prod || exit 1
+
 CMD node dist/main.js

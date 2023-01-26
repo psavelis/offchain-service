@@ -17,11 +17,7 @@ export class HealthcheckController {
   @Get()
   @HealthCheck()
   healthcheck() {
-    return { ok: true };
-    // return this.health
-    //   .check([() => this.databaseIndicator.check()])
-    //   .catch((err) => {
-
-    //   });
+    return this.health
+      .check([() => this.databaseIndicator.check()]);
   }
 }

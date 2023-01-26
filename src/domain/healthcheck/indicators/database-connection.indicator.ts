@@ -1,10 +1,10 @@
 import { HealthIndicator, HealthIndicatorResult, HealthCheckError } from '@nestjs/terminus';
-import { ConnectionChecker } from '../../../infrastructure/adapters/outbound/database/healthcheck/connection.checker';
+import { DatabaseConnectionChecker } from '../checkers/database-connection.checker';
 
 export const DatabaseHealthcheck = Symbol('DATABASE_HEALTHCHECK');
 
 export class DatabaseConnectionIndicator extends HealthIndicator {
-    constructor (private checker: ConnectionChecker) {
+    constructor (private checker: DatabaseConnectionChecker) {
         super();
     }
 

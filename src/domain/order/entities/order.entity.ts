@@ -23,6 +23,8 @@ export enum OrderStatus {
 export type Email = 'EA';
 export type CryptoWallet = 'CW';
 
+export type UserIdentifier = Email | CryptoWallet;
+
 const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0; // TODO:  parametrizar!
 const DEFAULT_ORDER_EXPIRATION = 900 * 1_000; // TODO: parametrizar!
 
@@ -46,7 +48,7 @@ export interface OrderProps extends Props {
   totalKnn: number;
   amountOfTokens: CurrencyAmount;
   userIdentifier: string;
-  identifierType: Email | CryptoWallet;
+  identifierType: UserIdentifier;
 
   parentId?: string;
   clientIp?: string;

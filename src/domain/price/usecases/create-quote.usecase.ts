@@ -1,4 +1,4 @@
-import { CreateQuoteDto } from '../dtos/create-quote.dto';
+import { CreateQuoteDto, TransactionType } from '../dtos/create-quote.dto';
 import { Quote } from '../entities/quote.entity';
 import { CreateQuoteInteractor } from '../interactors/create-quote.interactor';
 import { FetchableEthBasisPort } from '../ports/fetchable-eth-basis.port';
@@ -28,7 +28,11 @@ export type CalculationStrategy = (
   ethQuotation: EthQuoteBasis,
 ) => QuotationAggregate;
 
-const estimatedGasInWEI = 65_361;
+const estimatedGasInWEI: Record<TransactionType, number> = {
+  Transfer: 20_000,
+  LockSupply: 37_800,
+  Claim: 87_510,
+};
 
 export interface CalculationStrategyAggregate
   extends Record<CurrencyIsoCode, CalculationStrategy> {}
@@ -104,6 +108,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     const quote = {} as Quote;
 
     quote.userAmount = entry.amount;
+    quote.transactionType = entry?.transactionType ?? 'Claim';
 
     quote.finalAmountOfTokens =
       userCurrency === IsoCodes.KNN
@@ -163,8 +168,10 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   ): Promise<QuotationAggregate> {
     const gasPriceInETH = await this.gasPricePort.fetch(entry.forceReload);
 
+    const transactionType = entry?.transactionType ?? 'Claim';
+
     const amountInWEI: CurrencyAmount = {
-      unassignedNumber: estimatedGasInWEI.toString(),
+      unassignedNumber: estimatedGasInWEI[transactionType].toString(),
       decimals: 0,
       isoCode: IsoCodes.ETH,
     };

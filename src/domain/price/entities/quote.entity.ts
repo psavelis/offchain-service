@@ -1,3 +1,4 @@
+import { TransactionType } from '../dtos/create-quote.dto';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
@@ -6,7 +7,7 @@ import {
 
 export interface Quote<T extends CurrencyIsoCode = CurrencyIsoCode> {
   id: string;
-
+  transactionType: TransactionType;
   userAmount: CurrencyAmount<T>;
   finalAmountOfTokens: CurrencyAmount<IsoCodes.KNN>;
   total: {

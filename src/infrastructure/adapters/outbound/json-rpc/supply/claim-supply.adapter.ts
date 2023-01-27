@@ -1,5 +1,4 @@
 import { BigNumber, ContractReceipt, ContractTransaction } from 'ethers';
-import { Settings } from '../../../../../domain/common/settings';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
@@ -10,7 +9,6 @@ import { ClaimSupplyPort } from '../../../../../domain/supply/ports/claim-supply
 import { IKannaProtocolProvider } from '../kanna.provider';
 import { KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
-import { Network, Alchemy, AlchemySettings } from 'alchemy-sdk';
 
 export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
   static instance: ClaimSupplyPort;

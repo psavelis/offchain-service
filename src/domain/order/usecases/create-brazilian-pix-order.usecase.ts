@@ -52,7 +52,11 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     CreateBrazilianPixOrderUseCase.validate(request);
 
     const quote = await this.createQuoteInteractor
-      .execute(request)
+      .execute({
+        amount: request.amount,
+        transactionType:
+          request.identifierType === 'CW' ? 'Claim' : 'LockSupply',
+      })
       .catch((err) => {
         this.logger.error(err, '[quote-error]');
       });
@@ -132,6 +136,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       total: order.getTotal(),
       expired: false,
       expiration: order.getExpiresAt(),
+      identifierType: order.getIdentifierType(),
       payload,
       base64,
       lockTransactionHash: undefined,

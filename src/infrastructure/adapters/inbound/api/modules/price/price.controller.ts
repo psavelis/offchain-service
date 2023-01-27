@@ -1,4 +1,11 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Post,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { CronJob } from 'cron';
 import { CreateQuoteDto } from '../../../../../../domain/price/dtos/create-quote.dto';
@@ -38,6 +45,13 @@ export class PriceController {
   @Post('quote')
   @Throttle(30, 60)
   postQuote(@Body() entry: CreateQuoteDto) {
-    return this.createQuote.execute({ ...entry, forceReload: false });
+    try {
+      return this.createQuote.execute({ ...entry, forceReload: false });
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

@@ -9,6 +9,8 @@ import {
   Req,
   Sse,
   MessageEvent,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
@@ -50,27 +52,32 @@ export class OrderController {
   @Post('')
   @Throttle(10, 60)
   postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
-    return this.createOrder.execute({
-      ...entry,
-      clientAgent: req?.headers['user-agent'],
-      clientIp: ip,
-    });
+    try {
+      return this.createOrder.execute({
+        ...entry,
+        clientAgent: req?.headers['user-agent'],
+        clientIp: ip,
+      });
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Get(':id')
   getOrder(
     @Param('id') id: string,
   ): Promise<BrazilianPixOrderDto | OrderDto | undefined> {
-    return this.fetchOrder.fetch(id);
-  }
-
-  @Post(':id/receipt')
-  async sendReceipt(
-    @Param('id') id: string,
-  ) {
-    await this.sendOrderReceipt.send(id);
-
-    return { status: 'ok' };
+    try {
+      return this.fetchOrder.fetch(id);
+    } catch (error) {
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Sse(':id/watch')

@@ -63,6 +63,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "lock"."transaction_hash" as "lockTransactionHash",
       "claim"."transaction_hash" as "claimTransactionHash",
       "payment"."sequence" as "paymentSequence" 
+      "payment"."provider_id" as "paymentProviderId" 
       from "order" 
       left join "lock" on "lock"."order_id" = "order"."id" 
       left join "claim" on "claim"."order_id" = "order"."id"
@@ -78,7 +79,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     }
 
     const [orderProps]: OrderProps[] = records,
-      [{ id, lockTransactionHash, paymentSequence, claimTransactionHash }] =
+      [{ id, lockTransactionHash, paymentSequence, paymentProviderId, claimTransactionHash }] =
         records;
 
     const order = new Order(orderProps, id);
@@ -86,6 +87,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     if (paymentSequence) {
       order.setPaymentSquence(paymentSequence);
       order.setPaymentCount(1);
+    }
+
+    if (paymentProviderId) {
+      order.setPaymentProviderId(paymentProviderId);
     }
 
     if (lockTransactionHash) {

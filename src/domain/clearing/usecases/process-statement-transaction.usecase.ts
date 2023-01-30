@@ -34,6 +34,19 @@ export class ProcessStatementTransactionUseCase
         effectiveDate,
         value: amountPaid,
       } = transaction;
+
+      if (matchingOrder.hasPayments()) {
+        if (matchingOrder.getPaymentProviderId() !== providerPaymentId) {
+          this.logger.warning(
+            `${findableKeyword} duplicated: ${
+              transaction.providerPaymentId
+            }: order ${matchingOrder.getId()} already paid`,
+          );
+        }
+
+        return undefined;
+      }
+
       const expectedAmount = matchingOrder.getTotal().toFixed(2);
 
       const amountNotExact = expectedAmount !== amountPaid;
@@ -53,16 +66,6 @@ export class ProcessStatementTransactionUseCase
           `${findableKeyword} invalid order status: ${
             transaction.providerPaymentId
           }: order ${matchingOrder.getId()} cannot be processed on ${matchingOrder.getStatus()}`,
-        );
-
-        return undefined;
-      }
-
-      if (matchingOrder.hasPayments()) {
-        this.logger.warning(
-          `${findableKeyword} duplicated: ${
-            transaction.providerPaymentId
-          }: order ${matchingOrder.getId()} already paid`,
         );
 
         return undefined;

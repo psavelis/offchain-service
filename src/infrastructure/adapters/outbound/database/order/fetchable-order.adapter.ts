@@ -62,7 +62,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "order"."expires_at" as "expiresAt",
       "lock"."transaction_hash" as "lockTransactionHash",
       "claim"."transaction_hash" as "claimTransactionHash",
-      "payment"."sequence" as "paymentSequence" 
+      "payment"."sequence" as "paymentSequence",
       "payment"."provider_id" as "paymentProviderId" 
       from "order" 
       left join "lock" on "lock"."order_id" = "order"."id" 

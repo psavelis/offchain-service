@@ -14,23 +14,6 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
   static instance: FetchableOrderDbAdapter;
   private db: () => Knex<any, any[]>;
 
-  private readonly orderTableFields = [
-    'id',
-    'parent_id as parentId',
-    'payment_option as paymentOption',
-    'iso_code as isoCode',
-    'end_to_end_id as endToEndId',
-    'total',
-    'amount_of_tokens as amountOfTokens',
-    'user_identifier as userIdentifier',
-    'identifier_type as identifierType',
-    'client_ip as clientIp',
-    'client_agent as clientAgent',
-    'status',
-    'created_at as createdAt',
-    'expires_at as expiresAt',
-  ];
-
   private constructor(readonly knexPostgresDb: KnexPostgresDatabase) {
     this.db = knexPostgresDb.knex.bind(knexPostgresDb);
   }
@@ -49,7 +32,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     const query = `select "order"."id",
       "order"."parent_id" as "parentId",
       "order"."payment_option" as "paymentOption",
-      "order"."iso_code" as "isoCode", 
+      "order"."iso_code" as "isoCode",
       "order"."end_to_end_id" as "endToEndId",
       "order"."total",
       "order"."amount_of_tokens" as "amountOfTokens",
@@ -63,11 +46,11 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "lock"."transaction_hash" as "lockTransactionHash",
       "claim"."transaction_hash" as "claimTransactionHash",
       "payment"."sequence" as "paymentSequence",
-      "payment"."provider_id" as "paymentProviderId" 
-      from "order" 
-      left join "lock" on "lock"."order_id" = "order"."id" 
+      "payment"."provider_id" as "paymentProviderId"
+      from "order"
+      left join "lock" on "lock"."order_id" = "order"."id"
       left join "claim" on "claim"."order_id" = "order"."id"
-      left join "payment" on "payment"."order_id" = "order"."id" 
+      left join "payment" on "payment"."order_id" = "order"."id"
       where "order".end_to_end_id = :endToEndId limit 1`;
 
     const param = { endToEndId: endToEndId };
@@ -110,33 +93,60 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     const result: Record<EndToEndId, Order> = {};
 
     const records = await this.db()
-      .select(this.orderTableFields)
+      .select([
+        'order.id',
+        'order.parent_id as parentId',
+        'order.payment_option as paymentOption',
+        'order.iso_code as isoCode',
+        'order.end_to_end_id as endToEndId',
+        'order.total',
+        'order.amount_of_tokens as amountOfTokens',
+        'order.user_identifier as userIdentifier',
+        'order.identifier_type as identifierType',
+        'order.client_ip as clientIp',
+        'order.client_agent as clientAgent',
+        'order.status',
+        'order.created_at as createdAt',
+        'order.expires_at as expiresAt',
+        'lock.transaction_hash as lockTransactionHash',
+        'claim.transaction_hash as claimTransactionHash',
+        'payment.sequence as paymentSequence',
+        'payment.provider_id as paymentProviderId'
+      ])
       .from(tableName)
-      .whereIn('end_to_end_id', endToEndIds);
+      .leftJoin('payment', 'order.id', 'payment.order_id')
+      .leftJoin('lock', 'order.id', 'lock.order_id')
+      .leftJoin('claim', 'order.id', 'claim.order_id')
+      .whereIn(`order.end_to_end_id`, endToEndIds);
 
     if (!records?.length) {
       return result;
     }
 
     for (const rawOrder of records) {
-      const orderProps: OrderProps = rawOrder,
-        { id, endToEndId } = rawOrder;
-
-      // TODO: opt3: da pra retirar essa query e colocar no join /\
-      const payments = (
-        await this.db()
-          .select(['id'])
-          .from('payment')
-          .where({ ['order_id']: id })
-      )?.length;
+      const orderProps: OrderProps = rawOrder;
+      const { id, paymentSequence, paymentProviderId, lockTransactionHash, claimTransactionHash } = rawOrder;
 
       const order = new Order(orderProps, id);
 
-      if (payments) {
-        order.setPaymentCount(payments);
+      if (paymentSequence) {
+        order.setPaymentSquence(paymentSequence);
+        order.setPaymentCount(1);
       }
 
-      result[endToEndId] = order;
+      if (paymentProviderId) {
+        order.setPaymentProviderId(paymentProviderId);
+      }
+
+      if (lockTransactionHash) {
+        order.setLockTransactionHash(lockTransactionHash);
+      }
+
+      if (claimTransactionHash) {
+        order.setClaimTransactionHash(claimTransactionHash);
+      }
+
+      result[orderProps.endToEndId] = order;
     }
 
     return result;
@@ -148,7 +158,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     const query = `select "order"."id",
       "order"."parent_id" as "parentId",
       "order"."payment_option" as "paymentOption",
-      "order"."iso_code" as "isoCode", 
+      "order"."iso_code" as "isoCode",
       "order"."end_to_end_id" as "endToEndId",
       "order"."total",
       "order"."amount_of_tokens" as "amountOfTokens",
@@ -161,14 +171,14 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "order"."expires_at" as "expiresAt",
       "payment"."id" as "paymentId",
       "payment"."sequence" as "paymentSequence",
-      "payment"."order_id" as "paymentOrderId" 
-      from "order" 
-      left join "lock" on "lock"."order_id" = "order"."id" 
-      left join "claim" on "claim"."order_id" = "order"."id" 
-      inner join "payment" on "payment"."order_id" = "order"."id" 
-      inner join "clearing" on "clearing"."id" = "payment"."clearing_id" 
+      "payment"."provider_id" as "paymentProviderId"
+      from "order"
+      left join "lock" on "lock"."order_id" = "order"."id"
+      left join "claim" on "claim"."order_id" = "order"."id"
+      inner join "payment" on "payment"."order_id" = "order"."id"
+      inner join "clearing" on "clearing"."id" = "payment"."clearing_id"
       left join "receipt" on "receipt"."order_id" = "order"."id"
-      where "order"."status" = :status and "lock"."id" is null 
+      where "order"."status" = :status and "lock"."id" is null
       and "claim"."id" is null and "receipt"."id" is null and "payment"."id" is not null limit :limit`;
 
     const param = {
@@ -185,17 +195,26 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     const result: Record<number, OrderWithPayment> = {};
 
     for (const rawOrder of records) {
-      const orderProps: OrderProps = rawOrder,
-        { id, paymentId, paymentSequence, paymentOrderId } = rawOrder;
+      const orderProps: OrderProps = rawOrder;
+      const { id, paymentId, paymentSequence, paymentProviderId } = rawOrder;
 
       const order = new Order(orderProps, id);
+
+      if (paymentSequence) {
+        order.setPaymentSquence(paymentSequence);
+        order.setPaymentCount(1);
+      }
+
+      if (paymentProviderId) {
+        order.setPaymentProviderId(paymentProviderId);
+      }
 
       if (paymentId && Number(paymentSequence) > 0) {
         result[paymentSequence] = {
           order,
           payment: {
             id: paymentId,
-            orderId: paymentOrderId,
+            orderId: id,
             sequence: paymentSequence,
           },
         };

@@ -3,7 +3,7 @@ import {
   CurrencyIsoCode,
 } from '../../price/value-objects/currency-amount.value-object';
 import { Entity, Props } from '../../common/entity';
-import { Convert } from 'src/domain/common/uuid';
+import { Convert } from '../../common/uuid';
 
 export enum PaymentOption {
   BrazilianPix = 1,

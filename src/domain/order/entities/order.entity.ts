@@ -65,6 +65,7 @@ export class Order extends Entity<OrderProps> {
   private paymentProviderId?: string;
   private claimTransactionHash?: string;
   private lockTransactionHash?: string;
+  private totalLockedUint256?: string;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -119,12 +120,16 @@ export class Order extends Entity<OrderProps> {
     this.paymentCount = (this.paymentCount || 0) + entries;
   }
 
-  public setPaymentSquence(sequence: number) {
+  public setPaymentSequence(sequence: number) {
     this.paymentSequence = sequence;
   }
 
   public setPaymentProviderId(providerId: string) {
     this.paymentProviderId = providerId;
+  }
+
+  public setTotalLockedUint256(totalLockedUint256: string) {
+    this.totalLockedUint256 = totalLockedUint256;
   }
 
   public hasPayments() {
@@ -248,5 +253,9 @@ export class Order extends Entity<OrderProps> {
 
   public getClaimTransactionHash(): string {
     return this.claimTransactionHash;
+  }
+
+  public getTotalLockedUint256() {
+    return this.totalLockedUint256;
   }
 }

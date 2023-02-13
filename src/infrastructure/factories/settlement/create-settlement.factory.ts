@@ -31,7 +31,7 @@ import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecas
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
 import { CreateOrderTransitionInteractor } from '../../../domain/order/interactors/create-order-status-transition.interactor';
 import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
-import { EncryptionAdapter } from '../../adapters/outbound/encryption/encryption.adapter';
+import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
 
 const disabled = {
   execute: () => Promise.resolve(),
@@ -75,7 +75,8 @@ export class CreateSettlementFactory {
         new CreateOrderStatusTransitionUseCase(
           persistableOrderStatusTransitionPort,
         );
-      const encryptionPort: EncryptionPort = EncryptionAdapter.getInstance();
+      const encryptionPort: EncryptionPort =
+        Aes256EncryptionAdapter.getInstance();
 
       const dispatchSupplyInteractor: DispatchSupplyInteractor =
         new DispatchSupplyUseCase(

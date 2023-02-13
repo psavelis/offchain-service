@@ -44,6 +44,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "order"."created_at" as "createdAt",
       "order"."expires_at" as "expiresAt",
       "lock"."transaction_hash" as "lockTransactionHash",
+      "lock"."uint256_amount" as "totalLockedUint256",
       "claim"."transaction_hash" as "claimTransactionHash",
       "payment"."sequence" as "paymentSequence",
       "payment"."provider_id" as "paymentProviderId"
@@ -62,13 +63,21 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     }
 
     const [orderProps]: OrderProps[] = records,
-      [{ id, lockTransactionHash, paymentSequence, paymentProviderId, claimTransactionHash }] =
-        records;
+      [
+        {
+          id,
+          lockTransactionHash,
+          paymentSequence,
+          paymentProviderId,
+          claimTransactionHash,
+          totalLockedUint256,
+        },
+      ] = records;
 
     const order = new Order(orderProps, id);
 
     if (paymentSequence) {
-      order.setPaymentSquence(paymentSequence);
+      order.setPaymentSequence(paymentSequence);
       order.setPaymentCount(1);
     }
 
@@ -82,6 +91,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
     if (claimTransactionHash) {
       order.setClaimTransactionHash(claimTransactionHash);
+    }
+
+    if (totalLockedUint256) {
+      order.setTotalLockedUint256(totalLockedUint256);
     }
 
     return order;
@@ -109,9 +122,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'order.created_at as createdAt',
         'order.expires_at as expiresAt',
         'lock.transaction_hash as lockTransactionHash',
+        'lock.uint256_amount as totalLockedUint256',
         'claim.transaction_hash as claimTransactionHash',
         'payment.sequence as paymentSequence',
-        'payment.provider_id as paymentProviderId'
+        'payment.provider_id as paymentProviderId',
       ])
       .from(tableName)
       .leftJoin('payment', 'order.id', 'payment.order_id')
@@ -125,12 +139,19 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
     for (const rawOrder of records) {
       const orderProps: OrderProps = rawOrder;
-      const { id, paymentSequence, paymentProviderId, lockTransactionHash, claimTransactionHash } = rawOrder;
+      const {
+        id,
+        paymentSequence,
+        paymentProviderId,
+        lockTransactionHash,
+        claimTransactionHash,
+        totalLockedUint256,
+      } = rawOrder;
 
       const order = new Order(orderProps, id);
 
       if (paymentSequence) {
-        order.setPaymentSquence(paymentSequence);
+        order.setPaymentSequence(paymentSequence);
         order.setPaymentCount(1);
       }
 
@@ -144,6 +165,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
       if (claimTransactionHash) {
         order.setClaimTransactionHash(claimTransactionHash);
+      }
+
+      if (totalLockedUint256) {
+        order.setTotalLockedUint256(totalLockedUint256);
       }
 
       result[orderProps.endToEndId] = order;
@@ -201,7 +226,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       const order = new Order(orderProps, id);
 
       if (paymentSequence) {
-        order.setPaymentSquence(paymentSequence);
+        order.setPaymentSequence(paymentSequence);
         order.setPaymentCount(1);
       }
 
@@ -222,5 +247,84 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     }
 
     return result;
+  }
+
+  async fetchLockedAndNotClaimedInStatus(
+    ...orderStatus: OrderStatus[]
+  ): Promise<Record<string, Order>> {
+    const orders: Record<string, Order> = {};
+
+    const records = await this.db()
+      .select([
+        'order.id',
+        'order.parent_id as parentId',
+        'order.payment_option as paymentOption',
+        'order.iso_code as isoCode',
+        'order.end_to_end_id as endToEndId',
+        'order.total',
+        'order.amount_of_tokens as amountOfTokens',
+        'order.user_identifier as userIdentifier',
+        'order.identifier_type as identifierType',
+        'order.client_ip as clientIp',
+        'order.client_agent as clientAgent',
+        'order.status',
+        'order.created_at as createdAt',
+        'order.expires_at as expiresAt',
+        'lock.transaction_hash as lockTransactionHash',
+        'lock.uint256_amount as totalLockedUint256',
+        'claim.transaction_hash as claimTransactionHash',
+        'claim.id as claimId',
+        'payment.sequence as paymentSequence',
+        'payment.provider_id as paymentProviderId',
+      ])
+      .from(tableName)
+      .innerJoin('payment', 'order.id', 'payment.order_id')
+      .innerJoin('lock', 'order.id', 'lock.order_id')
+      .leftJoin('claim', 'order.id', 'claim.order_id')
+      .whereIn('order.status', orderStatus)
+      .andWhere((qb) => qb.whereNull('claim.id'));
+
+    if (!records?.length) {
+      return orders;
+    }
+
+    for (const rawOrder of records) {
+      const orderProps: OrderProps = rawOrder;
+      const {
+        id,
+        paymentSequence,
+        paymentProviderId,
+        lockTransactionHash,
+        claimTransactionHash,
+        totalLockedUint256,
+      } = rawOrder;
+
+      const order = new Order(orderProps, id);
+
+      if (paymentSequence) {
+        order.setPaymentSequence(paymentSequence);
+        order.setPaymentCount(1);
+      }
+
+      if (paymentProviderId) {
+        order.setPaymentProviderId(paymentProviderId);
+      }
+
+      if (lockTransactionHash) {
+        order.setLockTransactionHash(lockTransactionHash);
+      }
+
+      if (claimTransactionHash) {
+        order.setClaimTransactionHash(claimTransactionHash);
+      }
+
+      if (totalLockedUint256) {
+        order.setTotalLockedUint256(totalLockedUint256);
+      }
+
+      orders[id] = order;
+    }
+
+    return orders;
   }
 }

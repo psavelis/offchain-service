@@ -19,9 +19,7 @@ export class SendOrderReceiptUseCase implements SendOrderReceiptInteractor {
     readonly logger: LoggablePort,
   ) {}
 
-  async send(
-    orderId: string,
-  ): Promise<void> {
+  async send(orderId: string): Promise<void> {
     const endToEndId = Order.toEndId(orderId);
 
     const order: Order | undefined = await this.fetchableOrderPort.fetchByEndId(
@@ -52,11 +50,7 @@ export class SendOrderReceiptUseCase implements SendOrderReceiptInteractor {
     });
 
     const decryptedIdentifier = await this.encryptionPort
-      .decrypt(
-        order.getUserIdentifier(),
-        order.getId(),
-        this.settings.cbc.key,
-      )
+      .decrypt(order.getUserIdentifier(), order.getId(), this.settings.cbc.key)
       .catch((err) => {
         this.logger.error(err, '[decrypt identifier error] email');
 

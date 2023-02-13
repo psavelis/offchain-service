@@ -6,12 +6,11 @@ import { SettingsAdapter } from '../../adapters/outbound/environment/settings.ad
 import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
 import { KnexPostgresDatabase } from '../../../infrastructure/adapters/outbound/database/knex-postgres.db';
 import { SendOrderReceiptInteractor } from '../../../domain/order/interactors/send-order-receipt.interactor';
-import { EncryptionAdapter } from '../../adapters/outbound/encryption/encryption.adapter';
+import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
 import Mailer from '../../adapters/outbound/smtp/mailer.adapter';
 import Logger from '../../adapters/outbound/log/logger';
 
 import { SendOrderReceiptUseCase } from '../../../domain/order/usecases/send-order-receipt.usecase';
-
 
 export class SendOrderReceiptFactory {
   static instance: SendOrderReceiptInteractor;
@@ -25,7 +24,8 @@ export class SendOrderReceiptFactory {
 
       const logger: LoggablePort = Logger.getInstance();
       const mailer: MailerPort = Mailer.getInstance(settings);
-      const encryptionPort: EncryptionPort = EncryptionAdapter.getInstance();
+      const encryptionPort: EncryptionPort =
+        Aes256EncryptionAdapter.getInstance();
 
       this.instance = new SendOrderReceiptUseCase(
         settings,

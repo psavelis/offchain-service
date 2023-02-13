@@ -1,10 +1,10 @@
 import { Knex } from 'knex';
 import { KnexPostgresDatabase } from '../knex-postgres.db';
 
-import { DatabaseConnectionChecker } from '../../../../../domain/healthcheck/checkers/database-connection.checker';
+import { DatabaseConnectionPort } from '../../../../../domain/healthcheck/ports/database-connection.port';
 
 export class DatabaseConnectionCheckerAdapter
-implements DatabaseConnectionChecker
+  implements DatabaseConnectionPort
 {
   static instance: DatabaseConnectionCheckerAdapter;
   private db: () => Knex<any, any[]>;
@@ -17,7 +17,8 @@ implements DatabaseConnectionChecker
     knexPostgresDb: KnexPostgresDatabase,
   ): DatabaseConnectionCheckerAdapter {
     if (!DatabaseConnectionCheckerAdapter.instance) {
-      DatabaseConnectionCheckerAdapter.instance = new DatabaseConnectionCheckerAdapter(knexPostgresDb);
+      DatabaseConnectionCheckerAdapter.instance =
+        new DatabaseConnectionCheckerAdapter(knexPostgresDb);
     }
 
     return DatabaseConnectionCheckerAdapter.instance;

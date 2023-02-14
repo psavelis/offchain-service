@@ -25,8 +25,9 @@ export type CryptoWallet = 'CW';
 
 export type UserIdentifier = Email | CryptoWallet;
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0; // TODO:  parametrizar!
-const DEFAULT_ORDER_EXPIRATION = 900 * 1_000; // TODO: parametrizar!
+const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE);
+
+const DEFAULT_ORDER_EXPIRATION = 900 * 1_000;
 
 const statusDictionary: Record<OrderStatus, string> = {
   [OrderStatus.Requested]: 'Aguardando Pagamento',

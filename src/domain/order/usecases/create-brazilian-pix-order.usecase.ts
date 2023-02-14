@@ -16,7 +16,8 @@ import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0;
+const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE);
+
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
 };

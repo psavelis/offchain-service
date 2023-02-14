@@ -3,7 +3,6 @@ export interface Settings {
     key: string;
   };
   sha3: {
-    deactivationSecret: string;
     identitySecret: string;
   };
   oauthProvider: {

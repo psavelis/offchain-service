@@ -47,6 +47,21 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     readonly mailerPort: MailerPort,
   ) {}
 
+  private validateEmailAddress(email: string) {
+    if (
+      !email.match(
+        /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/g,
+      )
+    ) {
+      throw new Error('invalid email address');
+    }
+  }
+
+  private validateCryptoWallet(cw: string) {
+    if (!cw.match(/(\b0x[a-f0-9]{40}\b)/g)) {
+      throw new Error('invalid wallet address');
+    }
+  }
   async executeChallenge(entry: ClaimLockedSupplyDto) {
     if (banlistByIP[entry.clientIp]) {
       this.logger.debug(
@@ -59,7 +74,8 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     }
 
     const lowerCaseEmailAddress = entry.emailAddress.toLowerCase();
-    // TODO: validate email regex
+
+    this.validateEmailAddress(lowerCaseEmailAddress);
 
     const orders =
       await this.fetchableOrderPort.fetchLockedAndNotClaimedInStatus(
@@ -132,7 +148,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
   private generateDeactivationHash(lowerCaseEmailAddress: string) {
     return this.signaturePort.hash(
-      `d=${lowerCaseEmailAddress}:${this.settings.sha3.deactivationSecret}`,
+      `d=${lowerCaseEmailAddress}:${this.settings.sha3.identitySecret}`,
     );
   }
 
@@ -159,9 +175,9 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     }
 
     const lowerCaseEmailAddress = entry.emailAddress.toLowerCase();
-    // TODO: validate email regex
-    // TODO: validate otp regex
-    // TODO: validate cryptoWallet regex
+    this.validateEmailAddress(lowerCaseEmailAddress);
+    this.validateCryptoWallet(entry.cryptoWallet);
+    this.validateOTP(entry.code);
 
     const orders =
       await this.fetchableOrderPort.fetchLockedAndNotClaimedInStatus(
@@ -233,6 +249,12 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       order: this.parseDto(order),
       signature,
     }));
+  }
+
+  validateOTP(code: string) {
+    if (code.includes('0') || code.includes('O') || code.length !== 6) {
+      throw new Error('Invalid OTP');
+    }
   }
 
   private async trySignOrders(

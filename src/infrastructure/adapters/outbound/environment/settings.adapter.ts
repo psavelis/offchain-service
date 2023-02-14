@@ -53,7 +53,6 @@ export class SettingsAdapter {
         user: this.envString('POSTGRES_USER'),
       },
       sha3: {
-        deactivationSecret: this.envString('DEACTIVATION_SECRET'),
         identitySecret: this.envString('IDENTITY_SECRET'),
       },
       blockchain: {

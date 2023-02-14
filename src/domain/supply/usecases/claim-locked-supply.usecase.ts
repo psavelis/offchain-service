@@ -19,7 +19,8 @@ import { CreateOrderTransitionInteractor } from '../../order/interactors/create-
 import { FetchableChallengePort } from '../ports/fetchable-challenge.port';
 import { Answer } from '../entities/answer.entity';
 import { PersistableAnswerPort } from '../ports/persistable-answer.port';
-import { MailerPort } from 'src/domain/common/ports/mailer.port';
+import { MailerPort, MailMessage } from 'src/domain/common/ports/mailer.port';
+import claimOtpTemplate from '../../supply/mails/claim-otp.template';
 
 const DEFAULT_KNN_TRUNCATE_OPTIONS = {
   truncateDecimals: 8,
@@ -142,8 +143,15 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
         reason: `${entry.clientIp} challenged with #${challenge.getId()}`,
       });
     }
+    const html = this.mailerPort.parserTemplate(claimOtpTemplate, {
+      otp: oneTimePassword,
+    });
 
-    // TODO: add template + call mailerPort
+    return this.mailerPort.sendMail({
+      to: lowerCaseEmailAddress,
+      subject: 'Resgate seus tokens KNN utilizando o código de verificação.',
+      html,
+    });
   }
 
   private generateDeactivationHash(lowerCaseEmailAddress: string) {

@@ -6,6 +6,7 @@ export interface SignaturePayload {
 export interface SignatureResult {
   signature: string;
   nonce: string;
+  cryptoWallet: string;
 }
 
 export interface SignaturePort {

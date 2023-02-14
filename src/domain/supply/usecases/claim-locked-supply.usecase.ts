@@ -256,6 +256,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     return signedOrders.map(({ order, signature }) => ({
       order: this.parseDto(order),
       signature,
+      cryptoWallet: entry.cryptoWallet,
     }));
   }
 

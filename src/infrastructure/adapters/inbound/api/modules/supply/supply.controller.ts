@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
+import { MinimalSignedClaim } from 'src/domain/supply/dtos/signed-claim.dto';
 import { ClaimLockedSupplyDto } from '../../../../../../domain/supply/dtos/claim-locked-supply.dto';
 import {
   ClaimLockedSupply,
@@ -51,7 +52,6 @@ export class SupplyController {
         });
     } catch (err) {
       this.logger.debug(err, '[400] PUT /supply/claim');
-      throw new BadRequestException();
     }
   }
 
@@ -74,10 +74,12 @@ export class SupplyController {
         cryptoWallet: cw,
       };
 
-      const result = await this.claimLockedSupply
+      const result: MinimalSignedClaim[] = await this.claimLockedSupply
         .validateAnswer(claimLockedSupplyDto)
         .then((res) => res)
         .catch((err) => this.logger.error(err, '[500] PATCH /supply/claim'));
+
+      return result;
     } catch (err) {
       this.logger.debug(err, '[400] PATCH /supply/claim ');
     }

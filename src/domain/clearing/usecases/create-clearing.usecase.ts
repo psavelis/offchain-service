@@ -202,7 +202,7 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     orders: OrderDictionary,
     processedPayments: Record<ProviderPaymentId, ConfirmationRecord>,
   ): Promise<void> {
-    const { endToEndId, providerPaymentId } = transaction;
+    const { endToEndId, providerPaymentId, value, effectiveDate } = transaction;
 
     if (this.cache[providerPaymentId]) {
       return;
@@ -211,11 +211,15 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     const order: Order = orders[endToEndId];
 
     if (!order) {
-      // TODO: melhoria: inserir em tabelas de 'não-identificados'?
-      this.logger.warning(
-        `NotFound: Unknown endToEndId '${endToEndId}' (ProviderID: ${providerPaymentId}).`,
-        { hash: clearing.getHash(), id: clearing.getId() },
-      );
+      if (endToEndId) {
+        this.logger.warning(
+          `NotFound: Unknown endToEndId '${endToEndId}' (${value} @ ${effectiveDate})`,
+          {
+            hash: clearing.getHash(),
+            id: clearing.getId(),
+          },
+        );
+      }
 
       this.cache[providerPaymentId] = true;
       return;

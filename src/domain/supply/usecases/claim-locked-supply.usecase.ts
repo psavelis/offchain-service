@@ -312,7 +312,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     return signedOrders;
   }
 
-  private reportFailure(entry: ClaimLockedSupplyDto) {
+  private async reportFailure(entry: ClaimLockedSupplyDto): Promise<void> {
     this.logger.debug(
       `[sec-warning] Attempt failure: ${JSON.stringify({
         ...entry,
@@ -325,6 +325,12 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
     if (errorAttemptsByIP[entry.clientIp] > IP_BAN_THRESHOLD) {
       banlistByIP[entry.clientIp] = true;
+
+      const deactivationHash = this.generateDeactivationHash(
+        entry.emailAddress.toLowerCase(),
+      );
+
+      await this.persistableChallengePort.deactivate(deactivationHash);
 
       this.logger.warning(
         `[sec-warning] user ${entry.clientIp}@${

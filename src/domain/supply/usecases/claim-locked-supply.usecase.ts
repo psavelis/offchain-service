@@ -103,14 +103,6 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       return;
     }
 
-    const signedOrders = await this.trySignOrders(entry, userOrders);
-
-    if (!signedOrders?.length) {
-      this.reportFailure(entry);
-
-      return;
-    }
-
     const oneTimePassword = Id.createOTP();
     const verificationHash = this.generateVerificationHash(
       lowerCaseEmailAddress,
@@ -123,7 +115,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     const currentDate = new Date();
 
     let challenge = new Challenge({
-      identifierOrderId: signedOrders[0].order.getId(),
+      identifierOrderId: userOrders[0].getId(),
       clientIp: entry.clientIp,
       clientAgent: entry.clientAgent,
       verificationHash,
@@ -136,7 +128,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
     challenge = await this.persistableChallengePort.create(challenge);
 
-    for (const { order } of signedOrders) {
+    for (const order of userOrders) {
       order.setStatus(OrderStatus.Challenged);
 
       await this.createOrderTransitionInteractor.execute(order, {
@@ -226,7 +218,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     const currentDate = new Date();
     const challenge = await this.fetchableChallengePort.fetch(verificationHash);
 
-    if (!challenge || challenge.getExpiresAt() > currentDate) {
+    if (!challenge || challenge.getExpiresAt() < currentDate) {
       this.reportFailure(entry);
 
       return [];
@@ -256,7 +248,6 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     return signedOrders.map(({ order, signature }) => ({
       order: this.parseDto(order),
       signature,
-      cryptoWallet: entry.cryptoWallet,
     }));
   }
 
@@ -359,14 +350,13 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     orders: Record<string, Order>,
     request: ClaimLockedSupplyDto,
   ): Promise<Order[]> {
-    if (!orders?.length) {
+    if (!Object.keys(orders)?.length) {
       return [];
     }
 
     const filtered: Array<Order> = [];
 
-    for (const orderId of Object.keys(orders)) {
-      const order = orders[orderId];
+    for (const [orderId, order] of Object.entries(orders)) {
 
       const notEmailIdentifier = order.getIdentifierType() !== 'EA';
 
@@ -457,6 +447,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       amountOfTokens: entity.getAmountOfTokens(),
       lockTransactionHash: entity.getLockTransactionHash(),
       reference: entity.getPaymentSequence(),
+      createdAt: entity.getCreatedAt(),
     };
   }
 }

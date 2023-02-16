@@ -16,6 +16,7 @@ export interface MinimalSignedClaim {
     amountOfTokens: CurrencyAmount<'BRL' | 'ETH' | 'KNN' | 'USD'>;
     lockTransactionHash: string;
     reference: number | undefined;
+    createdAt: Date;
   };
   signature: SignatureResult;
 }

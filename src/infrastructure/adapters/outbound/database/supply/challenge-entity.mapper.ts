@@ -6,7 +6,8 @@ export const parseEntity = (challenge: Challenge) => {
     client_ip: challenge.getClientIp(),
     client_agent: challenge.getClientAgent(),
     verification_hash: challenge.getVerificationHash(),
-    deactivation_hash: challenge.getDeactivatedAt(),
+    deactivation_hash: challenge.getDeactivationHash(),
+    deactivated_at: challenge.getDeactivatedAt(),
     expires_at: challenge.getExpiresAt(),
     created_at: challenge.getCreatedAt(),
   };

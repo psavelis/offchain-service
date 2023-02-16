@@ -52,6 +52,7 @@ export class ECDSASignatureAdapter implements SignaturePort {
     return {
       signature,
       nonce: uint256Nonce.toString(),
+      cryptoWallet: payload.values[1]
     };
   }
 

@@ -9,7 +9,7 @@ export interface IKannaProtocolProvider {
 
 export class KannaProvider implements IKannaProtocolProvider {
   static signersInstance: Signer;
-  static presaleInstance: KannaPreSale;
+  static presaleInstanceAsManager: KannaPreSale;
   static instance: IKannaProtocolProvider;
 
   private constructor(readonly settings: Settings) {}
@@ -25,7 +25,7 @@ export class KannaProvider implements IKannaProtocolProvider {
         provider,
       );
 
-      KannaProvider.presaleInstance = KannaPreSale__factory.connect(
+      KannaProvider.presaleInstanceAsManager = KannaPreSale__factory.connect(
         settings.blockchain.contracts.preSaleAddress,
         claimManagerWallet,
       );
@@ -37,6 +37,6 @@ export class KannaProvider implements IKannaProtocolProvider {
   }
 
   preSale(): Promise<KannaPreSale> {
-    return Promise.resolve(KannaProvider.presaleInstance);
+    return Promise.resolve(KannaProvider.presaleInstanceAsManager);
   }
 }

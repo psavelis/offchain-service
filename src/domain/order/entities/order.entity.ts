@@ -25,8 +25,9 @@ export type CryptoWallet = 'CW';
 
 export type UserIdentifier = Email | CryptoWallet;
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = 60.0; // TODO:  parametrizar!
-const DEFAULT_ORDER_EXPIRATION = 900 * 1_000; // TODO: parametrizar!
+const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE);
+
+const DEFAULT_ORDER_EXPIRATION = 900 * 1_000;
 
 const statusDictionary: Record<OrderStatus, string> = {
   [OrderStatus.Requested]: 'Aguardando Pagamento',
@@ -65,6 +66,7 @@ export class Order extends Entity<OrderProps> {
   private paymentProviderId?: string;
   private claimTransactionHash?: string;
   private lockTransactionHash?: string;
+  private totalLockedUint256?: string;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -119,12 +121,16 @@ export class Order extends Entity<OrderProps> {
     this.paymentCount = (this.paymentCount || 0) + entries;
   }
 
-  public setPaymentSquence(sequence: number) {
+  public setPaymentSequence(sequence: number) {
     this.paymentSequence = sequence;
   }
 
   public setPaymentProviderId(providerId: string) {
     this.paymentProviderId = providerId;
+  }
+
+  public setTotalLockedUint256(totalLockedUint256: string) {
+    this.totalLockedUint256 = totalLockedUint256;
   }
 
   public hasPayments() {
@@ -248,5 +254,9 @@ export class Order extends Entity<OrderProps> {
 
   public getClaimTransactionHash(): string {
     return this.claimTransactionHash;
+  }
+
+  public getTotalLockedUint256() {
+    return this.totalLockedUint256;
   }
 }

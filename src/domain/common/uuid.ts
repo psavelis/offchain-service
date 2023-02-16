@@ -6,6 +6,16 @@ export class Id {
   static createUnique(): string {
     return uuidv4();
   }
+
+  static createOTP(): string {
+    const readable = Math.random().toString(36).slice(2, 8).toUpperCase();
+
+    if (readable.includes('O') || readable.includes('0')) {
+      return Id.createOTP();
+    }
+
+    return readable;
+  }
 }
 
 export class Convert {

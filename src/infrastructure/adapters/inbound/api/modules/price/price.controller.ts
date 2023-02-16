@@ -20,7 +20,7 @@ export class PriceController {
     @Inject(CreateQuote)
     readonly createQuote: CreateQuoteInteractor,
   ) {
-    const job = new CronJob('*/45 * * * * *', () => {
+    const job = new CronJob(process.env.QUOTE_UPDATE_CRONTAB, () => {
       return this.createQuote
         .execute({
           amount: {

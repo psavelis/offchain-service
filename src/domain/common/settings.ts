@@ -2,6 +2,9 @@ export interface Settings {
   cbc: {
     key: string;
   };
+  sha3: {
+    identitySecret: string;
+  };
   oauthProvider: {
     path: string;
     clientId: string;
@@ -36,6 +39,7 @@ export interface Settings {
   blockchain: {
     providerEndpoint: string;
     claimManagerKey: string;
+    claimSignerKey: string;
     contracts: {
       preSaleAddress: string;
     };

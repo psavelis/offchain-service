@@ -1,18 +1,18 @@
-import { EncryptionPort } from '../../../../domain/common/ports/encryption.port';
+import { EncryptionPort } from '../../../../../domain/common/ports/encryption.port';
 import crypto from 'crypto';
 const algorithm = 'aes-256-cbc';
 
-export class EncryptionAdapter implements EncryptionPort {
+export class Aes256EncryptionAdapter implements EncryptionPort {
   static instance: EncryptionPort;
 
   private constructor() {}
 
   static getInstance() {
-    if (!EncryptionAdapter.instance) {
-      EncryptionAdapter.instance = new EncryptionAdapter();
+    if (!Aes256EncryptionAdapter.instance) {
+      Aes256EncryptionAdapter.instance = new Aes256EncryptionAdapter();
     }
 
-    return EncryptionAdapter.instance;
+    return Aes256EncryptionAdapter.instance;
   }
 
   encrypt(

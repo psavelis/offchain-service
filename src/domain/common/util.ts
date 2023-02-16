@@ -16,3 +16,13 @@ export const formatDecimals = (
 
   return `${integer}${separator}${decimals}`;
 };
+
+export const hideEmailPartially = (emailAddress: string) => {
+  return emailAddress.replace(/(.{3})(.*)(?=@)/, (gp1, gp2, gp3) => {
+    for (let i = 0; i < gp3.length; i++) {
+      gp2 += '*';
+    }
+
+    return gp2;
+  });
+};

@@ -52,9 +52,13 @@ export class SettingsAdapter {
         schemaName: this.envString('POSTGRES_SCHEMA'),
         user: this.envString('POSTGRES_USER'),
       },
+      sha3: {
+        identitySecret: this.envString('IDENTITY_SECRET'),
+      },
       blockchain: {
         providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),
         claimManagerKey: this.envString('CLAIM_MANAGER_KEY'),
+        claimSignerKey: this.envString('CLAIM_SIGNER_KEY'),
         providerApiKey: this.envString('RPC_PROVIDER_API_KEY'),
         network: this.envString('RPC_NETWORK'),
         contracts: {

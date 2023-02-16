@@ -7,10 +7,14 @@ export interface Props {
 }
 
 export abstract class SequenceEntity<T extends Props> {
-  protected readonly _id: Number;
+  protected readonly _id: number;
   protected props: T;
 
-  constructor(props: T) {
+  constructor(props: T, id?: number) {
+    if (id) {
+      this._id = id;
+    }
+
     this.props = props;
     this.props.createdAt = props.createdAt ?? new Date();
   }

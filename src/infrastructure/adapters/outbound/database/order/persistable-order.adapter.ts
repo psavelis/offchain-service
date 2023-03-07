@@ -41,4 +41,20 @@ export class PersistableOrderDbAdapter implements PersistableOrderPort {
 
     return created;
   }
+
+  async refresh(order: Order): Promise<void> {
+    const param = {
+      orderId: order.getId(),
+      total: order.getTotal(),
+      amountOftokens: order.getAmountOfTokens(),
+      totalGas: order.getTotalGas(),
+      totalNet: order.getTotalNet(),
+      totalKnn: order.getTotalKnn(),
+    };
+
+    await this.db().raw(
+      `update "order" as o set total = :total, amount_of_tokens = :amountOftokens, total_gas = :totalGas, total_net = :totalGas, total_knn = :totalKnn where o.id = :orderId;`,
+      param,
+    );
+  }
 }

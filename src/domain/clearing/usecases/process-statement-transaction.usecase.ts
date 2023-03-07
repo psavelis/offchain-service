@@ -1,3 +1,4 @@
+import { RefreshOrderInteractor } from '../../order/interactors/refresh-order.interactor';
 import { LoggablePort } from '../../common/ports/loggable.port';
 import { Order, OrderStatus } from '../../order/entities/order.entity';
 import { CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
@@ -7,15 +8,26 @@ import { ConfirmationRecord } from '../dtos/confirmation-record.dto';
 import { Clearing } from '../entities/clearing.entity';
 import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
 import { Transaction } from '../value-objects/transaction.value-object';
+import { CreateQuoteInteractor } from 'src/domain/price/interactors/create-quote.interactor';
+import { formatDecimals } from 'src/domain/common/util';
+
+const DEFAULT_BRL_TRUNCATE_OPTIONS = {
+  truncateDecimals: 2,
+};
+
+const DEFAULT_KNN_TRUNCATE_OPTIONS = {
+  truncateDecimals: 8,
+};
 
 const findableKeyword = '#payment-process';
 export class ProcessStatementTransactionUseCase
   implements ProcessStatementTransactionInteractor
 {
-  // TODO: adicionar readonly createOrderInteractor: CreateOrderInteractor // para o recalculo
   constructor(
     readonly logger: LoggablePort,
     readonly createPaymentInteractor: CreatePaymentInteractor,
+    readonly createQuoteInteractor: CreateQuoteInteractor,
+    readonly refreshOrderInteractor: RefreshOrderInteractor,
     readonly orderTransitionInteractor: CreateOrderTransitionInteractor,
   ) {}
 
@@ -72,19 +84,61 @@ export class ProcessStatementTransactionUseCase
       }
 
       if (matchingOrder.isExpired()) {
-        this.logger.warning(
-          `${findableKeyword} order expired: ${
-            transaction.providerPaymentId
-          }: order ${matchingOrder.getId()} expired at ${matchingOrder
-            .getExpiresAt()
-            ?.toISOString()} but paid at ${new Date().toISOString()}`,
+        matchingOrder.setStatus(OrderStatus.Expired);
+
+        await this.orderTransitionInteractor.execute(matchingOrder, {
+          reason: `[clearing] paid after expiration`,
+        });
+
+        const refreshed = await this.createQuoteInteractor.execute({
+          amount: {
+            unassignedNumber: expectedAmount,
+            decimals: 2,
+            isoCode: 'BRL',
+          },
+          transactionType:
+            matchingOrder.getIdentifierType() === 'EA' ? 'LockSupply' : 'Claim',
+        });
+
+        const total = Number(
+          formatDecimals(
+            refreshed.total.BRL.unassignedNumber,
+            refreshed.total.BRL.decimals,
+            DEFAULT_BRL_TRUNCATE_OPTIONS,
+          ),
         );
-        // create new order, add parent_id (recreate-quote-usecase*)
-        // TODO: new value = valuePaid - (estimatedGasValue - order.gasValue* adicionar campo )
-        // TODO: aqui podemos gravar também o diff do valor do gas atual x valor pago
-        // matchingOrder = .execute()
-        // TODO: atualizar a anterior (parent), para expired
-        return undefined;
+
+        const totalGas = Number(
+          formatDecimals(
+            refreshed.gasAmount.BRL.unassignedNumber,
+            refreshed.gasAmount.BRL.decimals,
+            DEFAULT_BRL_TRUNCATE_OPTIONS,
+          ),
+        );
+
+        const totalNet = Number(
+          formatDecimals(
+            refreshed.netTotal.BRL.unassignedNumber,
+            refreshed.netTotal.BRL.decimals,
+            DEFAULT_BRL_TRUNCATE_OPTIONS,
+          ),
+        );
+
+        const totalKnn = Number(
+          formatDecimals(
+            refreshed.finalAmountOfTokens.unassignedNumber,
+            refreshed.finalAmountOfTokens.decimals,
+            DEFAULT_KNN_TRUNCATE_OPTIONS,
+          ),
+        );
+
+        matchingOrder.setAmountOfTokens(refreshed.finalAmountOfTokens);
+        matchingOrder.setTotal(total);
+        matchingOrder.setTotalGas(totalGas);
+        matchingOrder.setTotalNet(totalNet);
+        matchingOrder.setTotalKnn(totalKnn);
+
+        await this.refreshOrderInteractor.refresh(matchingOrder);
       }
 
       const payment: Payment = await this.createPaymentInteractor.execute(

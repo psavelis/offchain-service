@@ -133,6 +133,26 @@ export class Order extends Entity<OrderProps> {
     this.totalLockedUint256 = totalLockedUint256;
   }
 
+  public setAmountOfTokens(amountOfTokens: CurrencyAmount) {
+    this.props.amountOfTokens = amountOfTokens;
+  }
+
+  public setTotal(total: number) {
+    this.props.total = total;
+  }
+
+  public setTotalKnn(totalKnn: number) {
+    this.props.totalKnn = totalKnn;
+  }
+
+  public setTotalNet(totalNet: number) {
+    this.props.totalNet = totalNet;
+  }
+
+  public setTotalGas(totalGas: number) {
+    this.props.totalGas = totalGas;
+  }
+
   public hasPayments() {
     return (this.paymentCount ?? 0) > 0;
   }

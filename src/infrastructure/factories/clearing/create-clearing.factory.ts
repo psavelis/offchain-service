@@ -12,6 +12,7 @@ import Logger from '../../adapters/outbound/log/logger';
 import { FetchableStatementPort } from '../../../domain/clearing/ports/fetchable-statement.port';
 import { FetchableStatementHttpAdapter } from '../../adapters/outbound/http/statement/fetchable-statement.adapter';
 import { FetchOrderBatchInteractor } from '../../../domain/order/interactors/fetch-order-batch.interactor';
+import { RefreshOrderUseCase } from '../../../domain/order/usecases/refresh-order.usecase';
 import { FetchOrderBatchUseCase } from '../../../domain/order/usecases/fetch-order-batch.usecase';
 import { FetchableOrderPort } from '../../../domain/order/ports/fetchable-order.port';
 import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
@@ -26,6 +27,11 @@ import { CreateOrderTransitionInteractor } from '../../../domain/order/interacto
 import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbound/database/order/persistable-order-status-transition.adapter';
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
 import { Clearing } from 'src/domain/clearing/entities/clearing.entity';
+import { RefreshOrderInteractor } from 'src/domain/order/interactors/refresh-order.interactor';
+import { PersistableOrderDbAdapter } from 'src/infrastructure/adapters/outbound/database/order/persistable-order.adapter';
+import { PersistableOrderPort } from 'src/domain/order/ports/persistable-order.port';
+import { CreateQuoteInteractor } from 'src/domain/price/interactors/create-quote.interactor';
+import { CreateQuoteFactory } from '../price/create-quote.factory';
 
 const disabled = {
   execute: () => Promise.resolve({} as Clearing),
@@ -57,6 +63,9 @@ export class CreateClearingFactory {
       const fetchableOrderPort: FetchableOrderPort =
         FetchableOrderDbAdapter.getInstance(knexPostgresDb);
 
+      const persistableOrderPort: PersistableOrderPort =
+        PersistableOrderDbAdapter.getInstance(knexPostgresDb);
+
       const fetchOrderBatchInteractor: FetchOrderBatchInteractor =
         new FetchOrderBatchUseCase(fetchableOrderPort);
 
@@ -74,10 +83,18 @@ export class CreateClearingFactory {
           persistableOrderStatusTransitionPort,
         );
 
+      const createQuoteInteractor: CreateQuoteInteractor =
+        CreateQuoteFactory.getInstance();
+
+      const refreshOrderInteractor: RefreshOrderInteractor =
+        new RefreshOrderUseCase(persistableOrderPort);
+
       const processTransactionInteractor: ProcessStatementTransactionInteractor =
         new ProcessStatementTransactionUseCase(
           logger,
           createPaymentInteractor,
+          createQuoteInteractor,
+          refreshOrderInteractor,
           createOrderStatusTransition,
         );
 

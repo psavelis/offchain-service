@@ -3,7 +3,8 @@ import { FixedPointCalculusAdapter } from './fixed-point-calculus.adapter';
 
 describe('FixedPointCalculusAdapter', () => {
   it('should divide currencies with different precision', async () => {
-    const adapter = new FixedPointCalculusAdapter();
+    const adapter =
+      FixedPointCalculusAdapter.getInstance() as FixedPointCalculusAdapter;
 
     const fifthCentsOfUSD: CurrencyAmount = {
       unassignedNumber: '50000000',

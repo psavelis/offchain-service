@@ -10,13 +10,13 @@ const CACHE_TTL_MS = 1_000 * 300;
 
 export class FetchableKnnBasisJsonRpcAdapter implements FetchableKnnBasisPort {
   static instance: FetchableKnnBasisPort;
-  static cachedBasis: KnnQuoteBasis;
+  static cachedBasis: KnnQuoteBasis | null;
 
   private constructor(readonly provider: IKannaProtocolProvider) {
     FetchableKnnBasisJsonRpcAdapter.cachedBasis = null;
   }
 
-  static getCachedBasis(): KnnQuoteBasis {
+  static getCachedBasis(): KnnQuoteBasis | null {
     if (
       FetchableKnnBasisJsonRpcAdapter.cachedBasis &&
       FetchableKnnBasisJsonRpcAdapter.cachedBasis.expiration > new Date()

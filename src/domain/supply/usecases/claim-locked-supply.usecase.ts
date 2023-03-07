@@ -63,6 +63,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       throw new Error('invalid wallet address');
     }
   }
+
   async executeChallenge(entry: ClaimLockedSupplyDto) {
     if (banlistByIP[entry.clientIp]) {
       this.logger.debug(
@@ -446,6 +447,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       total: entity.getTotal(),
       amountOfTokens: entity.getAmountOfTokens(),
       lockTransactionHash: entity.getLockTransactionHash(),
+      contractAddress: entity.getContractAddress(),
       reference: entity.getPaymentSequence(),
       createdAt: entity.getCreatedAt(),
     };

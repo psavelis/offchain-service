@@ -67,6 +67,7 @@ export class Order extends Entity<OrderProps> {
   private claimTransactionHash?: string;
   private lockTransactionHash?: string;
   private totalLockedUint256?: string;
+  private contractAddress?: string;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -151,6 +152,10 @@ export class Order extends Entity<OrderProps> {
 
   public setTotalGas(totalGas: number) {
     this.props.totalGas = totalGas;
+  }
+
+  public setContractAddress(contractAddress: string) {
+    this.contractAddress = contractAddress;
   }
 
   public hasPayments() {
@@ -278,5 +283,9 @@ export class Order extends Entity<OrderProps> {
 
   public getTotalLockedUint256() {
     return this.totalLockedUint256;
+  }
+
+  public getContractAddress() {
+    return this.contractAddress;
   }
 }

@@ -22,9 +22,11 @@ export interface PartnerQuotation {
 
 export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
   static instance: FetchableEthBasisPort;
-  static cachedBasis: EthQuoteBasis;
+  static cachedBasis: EthQuoteBasis | null;
 
   private constructor() {
+    throw new Error(`${FetchableEthBasisHttpAdapter.name} deprecated`);
+
     FetchableEthBasisHttpAdapter.cachedBasis = null;
   }
 
@@ -37,7 +39,7 @@ export class FetchableEthBasisHttpAdapter implements FetchableEthBasisPort {
     return FetchableEthBasisHttpAdapter.instance;
   }
 
-  static getCachedBasis(): EthQuoteBasis {
+  static getCachedBasis(): EthQuoteBasis | null {
     if (
       FetchableEthBasisHttpAdapter.cachedBasis &&
       FetchableEthBasisHttpAdapter.cachedBasis.expiration > new Date()

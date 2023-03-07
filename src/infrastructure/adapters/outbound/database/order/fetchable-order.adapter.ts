@@ -46,11 +46,14 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "lock"."transaction_hash" as "lockTransactionHash",
       "lock"."uint256_amount" as "totalLockedUint256",
       "claim"."transaction_hash" as "claimTransactionHash",
+      coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress",
       "payment"."sequence" as "paymentSequence",
       "payment"."provider_id" as "paymentProviderId"
       from "order"
       left join "lock" on "lock"."order_id" = "order"."id"
+      left join "receipt" as "lock_receipt" on "lock_receipt"."transaction_hash" = "lock"."transaction_hash"
       left join "claim" on "claim"."order_id" = "order"."id"
+      left join "receipt" as "claim_receipt" on "claim_receipt"."transaction_hash" = "claim"."transaction_hash"
       left join "payment" on "payment"."order_id" = "order"."id"
       where "order".end_to_end_id = :endToEndId limit 1`;
 
@@ -71,6 +74,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
           paymentProviderId,
           claimTransactionHash,
           totalLockedUint256,
+          contractAddress,
         },
       ] = records;
 
@@ -95,6 +99,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
     if (totalLockedUint256) {
       order.setTotalLockedUint256(totalLockedUint256);
+    }
+
+    if (contractAddress) {
+      order.setContractAddress(contractAddress);
     }
 
     return order;
@@ -124,13 +132,16 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'lock.transaction_hash as lockTransactionHash',
         'lock.uint256_amount as totalLockedUint256',
         'claim.transaction_hash as claimTransactionHash',
+        this.db().raw('coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"'),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',
       ])
       .from(tableName)
       .leftJoin('payment', 'order.id', 'payment.order_id')
       .leftJoin('lock', 'order.id', 'lock.order_id')
+      .leftJoin('receipt as lock_receipt', 'lock.transaction_hash', 'lock_receipt.transaction_hash')
       .leftJoin('claim', 'order.id', 'claim.order_id')
+      .leftJoin('receipt as claim_receipt', 'claim.transaction_hash', 'claim_receipt.transaction_hash')
       .whereIn(`order.end_to_end_id`, endToEndIds);
 
     if (!records?.length) {
@@ -146,6 +157,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         lockTransactionHash,
         claimTransactionHash,
         totalLockedUint256,
+        contractAddress,
       } = rawOrder;
 
       const order = new Order(orderProps, id);
@@ -169,6 +181,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
       if (totalLockedUint256) {
         order.setTotalLockedUint256(totalLockedUint256);
+      }
+
+      if (contractAddress) {
+        order.setContractAddress(contractAddress);
       }
 
       result[orderProps.endToEndId] = order;
@@ -274,13 +290,16 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'lock.uint256_amount as totalLockedUint256',
         'claim.transaction_hash as claimTransactionHash',
         'claim.id as claimId',
+        this.db().raw('coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"'),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',
       ])
       .from(tableName)
       .innerJoin('payment', 'order.id', 'payment.order_id')
       .innerJoin('lock', 'order.id', 'lock.order_id')
+      .innerJoin('receipt as lock_receipt', 'lock.transaction_hash', 'lock_receipt.transaction_hash')
       .leftJoin('claim', 'order.id', 'claim.order_id')
+      .leftJoin('receipt as claim_receipt', 'claim.transaction_hash', 'claim_receipt.transaction_hash')
       .whereIn('order.status', orderStatus)
       .andWhere((qb) => qb.whereNull('claim.id'));
 
@@ -297,6 +316,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         lockTransactionHash,
         claimTransactionHash,
         totalLockedUint256,
+        contractAddress,
       } = rawOrder;
 
       const order = new Order(orderProps, id);
@@ -320,6 +340,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
       if (totalLockedUint256) {
         order.setTotalLockedUint256(totalLockedUint256);
+      }
+
+      if (contractAddress) {
+        order.setContractAddress(contractAddress);
       }
 
       orders[id] = order;

@@ -39,9 +39,11 @@ export interface Settings {
   blockchain: {
     providerEndpoint: string;
     claimManagerKey: string;
-    claimSignerKey: string;
+    legacyClaimSignerKey: string;
+    currentClaimSignerKey: string;
     contracts: {
-      preSaleAddress: string;
+      saleAddress: string;
+      legacyPreSaleAddress: string;
     };
     network: string;
     providerApiKey: string;

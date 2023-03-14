@@ -43,7 +43,7 @@ export class FetchableKnnBasisJsonRpcAdapter implements FetchableKnnBasisPort {
       return cached;
     }
 
-    const presale: KannaPreSale = await this.provider.preSale();
+    const presale: KannaPreSale = await this.provider.sale();
 
     const [priceInChainLinkUsd1e8, [priceInWei1e18, usdQuotation]] =
       await Promise.all([

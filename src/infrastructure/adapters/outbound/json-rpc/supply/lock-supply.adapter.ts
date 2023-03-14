@@ -27,7 +27,7 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const presale: KannaPreSale = await this.provider.preSale();
+    const presale: KannaPreSale = await this.provider.sale();
 
     const transaction: ContractTransaction = await presale.lockSupply(
       uint256Amount,
@@ -41,7 +41,7 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
 
   async verify({ nonce, amount }: LockSupplyDto): Promise<void> {
     this.validate(nonce, amount);
-    const presale: KannaPreSale = await this.provider.preSale();
+    const presale: KannaPreSale = await this.provider.sale();
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));

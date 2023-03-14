@@ -10,6 +10,6 @@ export interface SignatureResult {
 }
 
 export interface SignaturePort {
-  sign(payload: SignaturePayload): Promise<SignatureResult>;
+  sign(payload: SignaturePayload, legacy: boolean): Promise<SignatureResult>;
   hash(value: string);
 }

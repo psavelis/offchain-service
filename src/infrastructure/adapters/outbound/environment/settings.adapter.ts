@@ -58,11 +58,13 @@ export class SettingsAdapter {
       blockchain: {
         providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),
         claimManagerKey: this.envString('CLAIM_MANAGER_KEY'),
-        claimSignerKey: this.envString('CLAIM_SIGNER_KEY'),
+        legacyClaimSignerKey: this.envString('CLAIM_SIGNER_KEY'),
+        currentClaimSignerKey: this.envString('SALE_CLAIM_SIGNER_KEY'),
         providerApiKey: this.envString('RPC_PROVIDER_API_KEY'),
         network: this.envString('RPC_NETWORK'),
         contracts: {
-          preSaleAddress: this.envString('PRESALE_CONTRACT_ADDRESS'),
+          legacyPreSaleAddress: this.envString('PRESALE_CONTRACT_ADDRESS'),
+          saleAddress: this.envString('SALE_CONTRACT_ADDRESS'),
         },
       },
       price: {

@@ -51,6 +51,7 @@ export class ClaimLockedSupplyFactory {
       const delegateClaimPort: DelegateClaimPort =
         DelegateClaimRpcAdapter.getInstance(
           kannaProvider,
+          settings,
           signaturePort,
           logger,
         );

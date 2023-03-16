@@ -9,6 +9,7 @@ import { ClaimLockedSupplyDto } from '../../../../../domain/supply/dtos/claim-lo
 import { DelegateClaimPort } from '../../../../../domain/supply/ports/delegate-claim.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
 import { KannaPreSale } from '../protocol/contracts';
+import { Settings } from 'src/domain/common/settings';
 
 const claimType =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce)';
@@ -18,18 +19,21 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
 
   private constructor(
     readonly provider: IKannaProtocolProvider,
+    readonly settings: Settings,
     readonly signaturePort: SignaturePort,
     readonly logger: LoggablePort,
   ) {}
 
   static getInstance(
     provider: IKannaProtocolProvider,
+    settings: Settings,
     signaturePort: SignaturePort,
     logger: LoggablePort,
   ) {
     if (!DelegateClaimRpcAdapter.instance) {
       DelegateClaimRpcAdapter.instance = new DelegateClaimRpcAdapter(
         provider,
+        settings,
         signaturePort,
         logger,
       );
@@ -77,7 +81,9 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       ],
     };
 
-    const signature = await this.signaturePort.sign(payload);
+    const isLegacy = this.isLegacy(order);
+
+    const signature = await this.signaturePort.sign(payload, isLegacy);
 
     this.logger.debug(
       `[delegate-sign][signature-generated] Order ${order.getId()} has been signed referencing #${paymentSequence} issued by [${
@@ -88,12 +94,21 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     return signature;
   }
 
+  isLegacy(order: Order) {
+    const currentContract = this.settings.blockchain.contracts.saleAddress;
+
+    return order.getContractAddress() !== currentContract;
+  }
+
   async estimateClaimLocked(
     claimRequest: ClaimLockedSupplyDto,
     order: Order,
     signature: SignatureResult,
   ): Promise<void> {
-    const presale: KannaPreSale = await this.provider.preSale();
+    const presale: KannaPreSale = this.isLegacy(order)
+      ? await this.provider.legacyPreSale()
+      : await this.provider.sale();
+
     const paymentSequence = String(order.getPaymentSequence());
 
     await presale.estimateGas.claimLocked(

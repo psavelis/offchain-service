@@ -12,15 +12,21 @@ const contractOffset = BigNumber.from('1');
 
 export class ECDSASignatureAdapter implements SignaturePort {
   static instance: SignaturePort;
-  private signerWallet: Wallet;
+  private legacySignerWallet: Wallet;
+  private currentSignerWallet: Wallet;
 
   private constructor(readonly settings: Settings) {
     const provider = new ethers.providers.JsonRpcProvider(
       settings.blockchain.providerEndpoint,
     );
 
-    this.signerWallet = new ethers.Wallet(
-      settings.blockchain.claimSignerKey,
+    this.legacySignerWallet = new ethers.Wallet(
+      settings.blockchain.legacyClaimSignerKey,
+      provider,
+    );
+
+    this.currentSignerWallet = new ethers.Wallet(
+      settings.blockchain.currentClaimSignerKey,
       provider,
     );
   }
@@ -33,7 +39,10 @@ export class ECDSASignatureAdapter implements SignaturePort {
     return ECDSASignatureAdapter.instance;
   }
 
-  async sign(payload: SignaturePayload): Promise<SignatureResult> {
+  async sign(
+    payload: SignaturePayload,
+    legacy: boolean,
+  ): Promise<SignatureResult> {
     const hex32nonce = hexlify(randomBytes(32));
 
     const uint256Nonce = BigNumber.from(hex32nonce).sub(contractOffset);
@@ -45,14 +54,16 @@ export class ECDSASignatureAdapter implements SignaturePort {
       ethers.utils.defaultAbiCoder.encode(types, values),
     );
 
-    const signature = await this.signerWallet.signMessage(
+    const signer = legacy ? this.legacySignerWallet : this.currentSignerWallet;
+
+    const signature = await signer.signMessage(
       ethers.utils.arrayify(messageHash),
     );
 
     return {
       signature,
       nonce: uint256Nonce.toString(),
-      cryptoWallet: payload.values[1]
+      cryptoWallet: payload.values[1],
     };
   }
 

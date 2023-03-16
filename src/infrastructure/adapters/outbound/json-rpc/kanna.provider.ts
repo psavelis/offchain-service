@@ -5,13 +5,15 @@ import { KannaPreSale__factory } from './protocol/factories/contracts';
 import { Settings } from '../../../../domain/common/settings';
 import { JsonRpcProvider } from '@ethersproject/providers';
 export interface IKannaProtocolProvider {
-  preSale(): Promise<KannaPreSale>;
+  sale(): Promise<KannaPreSale>;
+  legacyPreSale(): Promise<KannaPreSale>;
   getDefaultRpcProvider(): JsonRpcProvider;
 }
 
 export class KannaProvider implements IKannaProtocolProvider {
   static signersInstance: Signer;
-  static presaleInstanceAsManager: KannaPreSale;
+  static saleInstanceAsManager: KannaPreSale;
+  static legacyPreSaleInstanceAsManager: KannaPreSale;
   static instance: IKannaProtocolProvider;
   static rpcProvider: JsonRpcProvider;
 
@@ -31,10 +33,16 @@ export class KannaProvider implements IKannaProtocolProvider {
         KannaProvider.rpcProvider,
       );
 
-      KannaProvider.presaleInstanceAsManager = KannaPreSale__factory.connect(
-        settings.blockchain.contracts.preSaleAddress,
+      KannaProvider.saleInstanceAsManager = KannaPreSale__factory.connect(
+        settings.blockchain.contracts.saleAddress,
         claimManagerWallet,
       );
+
+      KannaProvider.legacyPreSaleInstanceAsManager =
+        KannaPreSale__factory.connect(
+          settings.blockchain.contracts.legacyPreSaleAddress,
+          claimManagerWallet,
+        );
 
       KannaProvider.instance = new KannaProvider(settings);
     }
@@ -42,7 +50,11 @@ export class KannaProvider implements IKannaProtocolProvider {
     return KannaProvider.instance;
   }
 
-  preSale(): Promise<KannaPreSale> {
-    return Promise.resolve(KannaProvider.presaleInstanceAsManager);
+  sale(): Promise<KannaPreSale> {
+    return Promise.resolve(KannaProvider.saleInstanceAsManager);
+  }
+
+  legacyPreSale(): Promise<KannaPreSale> {
+    return Promise.resolve(KannaProvider.legacyPreSaleInstanceAsManager);
   }
 }

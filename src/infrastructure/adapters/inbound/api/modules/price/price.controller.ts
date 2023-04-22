@@ -24,7 +24,7 @@ export class PriceController {
       return this.createQuote
         .execute({
           amount: {
-            unassignedNumber: '60',
+            unassignedNumber: '1000',
             decimals: 0,
             isoCode: 'USD',
           },

@@ -44,6 +44,7 @@ export interface Settings {
     contracts: {
       saleAddress: string;
       legacyPreSaleAddress: string;
+      badgeAddress: string;
     };
     network: string;
     providerApiKey: string;

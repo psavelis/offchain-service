@@ -6,6 +6,8 @@ import { VerifyMintInteractor } from '../interactors/verify-mint-request.interac
 import { FetchableBadgeEventPort } from '../ports/fetchable-badge-event.port';
 import { FetchablePreSaleEventPort } from '../ports/fetchable-presale-event.port';
 
+const PRESALE_BADGE_ID = 1;
+
 export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
   constructor(
     readonly fetchablePresaleEventPort: FetchablePreSaleEventPort,
@@ -21,7 +23,11 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
         PreSaleEventType.CLAIM,
         PreSaleEventType.PURCHASE,
       ),
-      this.fetchableBadgeEventPort.fetch(cryoptoWallet, BadgeEventType.MINT),
+      this.fetchableBadgeEventPort.fetch(
+        cryoptoWallet,
+        PRESALE_BADGE_ID,
+        BadgeEventType.MINT,
+      ),
     ]);
 
     let isVerified =

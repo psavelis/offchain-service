@@ -1,6 +1,6 @@
 import { PreSaleEvent, PreSaleEventType } from '../dtos/presale-event.dto';
 
-export interface FetchablePresaleEventPort {
+export interface FetchablePreSaleEventPort {
   fetch(
     cryptoWallet: string,
     ...preSaleEventType: PreSaleEventType[]

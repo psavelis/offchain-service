@@ -1,12 +1,16 @@
-import { Contract, ethers, Signer } from 'ethers';
-import { KannaPreSale } from './protocol/contracts';
-import { KannaPreSale__factory } from './protocol/factories/contracts';
+import { ethers, Signer } from 'ethers';
+import { KannaPreSale, KannaBadges } from './protocol/contracts';
+import {
+  KannaPreSale__factory,
+  KannaBadges__factory,
+} from './protocol/factories/contracts';
 
 import { Settings } from '../../../../domain/common/settings';
 import { JsonRpcProvider } from '@ethersproject/providers';
 export interface IKannaProtocolProvider {
   sale(): Promise<KannaPreSale>;
   legacyPreSale(): Promise<KannaPreSale>;
+  badges(): Promise<KannaBadges>;
   getDefaultRpcProvider(): JsonRpcProvider;
 }
 
@@ -14,10 +18,12 @@ export class KannaProvider implements IKannaProtocolProvider {
   static signersInstance: Signer;
   static saleInstanceAsManager: KannaPreSale;
   static legacyPreSaleInstanceAsManager: KannaPreSale;
+  static badgeInstanceAsManager: KannaBadges;
   static instance: IKannaProtocolProvider;
   static rpcProvider: JsonRpcProvider;
 
   private constructor(readonly settings: Settings) {}
+
   getDefaultRpcProvider(): ethers.providers.JsonRpcProvider {
     return KannaProvider.rpcProvider;
   }
@@ -44,6 +50,11 @@ export class KannaProvider implements IKannaProtocolProvider {
           claimManagerWallet,
         );
 
+      KannaProvider.badgeInstanceAsManager = KannaBadges__factory.connect(
+        settings.blockchain.contracts.badgeAddress,
+        claimManagerWallet, // TODO: create a specific badges manager wallet
+      );
+
       KannaProvider.instance = new KannaProvider(settings);
     }
 
@@ -56,5 +67,9 @@ export class KannaProvider implements IKannaProtocolProvider {
 
   legacyPreSale(): Promise<KannaPreSale> {
     return Promise.resolve(KannaProvider.legacyPreSaleInstanceAsManager);
+  }
+
+  badges(): Promise<KannaBadges> {
+    return Promise.resolve(KannaProvider.badgeInstanceAsManager);
   }
 }

@@ -4,11 +4,11 @@ import { VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
 import { VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
 import { VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
 import { FetchableBadgeEventPort } from '../ports/fetchable-badge-event.port';
-import { FetchablePresaleEventPort } from '../ports/fetchable-presale-event.port';
+import { FetchablePreSaleEventPort } from '../ports/fetchable-presale-event.port';
 
 export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
   constructor(
-    readonly fetchablePresaleEventPort: FetchablePresaleEventPort,
+    readonly fetchablePresaleEventPort: FetchablePreSaleEventPort,
     readonly fetchableBadgeEventPort: FetchableBadgeEventPort,
   ) {}
 

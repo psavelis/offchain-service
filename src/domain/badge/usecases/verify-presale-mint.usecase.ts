@@ -41,9 +41,6 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
       amount: Number(isVerified),
     };
 
-    // TODO: encryptar a carteira, buscar order e ver se foi no contrato de presale? apenas se possuir a importação dos pedidos feito onchain
-    // TODO: se não encontrar pedido na base, ir na carteira do usuário e ver se teve transação de compra na presale
-
     return result;
   }
 }

@@ -3,7 +3,6 @@ import { SettingsAdapter } from '../../../../../../../src/infrastructure/adapter
 import { Settings } from '../../../../../../../src/domain/common/settings';
 import { KnexPostgresDatabase } from '../../../../../../../src/infrastructure/adapters/outbound/database/knex-postgres.db';
 
-// TODO: mock database! (test skipped)
 describe.skip('FetchOrderAdapter', () => {
   it('fetchManyByEndId', async () => {
     const settings: Settings = {

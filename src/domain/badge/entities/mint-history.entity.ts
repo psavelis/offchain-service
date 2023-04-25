@@ -6,6 +6,8 @@ export interface MintHistoryProps extends Props {
   amount: number;
   valid: boolean;
   description?: string;
+  clientIp?: string;
+  clientAgent?: string;
 }
 
 export class MintHistory extends Entity<MintHistoryProps> {
@@ -29,7 +31,15 @@ export class MintHistory extends Entity<MintHistoryProps> {
     return this.props.valid;
   }
 
-  get reason(): string | undefined {
+  get description(): string | undefined {
     return this.props.description;
+  }
+
+  get clientIp(): string | undefined {
+    return this.props.clientIp;
+  }
+
+  get clientAgent(): string | undefined {
+    return this.props.clientAgent;
   }
 }

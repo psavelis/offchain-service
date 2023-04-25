@@ -5,18 +5,20 @@ import {
 import { FetchableBadgeEventPort } from '../../../../../domain/badge/ports/fetchable-badge-event.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
 
-export class FetchableBadgeEventRpcAdapter implements FetchableBadgeEventPort {
+export class FetchableBadgeEventJsonRpcAdapter
+  implements FetchableBadgeEventPort
+{
   static instance: FetchableBadgeEventPort;
 
   private constructor(readonly provider: IKannaProtocolProvider) {}
 
   static getInstance(provider: IKannaProtocolProvider) {
-    if (!FetchableBadgeEventRpcAdapter.instance) {
-      FetchableBadgeEventRpcAdapter.instance =
-        new FetchableBadgeEventRpcAdapter(provider);
+    if (!FetchableBadgeEventJsonRpcAdapter.instance) {
+      FetchableBadgeEventJsonRpcAdapter.instance =
+        new FetchableBadgeEventJsonRpcAdapter(provider);
     }
 
-    return FetchableBadgeEventRpcAdapter.instance;
+    return FetchableBadgeEventJsonRpcAdapter.instance;
   }
 
   async fetch(

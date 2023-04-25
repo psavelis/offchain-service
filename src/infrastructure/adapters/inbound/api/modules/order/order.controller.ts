@@ -9,14 +9,15 @@ import {
   Req,
   Sse,
   MessageEvent,
-  HttpException,
-  HttpStatus,
+  BadRequestException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
   distinctUntilKeyChanged,
   interval,
   map,
+  NotFoundError,
   Observable,
   switchMap,
 } from 'rxjs';
@@ -50,7 +51,7 @@ export class OrderController {
   ) {}
 
   @Post('')
-  @Throttle(10, 60)
+  @Throttle(6, 60)
   postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
     try {
       return this.createOrder.execute({
@@ -59,24 +60,27 @@ export class OrderController {
         clientIp: ip,
       });
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      console.log(
+        `postOrder ${OrderController.name}, [${ip}@${req?.headers['user-agent']}], ${error.message}`,
       );
+      throw new UnprocessableEntityException('Bad order request');
     }
   }
 
   @Get(':id')
+  @Throttle(60, 60)
   getOrder(
     @Param('id') id: string,
+    @Req() req,
+    @Ip() ip,
   ): Promise<BrazilianPixOrderDto | OrderDto | undefined> {
     try {
       return this.fetchOrder.fetch(id);
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      console.log(
+        `getOrder ${OrderController.name}, [${ip}@${req?.headers['user-agent']}], ${error.message}`,
       );
+      throw new BadRequestException('Bad order id');
     }
   }
 

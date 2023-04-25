@@ -6,6 +6,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
+import { Throttle } from '@nestjs/throttler';
 
 import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
 
@@ -25,6 +26,7 @@ export class HealthcheckController {
   ) {}
 
   @Get()
+  @Throttle(60, 60)
   @HealthCheck()
   async healthcheck() {
     try {

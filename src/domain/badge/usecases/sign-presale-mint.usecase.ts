@@ -28,6 +28,8 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
 
   async execute({
     cryptoWallet,
+    clientIp,
+    clientAgent,
   }: SignMintRequestDto): Promise<SignedMintResponseDto> {
     const referenceMetadataId = this.settings.badge.presale.referenceMetadataId;
 
@@ -43,11 +45,13 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         amount,
         description: 'Not verified',
         valid: false,
+        clientIp,
+        clientAgent,
       });
 
       await this.persistableMintHistoryPort.create(history);
 
-      throw new Error(history.reason);
+      throw new Error(history.description);
     }
 
     const mintTypeHash = this.signaturePort.hash(mintType);
@@ -75,8 +79,10 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         referenceMetadataId,
         cryptoWallet,
         amount,
-        description: `#${result.incremental} verified and signed for ${amount}x`,
+        description: `${amount}x units of #${result.incremental} verified and signed`,
         valid: false,
+        clientIp,
+        clientAgent,
       }),
     );
 

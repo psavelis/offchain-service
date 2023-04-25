@@ -1,21 +1,24 @@
+import { Settings } from '../../common/settings';
+
 import { BadgeEventType } from '../dtos/badge-event.dto';
 import { PreSaleEventType } from '../dtos/presale-event.dto';
-import { VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
-import { VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
+
 import { VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
 import { FetchableBadgeEventPort } from '../ports/fetchable-badge-event.port';
 import { FetchablePreSaleEventPort } from '../ports/fetchable-presale-event.port';
 
-const PRESALE_BADGE_ID = 1;
+import { VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
+import { VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
 
 export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
   constructor(
+    readonly settings: Settings,
     readonly fetchablePresaleEventPort: FetchablePreSaleEventPort,
     readonly fetchableBadgeEventPort: FetchableBadgeEventPort,
   ) {}
 
   async execute({
-    cryoptoWallet,
+    cryptoWallet: cryoptoWallet,
   }: VerifyMintRequestDto): Promise<VerifyMintResponseDto> {
     const [preSaleEvents, badgeEvents] = await Promise.all([
       this.fetchablePresaleEventPort.fetch(
@@ -25,7 +28,7 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
       ),
       this.fetchableBadgeEventPort.fetch(
         cryoptoWallet,
-        PRESALE_BADGE_ID,
+        this.settings.badge.presale.referenceMetadataId,
         BadgeEventType.MINT,
       ),
     ]);
@@ -37,6 +40,9 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
       isVerified,
       amount: Number(isVerified),
     };
+
+    // TODO: encryptar a carteira, buscar order e ver se foi no contrato de presale? apenas se possuir a importação dos pedidos feito onchain
+    // TODO: se não encontrar pedido na base, ir na carteira do usuário e ver se teve transação de compra na presale
 
     return result;
   }

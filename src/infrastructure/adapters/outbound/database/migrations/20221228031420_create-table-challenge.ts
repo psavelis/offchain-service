@@ -3,9 +3,6 @@ import { Knex } from 'knex';
 const tableName = 'challenge';
 
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`DROP TABLE IF EXISTS answer;`);
-  await knex.raw(`DROP TABLE IF EXISTS ${tableName};`);
-
   return knex.schema.createTable(tableName, (table) => {
     table.increments('id', { primaryKey: true });
 

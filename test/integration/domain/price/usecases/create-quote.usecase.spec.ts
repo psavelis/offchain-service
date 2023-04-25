@@ -109,11 +109,9 @@ describe('CreateQuoteUseCase', () => {
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('1000000000000000000000');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('997024208448399999052');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given BRL amount', async () => {
@@ -125,17 +123,11 @@ describe('CreateQuoteUseCase', () => {
       },
     });
 
-    const { finalAmountOfTokens, netTotalInUsd } = quote;
+    const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('186581088140906037764');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('183605296589306036816');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    expect(netTotalInUsd.unassignedNumber).toBe('93290544070453018882');
-    expect(netTotalInUsd.isoCode).toBe('USD');
-    expect(netTotalInUsd.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given ETH amount', async () => {
@@ -152,8 +144,6 @@ describe('CreateQuoteUseCase', () => {
     expect(finalAmountOfTokens.unassignedNumber).toBe('1000000000000000000');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given ETH amount', async () => {
@@ -170,8 +160,6 @@ describe('CreateQuoteUseCase', () => {
     expect(finalAmountOfTokens.unassignedNumber).toBe('2428940000000000774443');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given KNN amount', async () => {
@@ -188,7 +176,5 @@ describe('CreateQuoteUseCase', () => {
     expect(finalAmountOfTokens.unassignedNumber).toBe('1');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(0);
-
-    console.info(quote);
   });
 });

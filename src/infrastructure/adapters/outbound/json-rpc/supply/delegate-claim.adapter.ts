@@ -2,6 +2,7 @@ import {
   SignaturePayload,
   SignaturePort,
   SignatureResult,
+  SignerType,
 } from '../../../../../domain/common/ports/signature.port';
 import { Order } from '../../../../../domain/order/entities/order.entity';
 import { LoggablePort } from '../../../../../domain/common/ports/loggable.port';
@@ -83,7 +84,10 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
 
     const isLegacy = this.isLegacy(order);
 
-    const signature = await this.signaturePort.sign(payload, isLegacy);
+    const signature = await this.signaturePort.sign(
+      payload,
+      isLegacy ? SignerType.PreSaleClaimManager : SignerType.SaleClaimManager,
+    );
 
     this.logger.debug(
       `[delegate-sign][signature-generated] Order ${order.getId()} has been signed referencing #${paymentSequence} issued by [${

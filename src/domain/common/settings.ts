@@ -41,6 +41,7 @@ export interface Settings {
     claimManagerKey: string;
     legacyClaimSignerKey: string;
     currentClaimSignerKey: string;
+    badgesMinterSignerKey: string;
     contracts: {
       saleAddress: string;
       legacyPreSaleAddress: string;
@@ -56,5 +57,10 @@ export interface Settings {
     port: string;
     username: string;
     password: string;
+  };
+  badge: {
+    presale: {
+      referenceMetadataId: number;
+    };
   };
 }

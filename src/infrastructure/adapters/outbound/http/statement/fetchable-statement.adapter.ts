@@ -196,6 +196,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
       });
 
       req.on('error', (err) => {
+        req.destroy(err);
         reject(err);
       });
 

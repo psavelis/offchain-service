@@ -60,13 +60,17 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     } catch (err) {
       const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
 
+      const msg = err?.msg;
+
       if (
-        !err?.message?.includes('ETIMEDOUT') &&
-        !err?.message?.includes('ECONNREFUSED') &&
-        !err?.message?.includes('Unexpected end of JSON input')
+        msg?.includes('ETIMEDOUT') ||
+        msg?.includes('ECONNRE') ||
+        msg?.includes('Unexpected end of JSON input')
       ) {
-        this.logger.error(err, remarks, statementParameter);
+        throw err;
       }
+
+      this.logger.error(err, remarks, statementParameter);
 
       await this.persistableClearingPort.create(
         new Clearing({

@@ -12,7 +12,7 @@ import { VerifyPreSaleMintUseCase } from '../../../domain/badge/usecases/verify-
 import { ECDSASignatureAdapter } from '../../adapters/outbound/encryption/ecdsa/ecdsa-signature.adapter';
 import { SignaturePort } from '../../../domain/common/ports/signature.port';
 
-export class VerifyPreSaleMintFactory {
+export class SignPreSaleMintFactory {
   static instance: SignPreSaleMintUseCase;
 
   static getInstance(): SignPreSaleMintUseCase {

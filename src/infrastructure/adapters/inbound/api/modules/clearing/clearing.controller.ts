@@ -1,5 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { Controller, Inject } from '@nestjs/common';
 import { CronJob } from 'cron';
 import {
   CreateClearing,
@@ -14,7 +13,7 @@ export class ClearingController {
     @Inject(CreateClearing)
     readonly createClearing: CreateClearingInteractor,
   ) {
-    const job = new CronJob('*/15 * * * * *', () => {
+    const job = new CronJob('*/7 * * * * *', () => {
       if (running) {
         return;
       }
@@ -24,10 +23,12 @@ export class ClearingController {
       return this.createClearing
         .execute()
         .catch((err) => {
+          console.log(`[Clearing] Provider could not respond: ${err.message}`);
+
           if (process.env.NODE_ENV === 'development') {
-            console.log(err);
+            return;
           } else {
-            throw err;
+            this.checkKnownError(err);
           }
         })
         .finally(() => {
@@ -36,5 +37,14 @@ export class ClearingController {
     });
 
     job.start();
+  }
+
+  private checkKnownError(err: any) {
+    if (
+      !err?.message?.includes('ETIMEDOUT') &&
+      !err?.message?.includes('ECONNREFUSED')
+    ) {
+      throw err;
+    }
   }
 }

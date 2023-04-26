@@ -32,7 +32,7 @@ export class PriceController {
         })
         .catch((err) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(err);
+            console.log(err.message);
           } else {
             throw err;
           }

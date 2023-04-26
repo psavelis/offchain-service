@@ -60,7 +60,11 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     } catch (err) {
       const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
 
-      if (!err.message.includes('JSON input')) {
+      if (
+        !err?.message?.includes('ETIMEDOUT') &&
+        !err?.message?.includes('ECONNREFUSED') &&
+        !err?.message?.includes('Unexpected end of JSON input')
+      ) {
         this.logger.error(err, remarks, statementParameter);
       }
 

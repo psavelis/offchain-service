@@ -26,14 +26,12 @@ export class ClearingController {
       return this.createClearing
         .execute()
         .catch((err) => {
-          this.logger.warning(
+          this.logger.debug(
             `[Clearing] Provider could not respond: ${err.message}`,
           );
 
           if (process.env.NODE_ENV === 'development') {
-            return;
-          } else {
-            this.checkKnownError(err);
+            throw err;
           }
         })
         .finally(() => {
@@ -42,17 +40,5 @@ export class ClearingController {
     });
 
     job.start();
-  }
-
-  private checkKnownError(err: any) {
-    if (
-      !err?.message?.includes('ETIMEDOUT') &&
-      !err?.message?.includes('ECONNREFUSED') &&
-      !err?.message?.includes('Unexpected end of JSON input')
-    ) {
-      this.logger.error(err, `[Clearing] Provider could not respond`);
-
-      throw err;
-    }
   }
 }

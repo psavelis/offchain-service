@@ -15,7 +15,6 @@ import {
 import { VerifyMint } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { VerifyMintInteractor } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { VerifyMintRequestDto } from '../../../../../../domain/badge/dtos/verify-mint-request.dto';
-import { ClientBase } from 'pg';
 
 @Controller('badge')
 export class BadgeController {

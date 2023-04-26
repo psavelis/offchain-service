@@ -13,10 +13,6 @@ export interface ClaimProps extends Props {
 export class Claim extends Entity<ClaimProps> {
   constructor(props: ClaimProps, id?: string) {
     super(props, id);
-
-    if (id) {
-      return;
-    }
   }
 
   public getPaymentId(): string {

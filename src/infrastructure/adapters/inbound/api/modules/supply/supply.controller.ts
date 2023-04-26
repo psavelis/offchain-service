@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Inject,
@@ -51,6 +50,9 @@ export class SupplyController {
           throw err;
         });
     } catch (err) {
+      console.log(
+        `putClaim ${SupplyController.name}, [${ip}@${req?.headers['user-agent']}], ${err.message}`,
+      );
       this.logger.debug(err, '[400] PUT /supply/claim');
     }
   }
@@ -81,6 +83,9 @@ export class SupplyController {
 
       return result;
     } catch (err) {
+      console.log(
+        `patchClaim ${SupplyController.name}, [${ip}@${req?.headers['user-agent']}], ${err.message}`,
+      );
       this.logger.debug(err, '[400] PATCH /supply/claim ');
     }
   }

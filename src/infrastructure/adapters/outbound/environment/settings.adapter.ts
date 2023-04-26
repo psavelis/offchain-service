@@ -60,11 +60,13 @@ export class SettingsAdapter {
         claimManagerKey: this.envString('CLAIM_MANAGER_KEY'),
         legacyClaimSignerKey: this.envString('CLAIM_SIGNER_KEY'),
         currentClaimSignerKey: this.envString('SALE_CLAIM_SIGNER_KEY'),
+        badgesMinterSignerKey: this.envString('BADGES_MINTER_SIGNER_KEY'),
         providerApiKey: this.envString('RPC_PROVIDER_API_KEY'),
         network: this.envString('RPC_NETWORK'),
         contracts: {
           legacyPreSaleAddress: this.envString('PRESALE_CONTRACT_ADDRESS'),
           saleAddress: this.envString('SALE_CONTRACT_ADDRESS'),
+          badgeAddress: this.envString('BADGE_CONTRACT_ADDRESS'),
         },
       },
       price: {
@@ -94,6 +96,11 @@ export class SettingsAdapter {
       },
       cbc: {
         key: this.envString('CBC_KEY'),
+      },
+      badge: {
+        presale: {
+          referenceMetadataId: 2,
+        },
       },
     };
   }

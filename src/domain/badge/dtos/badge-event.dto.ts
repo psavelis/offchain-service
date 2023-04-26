@@ -5,6 +5,5 @@ export enum BadgeEventType {
 export interface BadgeEvent {
   name: BadgeEventType;
   transactionHash: string;
-
   referenceMetadataId: number;
 }

@@ -1,7 +1,7 @@
 import { FetchableEthBasisHttpAdapter } from './fetchable-eth-basis.adapter';
 
-describe('FetchableEthBasisHttpAdapter', () => {
-  it('should fetch eth->brl basis quotation from http api', async () => {
+describe.skip('[DEPRECATED]  FetchableEthBasisHttpAdapter', () => {
+  it.skip('[DEPRECATED] should fetch eth->brl basis quotation from http api', async () => {
     const adapter = FetchableEthBasisHttpAdapter.getInstance();
 
     const {
@@ -19,7 +19,7 @@ describe('FetchableEthBasisHttpAdapter', () => {
     expect(expiration.getTime()).toBeGreaterThan(new Date().getTime());
   });
 
-  it('should fetch eth->usd basis quotation from http api', async () => {
+  it.skip('[DEPRECATED] should fetch eth->usd basis quotation from http api', async () => {
     const adapter = FetchableEthBasisHttpAdapter.getInstance();
 
     const {

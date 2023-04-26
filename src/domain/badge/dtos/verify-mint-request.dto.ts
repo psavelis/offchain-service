@@ -1,3 +1,4 @@
 export interface VerifyMintRequestDto {
-  cryoptoWallet: string;
+  cryptoWallet: string;
+  referenceMetadataId: number;
 }

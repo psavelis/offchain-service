@@ -10,7 +10,7 @@ import {
   CurrencyIsoCode,
   IsoCodes,
 } from '../../price/value-objects/currency-amount.value-object';
-import { formatDecimals } from '../../common/util';
+import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
@@ -175,7 +175,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     }
 
     if (identifiers.CriptoWallet === identifierType) {
-      if (!userIdentifier.match(/(\b0x[a-f0-9]{40}\b)/g)) {
+      if (!userIdentifier.match(cryptoWalletRegEx)) {
         throw new Error('invalid wallet address');
       }
     }

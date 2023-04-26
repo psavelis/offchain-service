@@ -3,8 +3,9 @@ import {
   Controller,
   Inject,
   Post,
-  HttpException,
-  HttpStatus,
+  UnprocessableEntityException,
+  Req,
+  Ip,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { CronJob } from 'cron';
@@ -26,7 +27,7 @@ export class PriceController {
           amount: {
             unassignedNumber: '1000',
             decimals: 0,
-            isoCode: 'USD',
+            isoCode: 'BRL',
           },
           forceReload: true,
         })
@@ -43,15 +44,15 @@ export class PriceController {
   }
 
   @Post('quote')
-  @Throttle(30, 60)
-  postQuote(@Body() entry: CreateQuoteDto) {
+  @Throttle(60, 60)
+  postQuote(@Body() entry: CreateQuoteDto, @Req() req, @Ip() ip) {
     try {
       return this.createQuote.execute({ ...entry, forceReload: false });
     } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      console.log(
+        `postQuote ${PriceController.name}, [${ip}@${req?.headers['user-agent']}], ${error.message}`,
       );
+      throw new UnprocessableEntityException('Bad quote request');
     }
   }
 }

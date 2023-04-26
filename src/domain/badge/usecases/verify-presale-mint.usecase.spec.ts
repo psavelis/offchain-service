@@ -1,7 +1,23 @@
+import { ethers } from 'ethers';
 import { PreSaleEventType } from '../dtos/presale-event.dto';
 import { VerifyPreSaleMintUseCase } from './verify-presale-mint.usecase';
 
+const settingsMock: any = {
+  badge: {
+    presale: {
+      referenceMetadataId: 2,
+    },
+  },
+};
+
+const { referenceMetadataId } = settingsMock.badge.presale;
+let randomWallet;
+
 describe('VerifyPreSaleMintUseCase', () => {
+  beforeEach(() => {
+    randomWallet = ethers.Wallet.createRandom();
+  });
+
   it('should return true if the presale mint is valid', async () => {
     const fetchablePresaleEventPort = {
       fetch: jest.fn().mockResolvedValue([
@@ -20,11 +36,18 @@ describe('VerifyPreSaleMintUseCase', () => {
     const fetchableBadgeEventPort = {
       fetch: jest.fn().mockResolvedValue([]),
     };
+
     const usecase = new VerifyPreSaleMintUseCase(
+      settingsMock,
       fetchablePresaleEventPort,
       fetchableBadgeEventPort,
     );
-    const result = await usecase.execute({ cryoptoWallet: '0x0' });
+
+    const result = await usecase.execute({
+      cryptoWallet: randomWallet.address,
+      referenceMetadataId,
+    });
+
     expect(result.isVerified).toBeTruthy();
     expect(result.amount).toBe(1);
   });
@@ -33,14 +56,22 @@ describe('VerifyPreSaleMintUseCase', () => {
     const fetchablePresaleEventPort = {
       fetch: jest.fn().mockResolvedValue([]),
     };
+
     const fetchableBadgeEventPort = {
       fetch: jest.fn().mockResolvedValue([]),
     };
+
     const usecase = new VerifyPreSaleMintUseCase(
+      settingsMock,
       fetchablePresaleEventPort,
       fetchableBadgeEventPort,
     );
-    const result = await usecase.execute({ cryoptoWallet: '0x0' });
+
+    const result = await usecase.execute({
+      cryptoWallet: randomWallet.address,
+      referenceMetadataId,
+    });
+
     expect(result.isVerified).toBeFalsy();
     expect(result.amount).toBe(0);
   });

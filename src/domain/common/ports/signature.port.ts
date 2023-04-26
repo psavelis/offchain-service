@@ -1,3 +1,9 @@
+export enum SignerType {
+  PreSaleClaimManager,
+  SaleClaimManager,
+  BadgesMinter,
+}
+
 export interface SignaturePayload {
   types: Array<string>;
   values: Array<string>;
@@ -10,6 +16,6 @@ export interface SignatureResult {
 }
 
 export interface SignaturePort {
-  sign(payload: SignaturePayload, legacy: boolean): Promise<SignatureResult>;
+  sign(payload: SignaturePayload, signer: SignerType): Promise<SignatureResult>;
   hash(value: string);
 }

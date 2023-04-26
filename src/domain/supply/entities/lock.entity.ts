@@ -13,10 +13,6 @@ export interface LockProps extends Props {
 export class LockEntity extends Entity<LockProps> {
   constructor(props: LockProps, id?: string) {
     super(props, id);
-
-    if (id) {
-      return;
-    }
   }
 
   public getPaymentId(): string {

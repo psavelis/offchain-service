@@ -4,6 +4,7 @@ import {
   SignaturePayload,
   SignaturePort,
   SignatureResult,
+  SignerType,
 } from '../../../../../domain/common/ports/signature.port';
 
 import { Settings } from '../../../../../domain/common/settings';
@@ -12,23 +13,29 @@ const contractOffset = BigNumber.from('1');
 
 export class ECDSASignatureAdapter implements SignaturePort {
   static instance: SignaturePort;
-  private legacySignerWallet: Wallet;
-  private currentSignerWallet: Wallet;
+  private signers: Record<SignerType, Wallet>;
 
   private constructor(readonly settings: Settings) {
     const provider = new ethers.providers.JsonRpcProvider(
       settings.blockchain.providerEndpoint,
     );
 
-    this.legacySignerWallet = new ethers.Wallet(
-      settings.blockchain.legacyClaimSignerKey,
-      provider,
-    );
+    this.signers = {
+      [SignerType.PreSaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.legacyClaimSignerKey,
+        provider,
+      ),
 
-    this.currentSignerWallet = new ethers.Wallet(
-      settings.blockchain.currentClaimSignerKey,
-      provider,
-    );
+      [SignerType.SaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.currentClaimSignerKey,
+        provider,
+      ),
+
+      [SignerType.BadgesMinter]: new ethers.Wallet(
+        settings.blockchain.badgesMinterSignerKey,
+        provider,
+      ),
+    };
   }
 
   static getInstance(settings: Settings) {
@@ -41,7 +48,7 @@ export class ECDSASignatureAdapter implements SignaturePort {
 
   async sign(
     payload: SignaturePayload,
-    legacy: boolean,
+    signerType: SignerType,
   ): Promise<SignatureResult> {
     const hex32nonce = hexlify(randomBytes(32));
 
@@ -54,7 +61,7 @@ export class ECDSASignatureAdapter implements SignaturePort {
       ethers.utils.defaultAbiCoder.encode(types, values),
     );
 
-    const signer = legacy ? this.legacySignerWallet : this.currentSignerWallet;
+    const signer = this.signers[signerType];
 
     const signature = await signer.signMessage(
       ethers.utils.arrayify(messageHash),

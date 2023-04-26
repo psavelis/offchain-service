@@ -57,7 +57,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
     const mintTypeHash = this.signaturePort.hash(mintType);
     const payload: SignaturePayload = {
       types: ['bytes32', 'address', 'uint256', 'uint256', 'uint256'],
-      values: [mintTypeHash, referenceMetadataId, cryptoWallet, 1, 1],
+      values: [mintTypeHash, cryptoWallet, referenceMetadataId, 1, 1],
     };
 
     const { signature, nonce } = await this.signaturePort.sign(

@@ -37,7 +37,7 @@ export class PersistableMintHistoryDbAdapter
     };
 
     return this.db().raw(
-      `insert into ${tableName} (amount, reference_metadata_id, crypto_wallet, valid, reason, client_ip, client_agent) values (:amount, :reference_metadata_id, :crypto_wallet, :valid, :reason, :client_ip, :client_agent);`,
+      `insert into ${tableName} (amount, reference_metadata_id, crypto_wallet, valid, description, client_ip, client_agent) values (:amount, :reference_metadata_id, :crypto_wallet, :valid, :description, :client_ip, :client_agent);`,
       param,
     );
   }

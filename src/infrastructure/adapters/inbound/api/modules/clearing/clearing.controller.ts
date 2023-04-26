@@ -13,7 +13,7 @@ export class ClearingController {
     @Inject(CreateClearing)
     readonly createClearing: CreateClearingInteractor,
   ) {
-    const job = new CronJob('*/7 * * * * *', () => {
+    const job = new CronJob('*/15 * * * * *', () => {
       if (running) {
         return;
       }
@@ -42,7 +42,8 @@ export class ClearingController {
   private checkKnownError(err: any) {
     if (
       !err?.message?.includes('ETIMEDOUT') &&
-      !err?.message?.includes('ECONNREFUSED')
+      !err?.message?.includes('ECONNREFUSED') &&
+      !err?.message?.includes('Unexpected end of JSON input')
     ) {
       throw err;
     }

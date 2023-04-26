@@ -151,12 +151,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       ),
     };
 
-    if (this.settings.price.persistQuotes && !entry.forceReload) {
-      await this.persistableQuotePort.save(quote).catch((e) => {
-        console.log(e);
-        return quote;
-      });
-    }
     return quote;
   }
 

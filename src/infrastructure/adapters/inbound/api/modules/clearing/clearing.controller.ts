@@ -4,6 +4,7 @@ import {
   CreateClearing,
   CreateClearingInteractor,
 } from '../../../../../../domain/clearing/interactors/create-clearing.interactor';
+import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
 
 let running = false;
 
@@ -12,6 +13,8 @@ export class ClearingController {
   constructor(
     @Inject(CreateClearing)
     readonly createClearing: CreateClearingInteractor,
+    @Inject(Loggable)
+    readonly logger: LoggablePort,
   ) {
     const job = new CronJob('*/15 * * * * *', () => {
       if (running) {
@@ -23,7 +26,9 @@ export class ClearingController {
       return this.createClearing
         .execute()
         .catch((err) => {
-          console.log(`[Clearing] Provider could not respond: ${err.message}`);
+          this.logger.warning(
+            `[Clearing] Provider could not respond: ${err.message}`,
+          );
 
           if (process.env.NODE_ENV === 'development') {
             return;
@@ -45,6 +50,8 @@ export class ClearingController {
       !err?.message?.includes('ECONNREFUSED') &&
       !err?.message?.includes('Unexpected end of JSON input')
     ) {
+      this.logger.error(err, `[Clearing] Provider could not respond`);
+
       throw err;
     }
   }

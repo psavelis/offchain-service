@@ -9,6 +9,7 @@ import { FetchablePreSaleEventPort } from '../ports/fetchable-presale-event.port
 
 import { VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
 import { VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
+import { cryptoWalletRegEx } from 'src/domain/common/util';
 
 export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
   constructor(
@@ -18,16 +19,20 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
   ) {}
 
   async execute({
-    cryptoWallet: cryoptoWallet,
+    cryptoWallet: cryptoWallet,
   }: VerifyMintRequestDto): Promise<VerifyMintResponseDto> {
+    if (!cryptoWallet.match(cryptoWalletRegEx)) {
+      throw new Error('invalid wallet address');
+    }
+
     const [preSaleEvents, badgeEvents] = await Promise.all([
       this.fetchablePresaleEventPort.fetch(
-        cryoptoWallet,
+        cryptoWallet,
         PreSaleEventType.CLAIM,
         PreSaleEventType.PURCHASE,
       ),
       this.fetchableBadgeEventPort.fetch(
-        cryoptoWallet,
+        cryptoWallet,
         this.settings.badge.presale.referenceMetadataId,
         BadgeEventType.MINT,
       ),

@@ -1,11 +1,14 @@
+import { ethers } from 'ethers';
 import { PreSaleEventType } from '../../../../../domain/badge/dtos/presale-event.dto';
 import { FetchablePreSaleEventJsonRpcAdapter } from './fetchable-presale-event.adapter';
 
 describe('FetchablePreSaleEventJsonRpcAdapter', () => {
   it('should return presale events', async () => {
+    const randomWallet = ethers.Wallet.createRandom().address;
+
     const expected = [
       {
-        transactionHash: '0x0',
+        transactionHash: randomWallet,
         name: PreSaleEventType.CLAIM,
       },
     ];
@@ -26,7 +29,7 @@ describe('FetchablePreSaleEventJsonRpcAdapter', () => {
     const adapter = FetchablePreSaleEventJsonRpcAdapter.getInstance(
       provider as any,
     );
-    const result = await adapter.fetch('0x0', PreSaleEventType.CLAIM);
+    const result = await adapter.fetch(randomWallet, PreSaleEventType.CLAIM);
 
     expect(result).toEqual(expected);
   });

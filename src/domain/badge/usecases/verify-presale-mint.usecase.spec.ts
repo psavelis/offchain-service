@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import { PreSaleEventType } from '../dtos/presale-event.dto';
 import { VerifyPreSaleMintUseCase } from './verify-presale-mint.usecase';
 
@@ -10,8 +11,13 @@ const settingsMock: any = {
 };
 
 const { referenceMetadataId } = settingsMock.badge.presale;
+let randomWallet;
 
 describe('VerifyPreSaleMintUseCase', () => {
+  beforeEach(() => {
+    randomWallet = ethers.Wallet.createRandom();
+  });
+
   it('should return true if the presale mint is valid', async () => {
     const fetchablePresaleEventPort = {
       fetch: jest.fn().mockResolvedValue([
@@ -38,7 +44,7 @@ describe('VerifyPreSaleMintUseCase', () => {
     );
 
     const result = await usecase.execute({
-      cryptoWallet: '0x0',
+      cryptoWallet: randomWallet.address,
       referenceMetadataId,
     });
 
@@ -62,7 +68,7 @@ describe('VerifyPreSaleMintUseCase', () => {
     );
 
     const result = await usecase.execute({
-      cryptoWallet: '0x0',
+      cryptoWallet: randomWallet.address,
       referenceMetadataId,
     });
 

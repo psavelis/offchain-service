@@ -10,7 +10,11 @@ import { Order, OrderStatus } from '../../order/entities/order.entity';
 import { FetchableOrderPort } from '../../order/ports/fetchable-order.port';
 import { ClaimLockedSupplyDto } from '../dtos/claim-locked-supply.dto';
 import { ClaimLockedSupplyInteractor } from '../interactors/claim-locked-supply.interactor';
-import { formatDecimals, hideEmailPartially } from '../../common/util';
+import {
+  cryptoWalletRegEx,
+  formatDecimals,
+  hideEmailPartially,
+} from '../../common/util';
 import { DelegateClaimPort } from '../ports/delegate-claim.port';
 import { MinimalSignedClaim, SignedClaim } from '../dtos/signed-claim.dto';
 import { Challenge } from '../entities/challenge.entity';
@@ -59,7 +63,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
   }
 
   private validateCryptoWallet(cw: string) {
-    if (!cw.match(/(\b0x[a-f0-9]{40}\b)/g)) {
+    if (!cw.match(cryptoWalletRegEx)) {
       throw new Error('invalid wallet address');
     }
   }
@@ -358,7 +362,6 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     const filtered: Array<Order> = [];
 
     for (const [orderId, order] of Object.entries(orders)) {
-
       const notEmailIdentifier = order.getIdentifierType() !== 'EA';
 
       if (notEmailIdentifier) {

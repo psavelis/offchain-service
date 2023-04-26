@@ -1,5 +1,5 @@
 import { BadgeEventType } from '../../../../../domain/badge/dtos/badge-event.dto';
-import { FetchableBadgeEventRpcAdapter } from './fetchable-badge-event.adapter';
+import { FetchableBadgeEventJsonRpcAdapter } from './fetchable-badge-event.adapter';
 
 describe('FetchableBadgeEventRpcAdapter', () => {
   it('should return badge events', async () => {
@@ -23,7 +23,9 @@ describe('FetchableBadgeEventRpcAdapter', () => {
         },
       }),
     };
-    const adapter = FetchableBadgeEventRpcAdapter.getInstance(provider as any);
+    const adapter = FetchableBadgeEventJsonRpcAdapter.getInstance(
+      provider as any,
+    );
     const result = await adapter.fetch('0x0', 1, BadgeEventType.MINT);
 
     expect(result).toEqual(expected);

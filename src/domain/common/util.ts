@@ -26,3 +26,5 @@ export const hideEmailPartially = (emailAddress: string) => {
     return gp2;
   });
 };
+
+export const cryptoWalletRegEx: RegExp = /^0x[a-fA-F0-9]{40}$/g;

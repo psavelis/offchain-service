@@ -4,6 +4,7 @@ import {
   CreateSettlement,
   CreateSettlementInteractor,
 } from '../../../../../../domain/settlement/interactors/create-settlement.interactor';
+import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
 
 let running = false;
 
@@ -12,8 +13,10 @@ export class SettlementController {
   constructor(
     @Inject(CreateSettlement)
     readonly createSettlement: CreateSettlementInteractor,
+    @Inject(Loggable)
+    readonly logger: LoggablePort,
   ) {
-    const job = new CronJob('*/2 * * * * *', () => {
+    const job = new CronJob('*/3 * * * * *', () => {
       if (running) {
         return;
       }
@@ -24,7 +27,7 @@ export class SettlementController {
         .execute()
         .catch((err) => {
           if (process.env.NODE_ENV === 'development') {
-            console.log(err);
+            this.logger.error(err, SettlementController.name);
           } else {
             throw err;
           }

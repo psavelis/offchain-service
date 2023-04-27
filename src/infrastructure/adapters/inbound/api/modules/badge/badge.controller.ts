@@ -6,6 +6,8 @@ import {
   UnprocessableEntityException,
   Req,
   Ip,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
@@ -14,48 +16,69 @@ import {
 } from '../../../../../../domain/badge/interactors/sign-mint.interactor';
 import { VerifyMint } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { VerifyMintInteractor } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
-import { VerifyMintRequestDto } from '../../../../../../domain/badge/dtos/verify-mint-request.dto';
+import { SignMintRequestDto } from 'src/domain/badge/dtos/sign-mint-request.dto';
 
 @Controller('badge')
 export class BadgeController {
   constructor(
     @Inject(VerifyMint)
-    readonly verifyPreSaleMint: VerifyMintInteractor,
+    readonly verifyPreSaleMint: VerifyMintInteractor, // TODO: será substituído pela factory, por enquanto chamando direto um Usecase Interactor específico
     @Inject(SignMint)
     readonly signPreSaleMint: SignMintInteractor,
   ) {}
 
-  @Post('presale/verify')
-  @Throttle(6, 60)
-  verifyMint(@Body() entry: VerifyMintRequestDto, @Req() req, @Ip() ip) {
+  @Get('')
+  @Throttle(10, 60)
+  async getBadges(
+    @Query('CW') base64CryptoWallet: string,
+    @Req() req,
+    @Ip() ip,
+  ) {
     let clientAgent = 'unknown';
     try {
       clientAgent = req?.headers['user-agent'];
 
-      return this.verifyPreSaleMint.execute(entry);
+      const cryptoWallet = Buffer.from(base64CryptoWallet, 'base64').toString(
+        'utf8',
+      );
+
+      const badge = await this.verifyPreSaleMint.execute({
+        cryptoWallet,
+      });
+
+      return [badge];
     } catch (error) {
       console.log(
-        `verifyMint(presale) ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message}`,
+        `getBadges ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message}`,
       );
       throw new UnprocessableEntityException('Bad verify request');
     }
   }
 
-  @Post('presale/sign')
-  @Throttle(5, 60)
-  signMint(@Body() entry: VerifyMintRequestDto, @Req() req, @Ip() ip) {
+  @Post('sign')
+  @Throttle(10, 60)
+  signMint(
+    @Body() { cryptoWallet, referenceMetadataId }: SignMintRequestDto,
+    @Req() req,
+    @Ip() ip,
+  ) {
     let clientAgent = 'unknown';
+
     try {
+      clientAgent = req?.headers['user-agent'];
+
       return this.signPreSaleMint.execute({
-        ...entry,
+        cryptoWallet,
+        referenceMetadataId,
         clientIp: ip,
         clientAgent,
       });
     } catch (error) {
       console.log(
-        `verifyMint(presale) ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message}`,
+        `signMint ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message}`,
       );
-      throw new UnprocessableEntityException('Bad verify request');
+
+      throw new UnprocessableEntityException('Bad sign request');
     }
   }
 }

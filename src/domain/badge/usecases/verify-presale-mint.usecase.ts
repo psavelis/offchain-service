@@ -25,6 +25,8 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
       throw new Error('invalid wallet address');
     }
 
+    const { referenceMetadataId } = this.settings.badge.presale;
+
     const [preSaleEvents, badgeEvents] = await Promise.all([
       this.fetchablePresaleEventPort.fetch(
         cryptoWallet,
@@ -33,7 +35,7 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
       ),
       this.fetchableBadgeEventPort.fetch(
         cryptoWallet,
-        this.settings.badge.presale.referenceMetadataId,
+        referenceMetadataId,
         BadgeEventType.MINT,
       ),
     ]);
@@ -42,6 +44,7 @@ export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
       Boolean(preSaleEvents.length) && !Boolean(badgeEvents.length);
 
     const result: VerifyMintResponseDto = {
+      referenceMetadataId,
       isVerified,
       amount: Number(isVerified),
     };

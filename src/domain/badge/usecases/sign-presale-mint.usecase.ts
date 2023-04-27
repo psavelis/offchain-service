@@ -31,11 +31,10 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
     clientIp,
     clientAgent,
   }: SignMintRequestDto): Promise<SignedMintResponseDto> {
-    const referenceMetadataId = this.settings.badge.presale.referenceMetadataId;
+    const { referenceMetadataId } = this.settings.badge.presale;
 
     const verifyResult = await this.verifyMintInteractor.execute({
       cryptoWallet,
-      referenceMetadataId,
     });
 
     if (!verifyResult.isVerified) {

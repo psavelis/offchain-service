@@ -43,7 +43,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         cryptoWallet,
         amount,
         description: 'Not verified',
-        valid: false,
+        valid: verifyResult.isVerified,
         clientIp,
         clientAgent,
       });
@@ -79,7 +79,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         cryptoWallet,
         amount,
         description: `${amount}x units of #${result.incremental} verified and signed`,
-        valid: true,
+        valid: verifyResult.isVerified,
         clientIp,
         clientAgent,
       }),

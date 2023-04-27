@@ -17,7 +17,7 @@ describe('FetchablePreSaleEventJsonRpcAdapter', () => {
       legacyPreSale: jest.fn().mockReturnValue({
         queryFilter: jest.fn().mockResolvedValue([
           {
-            transactionHash: '0x0',
+            transactionHash: randomWallet,
           },
         ]),
         filters: {

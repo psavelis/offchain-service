@@ -10,7 +10,6 @@ const settingsMock: any = {
   },
 };
 
-const { referenceMetadataId } = settingsMock.badge.presale;
 let randomWallet;
 
 describe('VerifyPreSaleMintUseCase', () => {
@@ -45,7 +44,6 @@ describe('VerifyPreSaleMintUseCase', () => {
 
     const result = await usecase.execute({
       cryptoWallet: randomWallet.address,
-      referenceMetadataId,
     });
 
     expect(result.isVerified).toBeTruthy();
@@ -69,7 +67,6 @@ describe('VerifyPreSaleMintUseCase', () => {
 
     const result = await usecase.execute({
       cryptoWallet: randomWallet.address,
-      referenceMetadataId,
     });
 
     expect(result.isVerified).toBeFalsy();

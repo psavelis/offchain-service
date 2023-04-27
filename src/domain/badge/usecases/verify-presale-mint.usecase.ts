@@ -9,7 +9,7 @@ import { FetchablePreSaleEventPort } from '../ports/fetchable-presale-event.port
 
 import { VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
 import { VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
-import { cryptoWalletRegEx } from 'src/domain/common/util';
+import { cryptoWalletRegEx } from '../../common/util';
 
 export class VerifyPreSaleMintUseCase implements VerifyMintInteractor {
   constructor(

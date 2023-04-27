@@ -57,7 +57,7 @@ export class BadgeController {
 
   @Post('sign')
   @Throttle(10, 60)
-  signMint(
+  async signMint(
     @Body() { cryptoWallet, referenceMetadataId }: SignMintRequestDto,
     @Req() req,
     @Ip() ip,
@@ -67,12 +67,14 @@ export class BadgeController {
     try {
       clientAgent = req?.headers['user-agent'];
 
-      return this.signPreSaleMint.execute({
+      const res = await this.signPreSaleMint.execute({
         cryptoWallet,
         referenceMetadataId,
         clientIp: ip,
         clientAgent,
       });
+
+      return res;
     } catch (error) {
       console.log(
         `signMint ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message}`,

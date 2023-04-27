@@ -78,7 +78,9 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         referenceMetadataId,
         cryptoWallet,
         amount,
-        description: `${amount}x units of #${result.incremental} verified and signed`,
+        description: `${
+          incremental ? '\t!' : '\x20'
+        }incremental ${amount}x of #${referenceMetadataId} verified and signed`,
         valid: verifyResult.isVerified,
         clientIp,
         clientAgent,

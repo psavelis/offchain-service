@@ -3,8 +3,9 @@ import {
   Controller,
   Inject,
   Post,
-  HttpException,
-  HttpStatus,
+  UnprocessableEntityException,
+  Req,
+  Ip,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { CronJob } from 'cron';
@@ -14,6 +15,8 @@ import {
   CreateQuoteInteractor,
 } from '../../../../../../domain/price/interactors/create-quote.interactor';
 
+let running = false;
+
 @Controller('price')
 export class PriceController {
   constructor(
@@ -21,21 +24,29 @@ export class PriceController {
     readonly createQuote: CreateQuoteInteractor,
   ) {
     const job = new CronJob(process.env.QUOTE_UPDATE_CRONTAB, () => {
+      if (running) {
+        return;
+      }
+
+      running = true;
+
       return this.createQuote
         .execute({
           amount: {
             unassignedNumber: '1000',
             decimals: 0,
-            isoCode: 'USD',
+            isoCode: 'BRL',
           },
           forceReload: true,
         })
         .catch((err) => {
-          if (process.env.NODE_ENV === 'development') {
-            console.log(err.message);
-          } else {
-            throw err;
-          }
+          console.log(
+            'Quote.CronJob',
+            JSON.stringify({ msg: err.message, trace: err.stack }),
+          );
+        })
+        .finally(() => {
+          running = false;
         });
     });
 
@@ -44,14 +55,24 @@ export class PriceController {
 
   @Post('quote')
   @Throttle(30, 60)
-  postQuote(@Body() entry: CreateQuoteDto) {
+  async postQuote(@Body() entry: CreateQuoteDto, @Req() req, @Ip() ip) {
     try {
-      return this.createQuote.execute({ ...entry, forceReload: false });
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      const res = await this.createQuote.execute({
+        ...entry,
+        forceReload: false,
+      });
+
+      return res;
+    } catch (err) {
+      const clientAgent = req?.headers['user-agent'];
+      const clientIp = ip;
+
+      console.log(
+        `postQuote ${PriceController.name} - ${
+          err.message
+        } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,
       );
+      throw new UnprocessableEntityException('Bad quote request');
     }
   }
 }

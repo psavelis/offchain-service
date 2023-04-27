@@ -60,7 +60,7 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     } catch (err) {
       const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
 
-      const msg = err?.msg;
+      const msg = err?.message;
 
       if (
         msg?.includes('ETIMEDOUT') ||

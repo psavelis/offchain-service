@@ -185,6 +185,8 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
             console.error(err, '[statement-oauth] https response parse error');
 
             reject(err);
+          } finally {
+            req.destroy();
           }
         });
       });

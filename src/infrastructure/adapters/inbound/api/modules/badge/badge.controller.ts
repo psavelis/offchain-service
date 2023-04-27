@@ -28,7 +28,7 @@ export class BadgeController {
   ) {}
 
   @Get('')
-  @Throttle(10, 60)
+  @Throttle(3, 60)
   async getBadges(
     @Query('CW') base64CryptoWallet: string,
     @Req() req,
@@ -56,7 +56,7 @@ export class BadgeController {
   }
 
   @Post('sign')
-  @Throttle(10, 60)
+  @Throttle(3, 60)
   async signMint(
     @Body() { cryptoWallet, referenceMetadataId }: SignMintRequestDto,
     @Req() req,

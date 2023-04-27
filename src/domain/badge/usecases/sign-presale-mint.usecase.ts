@@ -79,7 +79,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         cryptoWallet,
         amount,
         description: `${amount}x units of #${result.incremental} verified and signed`,
-        valid: false,
+        valid: true,
         clientIp,
         clientAgent,
       }),

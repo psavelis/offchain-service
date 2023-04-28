@@ -58,7 +58,17 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     try {
       statement = await this.fetchableStatementPort.fetch(statementParameter);
     } catch (err) {
-      const remarks = `statement unavailable: ${err} ($${JSON.stringify(err)})`;
+      const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
+
+      const msg = err?.message;
+
+      if (
+        msg?.includes('ETIMEDOUT') ||
+        msg?.includes('ECONNRE') ||
+        msg?.includes('Unexpected end of JSON input')
+      ) {
+        throw err;
+      }
 
       this.logger.error(err, remarks, statementParameter);
 

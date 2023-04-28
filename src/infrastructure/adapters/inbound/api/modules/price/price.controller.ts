@@ -15,6 +15,8 @@ import {
   CreateQuoteInteractor,
 } from '../../../../../../domain/price/interactors/create-quote.interactor';
 
+let running = false;
+
 @Controller('price')
 export class PriceController {
   constructor(
@@ -22,6 +24,12 @@ export class PriceController {
     readonly createQuote: CreateQuoteInteractor,
   ) {
     const job = new CronJob(process.env.QUOTE_UPDATE_CRONTAB, () => {
+      if (running) {
+        return;
+      }
+
+      running = true;
+
       return this.createQuote
         .execute({
           amount: {
@@ -32,11 +40,13 @@ export class PriceController {
           forceReload: true,
         })
         .catch((err) => {
-          if (process.env.NODE_ENV === 'development') {
-            console.log(err);
-          } else {
-            throw err;
-          }
+          console.error(
+            'Quote.CronJob',
+            JSON.stringify({ msg: err.message, trace: err.stack }),
+          );
+        })
+        .finally(() => {
+          running = false;
         });
     });
 
@@ -44,13 +54,23 @@ export class PriceController {
   }
 
   @Post('quote')
-  @Throttle(60, 60)
-  postQuote(@Body() entry: CreateQuoteDto, @Req() req, @Ip() ip) {
+  @Throttle(15, 60)
+  async postQuote(@Body() entry: CreateQuoteDto, @Req() req, @Ip() ip) {
     try {
-      return this.createQuote.execute({ ...entry, forceReload: false });
-    } catch (error) {
-      console.log(
-        `postQuote ${PriceController.name}, [${ip}@${req?.headers['user-agent']}], ${error.message}`,
+      const res = await this.createQuote.execute({
+        ...entry,
+        forceReload: false,
+      });
+
+      return res;
+    } catch (err) {
+      const clientAgent = req?.headers['user-agent'];
+      const clientIp = ip;
+
+      console.error(
+        `postQuote ${PriceController.name} - ${
+          err.message
+        } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,
       );
       throw new UnprocessableEntityException('Bad quote request');
     }

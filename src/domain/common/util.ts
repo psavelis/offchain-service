@@ -28,3 +28,6 @@ export const hideEmailPartially = (emailAddress: string) => {
 };
 
 export const cryptoWalletRegEx: RegExp = /^0x[a-fA-F0-9]{40}$/g;
+export const onlyDigits: RegExp = /^\d+$/;
+export const onlyCurrencies: RegExp = /^[A-Z]{3,5}$/;
+export const validateDecimals = (n: number) => n >= 0 && n <= 18;

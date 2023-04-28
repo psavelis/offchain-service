@@ -1,10 +1,10 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { Controller, Inject } from '@nestjs/common';
 import { CronJob } from 'cron';
 import {
   CreateClearing,
   CreateClearingInteractor,
 } from '../../../../../../domain/clearing/interactors/create-clearing.interactor';
+import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
 
 let running = false;
 
@@ -13,6 +13,8 @@ export class ClearingController {
   constructor(
     @Inject(CreateClearing)
     readonly createClearing: CreateClearingInteractor,
+    @Inject(Loggable)
+    readonly logger: LoggablePort,
   ) {
     const job = new CronJob('*/15 * * * * *', () => {
       if (running) {
@@ -24,9 +26,11 @@ export class ClearingController {
       return this.createClearing
         .execute()
         .catch((err) => {
+          this.logger.debug(
+            `[Clearing] Provider could not respond: ${err.message}`,
+          );
+
           if (process.env.NODE_ENV === 'development') {
-            console.log(err);
-          } else {
             throw err;
           }
         })

@@ -9,15 +9,14 @@ import {
   Req,
   Sse,
   MessageEvent,
-  BadRequestException,
   UnprocessableEntityException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
   distinctUntilKeyChanged,
   interval,
   map,
-  NotFoundError,
   Observable,
   switchMap,
 } from 'rxjs';
@@ -51,36 +50,48 @@ export class OrderController {
   ) {}
 
   @Post('')
-  @Throttle(6, 60)
-  postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
+  @Throttle(10, 60)
+  async postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
+    const clientAgent = req?.headers['user-agent'];
+    const clientIp = ip;
+
     try {
-      return this.createOrder.execute({
+      const res = await this.createOrder.execute({
         ...entry,
-        clientAgent: req?.headers['user-agent'],
-        clientIp: ip,
+        clientAgent,
+        clientIp,
       });
-    } catch (error) {
-      console.log(
-        `postOrder ${OrderController.name}, [${ip}@${req?.headers['user-agent']}], ${error.message}`,
+
+      return res;
+    } catch (err) {
+      console.error(
+        `postOrder ${OrderController.name} - ${
+          err.message
+        } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,
       );
       throw new UnprocessableEntityException('Bad order request');
     }
   }
 
   @Get(':id')
-  @Throttle(60, 60)
-  getOrder(
+  @Throttle(20, 60)
+  async getOrder(
     @Param('id') id: string,
     @Req() req,
     @Ip() ip,
   ): Promise<BrazilianPixOrderDto | OrderDto | undefined> {
+    const clientAgent = req?.headers['user-agent'];
+    const clientIp = ip;
+
     try {
-      return this.fetchOrder.fetch(id);
-    } catch (error) {
-      console.log(
-        `getOrder ${OrderController.name}, [${ip}@${req?.headers['user-agent']}], ${error.message}`,
+      const res = await this.fetchOrder.fetch(id);
+
+      return res;
+    } catch (err) {
+      console.error(
+        `getOrder ${OrderController.name} - ${err.message} - ${clientIp}@${clientAgent} - entry: ${id}`,
       );
-      throw new BadRequestException('Bad order id');
+      throw new NotFoundException('Order not found');
     }
   }
 

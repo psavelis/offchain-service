@@ -16,6 +16,11 @@ import {
 import { CalculusPort } from '../../price/ports/calculus.port';
 import { FetchableGasPricePort } from '../ports/fetchable-gas-price.port';
 import { Settings } from '../../common/settings';
+import {
+  validateDecimals,
+  onlyCurrencies,
+  onlyDigits,
+} from 'src/domain/common/util';
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -59,7 +64,25 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     this.getQuotation = supportedQuotationStrats;
   }
 
+  validateEntry = ({
+    amount: { unassignedNumber, isoCode, decimals },
+  }: CreateQuoteDto): void => {
+    if (!onlyDigits.test(unassignedNumber)) {
+      throw new Error('Invalid amount');
+    }
+
+    if (!onlyCurrencies.test(isoCode)) {
+      throw new Error('Invalid currency');
+    }
+
+    if (!validateDecimals(decimals)) {
+      throw new Error('Invalid decimals');
+    }
+  };
+
   async execute(entry: CreateQuoteDto): Promise<Quote> {
+    this.validateEntry(entry);
+
     const [ethBasis, knnBasis, usdBasis] = await Promise.all([
       this.ethPort.fetch(entry.forceReload),
       this.knnPort.fetch(entry.forceReload),
@@ -151,12 +174,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       ),
     };
 
-    if (this.settings.price.persistQuotes && !entry.forceReload) {
-      await this.persistableQuotePort.save(quote).catch((e) => {
-        console.log(e);
-        return quote;
-      });
-    }
     return quote;
   }
 

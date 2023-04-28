@@ -9,8 +9,8 @@ import {
   Req,
   Sse,
   MessageEvent,
-  HttpException,
-  HttpStatus,
+  UnprocessableEntityException,
+  NotFoundException,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import {
@@ -51,32 +51,47 @@ export class OrderController {
 
   @Post('')
   @Throttle(10, 60)
-  postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
+  async postOrder(@Body() entry: CreateOrderDto, @Req() req, @Ip() ip) {
+    const clientAgent = req?.headers['user-agent'];
+    const clientIp = ip;
+
     try {
-      return this.createOrder.execute({
+      const res = await this.createOrder.execute({
         ...entry,
-        clientAgent: req?.headers['user-agent'],
-        clientIp: ip,
+        clientAgent,
+        clientIp,
       });
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+
+      return res;
+    } catch (err) {
+      console.error(
+        `postOrder ${OrderController.name} - ${
+          err.message
+        } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,
       );
+      throw new UnprocessableEntityException('Bad order request');
     }
   }
 
   @Get(':id')
-  getOrder(
+  @Throttle(20, 60)
+  async getOrder(
     @Param('id') id: string,
+    @Req() req,
+    @Ip() ip,
   ): Promise<BrazilianPixOrderDto | OrderDto | undefined> {
+    const clientAgent = req?.headers['user-agent'];
+    const clientIp = ip;
+
     try {
-      return this.fetchOrder.fetch(id);
-    } catch (error) {
-      throw new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      const res = await this.fetchOrder.fetch(id);
+
+      return res;
+    } catch (err) {
+      console.error(
+        `getOrder ${OrderController.name} - ${err.message} - ${clientIp}@${clientAgent} - entry: ${id}`,
       );
+      throw new NotFoundException('Order not found');
     }
   }
 

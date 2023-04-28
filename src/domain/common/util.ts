@@ -26,3 +26,5 @@ export const hideEmailPartially = (emailAddress: string) => {
     return gp2;
   });
 };
+
+export const onlyNumbersRegEx = /^\d+$/;

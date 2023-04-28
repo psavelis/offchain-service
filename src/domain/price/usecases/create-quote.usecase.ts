@@ -16,6 +16,7 @@ import {
 import { CalculusPort } from '../../price/ports/calculus.port';
 import { FetchableGasPricePort } from '../ports/fetchable-gas-price.port';
 import { Settings } from '../../common/settings';
+import { onlyNumbersRegEx } from 'src/domain/common/util';
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -59,7 +60,15 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     this.getQuotation = supportedQuotationStrats;
   }
 
+  validateEntry = ({ amount }: CreateQuoteDto): void => {
+    if (!onlyNumbersRegEx.test(amount.unassignedNumber)) {
+      throw new Error('Invalid amount');
+    }
+  };
+
   async execute(entry: CreateQuoteDto): Promise<Quote> {
+    this.validateEntry(entry);
+
     const [ethBasis, knnBasis, usdBasis] = await Promise.all([
       this.ethPort.fetch(entry.forceReload),
       this.knnPort.fetch(entry.forceReload),

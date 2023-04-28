@@ -16,7 +16,11 @@ import {
 import { CalculusPort } from '../../price/ports/calculus.port';
 import { FetchableGasPricePort } from '../ports/fetchable-gas-price.port';
 import { Settings } from '../../common/settings';
-import { onlyNumbersRegEx } from 'src/domain/common/util';
+import {
+  validateDecimals,
+  onlyCurrencies,
+  onlyDigits,
+} from 'src/domain/common/util';
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -60,9 +64,19 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     this.getQuotation = supportedQuotationStrats;
   }
 
-  validateEntry = ({ amount }: CreateQuoteDto): void => {
-    if (!onlyNumbersRegEx.test(amount.unassignedNumber)) {
+  validateEntry = ({
+    amount: { unassignedNumber, isoCode, decimals },
+  }: CreateQuoteDto): void => {
+    if (!onlyDigits.test(unassignedNumber)) {
       throw new Error('Invalid amount');
+    }
+
+    if (!onlyCurrencies.test(isoCode)) {
+      throw new Error('Invalid currency');
+    }
+
+    if (!validateDecimals(decimals)) {
+      throw new Error('Invalid decimals');
     }
   };
 

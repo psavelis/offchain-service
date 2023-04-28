@@ -27,4 +27,8 @@ export const hideEmailPartially = (emailAddress: string) => {
   });
 };
 
-export const onlyNumbersRegEx = /^\d+$/;
+export const onlyDigits = /^\d+$/;
+
+export const onlyCurrencies = /^[A-Z]{3,5}$/;
+
+export const validateDecimals = (n: number) => n >= 0 && n <= 18;

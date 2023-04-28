@@ -40,7 +40,7 @@ export class PriceController {
           forceReload: true,
         })
         .catch((err) => {
-          console.log(
+          console.error(
             'Quote.CronJob',
             JSON.stringify({ msg: err.message, trace: err.stack }),
           );
@@ -54,7 +54,7 @@ export class PriceController {
   }
 
   @Post('quote')
-  @Throttle(30, 60)
+  @Throttle(15, 60)
   async postQuote(@Body() entry: CreateQuoteDto, @Req() req, @Ip() ip) {
     try {
       const res = await this.createQuote.execute({
@@ -67,7 +67,7 @@ export class PriceController {
       const clientAgent = req?.headers['user-agent'];
       const clientIp = ip;
 
-      console.log(
+      console.error(
         `postQuote ${PriceController.name} - ${
           err.message
         } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,

@@ -30,6 +30,9 @@ export class EthereumChainlinkProvider implements IChainlinkProtocolProvider {
       // TODO: só possui prod (mockar dev)
       const brlUsdAddress = '0x971E8F1B779A5F1C36e1cd7ef44Ba1Cc2F5EeE0f';
 
+      // TODO: só possui prod (mockar dev)
+      const maticUsdAddress = '0x7bac85a8a13a4bcd8abb3eb7d6b4d632c5a57676'; // matic-usd.data.eth (https://data.chain.link/ethereum/mainnet/crypto-usd/matic-usd)
+
       EthereumChainlinkProvider.dataFeed = {
         ['eth-usd']: new ethers.Contract(
           ethUsdAddress,
@@ -38,6 +41,11 @@ export class EthereumChainlinkProvider implements IChainlinkProtocolProvider {
         ),
         ['brl-usd']: new ethers.Contract(
           brlUsdAddress,
+          aggregatorV3InterfaceABI,
+          EthereumChainlinkProvider.rpcProvider,
+        ),
+        ['matic-usd']: new ethers.Contract(
+          maticUsdAddress,
           aggregatorV3InterfaceABI,
           EthereumChainlinkProvider.rpcProvider,
         ),

@@ -10,50 +10,70 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 export interface IKannaProtocolProvider {
   sale(): Promise<KannaPreSale>;
   legacyPreSale(): Promise<KannaPreSale>;
+  polygonSale(): Promise<KannaPreSale>;
   badges(): Promise<KannaBadges>;
   getDefaultRpcProvider(): JsonRpcProvider;
 }
 
 export class KannaProvider implements IKannaProtocolProvider {
   static signersInstance: Signer;
-  static saleInstanceAsManager: KannaPreSale;
-  static legacyPreSaleInstanceAsManager: KannaPreSale;
-  static badgeInstanceAsManager: KannaBadges;
+  static ethereumSaleInstanceAsManager: KannaPreSale;
+  static ethereumLegacyPreSaleInstanceAsManager: KannaPreSale;
+  static ethereumBadgeInstanceAsManager: KannaBadges;
+  static polygonSaleInstanceAsManager: KannaPreSale;
   static instance: IKannaProtocolProvider;
-  static rpcProvider: JsonRpcProvider;
+  static ethereumRpcProvider: JsonRpcProvider;
+  static polygonRpcProvider: JsonRpcProvider;
 
   private constructor(readonly settings: Settings) {}
 
   getDefaultRpcProvider(): ethers.providers.JsonRpcProvider {
-    return KannaProvider.rpcProvider;
+    return KannaProvider.ethereumRpcProvider;
   }
 
   static getInstance(settings: Settings) {
     if (!KannaProvider.instance) {
-      KannaProvider.rpcProvider = new ethers.providers.JsonRpcProvider(
-        settings.blockchain.providerEndpoint,
+      KannaProvider.ethereumRpcProvider = new ethers.providers.JsonRpcProvider(
+        settings.blockchain.ethereum.providerEndpoint,
       );
 
-      const claimManagerWallet = new ethers.Wallet(
-        settings.blockchain.claimManagerKey,
-        KannaProvider.rpcProvider,
+      KannaProvider.polygonRpcProvider = new ethers.providers.JsonRpcProvider(
+        settings.blockchain.polygon.providerEndpoint,
       );
 
-      KannaProvider.saleInstanceAsManager = KannaPreSale__factory.connect(
-        settings.blockchain.contracts.saleAddress,
-        claimManagerWallet,
+      const ethereumClaimManagerWallet = new ethers.Wallet(
+        settings.blockchain.ethereum.claimManagerKey,
+        KannaProvider.ethereumRpcProvider,
       );
 
-      KannaProvider.legacyPreSaleInstanceAsManager =
+      const polygonClaimManagerWallet = new ethers.Wallet(
+        settings.blockchain.polygon.claimManagerKey,
+        KannaProvider.polygonRpcProvider,
+      );
+
+      KannaProvider.ethereumSaleInstanceAsManager =
         KannaPreSale__factory.connect(
-          settings.blockchain.contracts.legacyPreSaleAddress,
-          claimManagerWallet,
+          settings.blockchain.ethereum.contracts.saleAddress,
+          ethereumClaimManagerWallet,
         );
 
-      KannaProvider.badgeInstanceAsManager = KannaBadges__factory.connect(
-        settings.blockchain.contracts.badgeAddress,
-        claimManagerWallet, // TODO: create a specific badges manager wallet
-      );
+      KannaProvider.ethereumLegacyPreSaleInstanceAsManager =
+        KannaPreSale__factory.connect(
+          settings.blockchain.ethereum.contracts.legacyPreSaleAddress,
+          ethereumClaimManagerWallet,
+        );
+
+      KannaProvider.ethereumBadgeInstanceAsManager =
+        KannaBadges__factory.connect(
+          settings.blockchain.ethereum.contracts.badgeAddress,
+          polygonClaimManagerWallet,
+        );
+
+      KannaProvider.polygonSaleInstanceAsManager =
+        KannaPreSale__factory.connect(
+          settings.blockchain.ethereum.contracts.saleAddress,
+          ethereumClaimManagerWallet,
+        );
 
       KannaProvider.instance = new KannaProvider(settings);
     }
@@ -62,14 +82,20 @@ export class KannaProvider implements IKannaProtocolProvider {
   }
 
   sale(): Promise<KannaPreSale> {
-    return Promise.resolve(KannaProvider.saleInstanceAsManager);
+    return Promise.resolve(KannaProvider.ethereumSaleInstanceAsManager);
   }
 
   legacyPreSale(): Promise<KannaPreSale> {
-    return Promise.resolve(KannaProvider.legacyPreSaleInstanceAsManager);
+    return Promise.resolve(
+      KannaProvider.ethereumLegacyPreSaleInstanceAsManager,
+    );
   }
 
   badges(): Promise<KannaBadges> {
-    return Promise.resolve(KannaProvider.badgeInstanceAsManager);
+    return Promise.resolve(KannaProvider.ethereumBadgeInstanceAsManager);
+  }
+
+  polygonSale(): Promise<KannaPreSale> {
+    return Promise.resolve(KannaProvider.polygonSaleInstanceAsManager);
   }
 }

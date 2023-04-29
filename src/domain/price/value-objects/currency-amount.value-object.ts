@@ -1,11 +1,6 @@
-export enum IsoCodes {
-  BRL = 'BRL',
-  ETH = 'ETH',
-  KNN = 'KNN',
-  USD = 'USD',
-}
+import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 
-export type CurrencyIsoCode = `${IsoCodes}`;
+export type CurrencyIsoCode = `${IsoCodeType}`;
 
 export interface CurrencyAmount<T extends CurrencyIsoCode = CurrencyIsoCode> {
   unassignedNumber: string;

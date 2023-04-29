@@ -2,7 +2,7 @@ import { utils, FixedNumber, BigNumber } from 'ethers';
 import { FetchableEthBasisPort } from '../../../../../domain/price/ports/fetchable-eth-basis.port';
 import { CurrencyAmount } from '../../../../../domain/price/value-objects/currency-amount.value-object';
 import { EthQuoteBasis } from '../../../../../domain/price/value-objects/eth-quote-basis.value-object';
-import { IChainlinkProtocolProvider } from '../chainlink.provider';
+import { IChainlinkProtocolProvider } from '../ethereum-chainlink.provider';
 
 const ETH_QUOTATION_DECIMALS = 18;
 const CACHE_TTL_MS = 1_000 * 60 * 15;

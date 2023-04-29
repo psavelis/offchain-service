@@ -18,8 +18,8 @@ export class FetchableGasPriceJsonRpcAdapter implements FetchableGasPricePort {
     if (!FetchableGasPriceJsonRpcAdapter.instance) {
       FetchableGasPriceJsonRpcAdapter.instance =
         new FetchableGasPriceJsonRpcAdapter({
-          network: settings.blockchain.network as Network,
-          apiKey: settings.blockchain.providerApiKey,
+          network: settings.blockchain.ethereum.network as Network,
+          apiKey: settings.blockchain.ethereum.providerApiKey,
         });
     }
 

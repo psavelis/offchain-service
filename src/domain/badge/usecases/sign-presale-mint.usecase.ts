@@ -7,10 +7,12 @@ import { PersistableMintHistoryPort } from '../ports/persistable-mint-history.po
 import {
   SignaturePayload,
   SignaturePort,
-  SignerType,
 } from '../../common/ports/signature.port';
 
 import { Settings } from '../../common/settings';
+import { SignerType } from '../../common/enums/signer-type.enum';
+import { Chain } from '../../common/entities/chain.entity';
+import { NetworkType } from '../../common/enums/network-type.enum';
 
 const mintType =
   'Mint(address to, uint256 id, uint256 amount, uint256 incremental, uint256 nonce)';
@@ -59,9 +61,12 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       values: [mintTypeHash, cryptoWallet, referenceMetadataId, 1, 1],
     };
 
+    const chain = this.getPreSaleChain();
+
     const { signature, nonce } = await this.signaturePort.sign(
       payload,
       SignerType.BadgesMinter,
+      chain,
     );
 
     const result: SignedMintResponseDto = {
@@ -88,5 +93,15 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
     );
 
     return result;
+  }
+
+  getPreSaleChain(): Chain {
+    let chainId = NetworkType.Ethereum;
+
+    if (process.env.NODE_ENV === 'development') {
+      chainId = NetworkType.EthereumGoerli;
+    }
+
+    return new Chain(chainId);
   }
 }

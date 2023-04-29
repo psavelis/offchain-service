@@ -1,8 +1,5 @@
-export enum SignerType {
-  PreSaleClaimManager,
-  SaleClaimManager,
-  BadgesMinter,
-}
+import { Chain } from '../entities/chain.entity';
+import { SignerType } from '../enums/signer-type.enum';
 
 export interface SignaturePayload {
   types: Array<string>;
@@ -13,9 +10,14 @@ export interface SignatureResult {
   signature: string;
   nonce: string;
   cryptoWallet: string;
+  chain: Chain;
 }
 
 export interface SignaturePort {
-  sign(payload: SignaturePayload, signer: SignerType): Promise<SignatureResult>;
+  sign(
+    payload: SignaturePayload,
+    signer: SignerType,
+    chain: Chain,
+  ): Promise<SignatureResult>;
   hash(value: string);
 }

@@ -9,8 +9,8 @@ import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
 import { FetchableGasPriceJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-gas-price.adapter';
 import { FetchableKnnBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-knn-basis.adapter';
 import { PersistableQuoteDbAdapter } from '../../adapters/outbound/database/price/persistable-quote.adapter';
-import { KnexPostgresDatabase } from 'src/infrastructure/adapters/outbound/database/knex-postgres.db';
-import { ChainlinkProvider } from 'src/infrastructure/adapters/outbound/json-rpc/chainlink.provider';
+import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
+import { EthereumChainlinkProvider } from '../../adapters/outbound/json-rpc/ethereum-chainlink.provider';
 
 export class CreateQuoteFactory {
   static instance: CreateQuoteInteractor;
@@ -19,7 +19,7 @@ export class CreateQuoteFactory {
     if (!this.instance) {
       const settings: Settings = SettingsAdapter.getInstance().getSettings();
       const kannaProvider = KannaProvider.getInstance(settings);
-      const chainlinkProvider = ChainlinkProvider.getInstance(settings);
+      const chainlinkProvider = EthereumChainlinkProvider.getInstance(settings);
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
 
       const calculusAdapter = FixedPointCalculusAdapter.getInstance();

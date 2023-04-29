@@ -4,11 +4,11 @@ import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
 import { EncryptionPort } from '../../common/ports/encryption.port';
+import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 
 import {
   CurrencyAmount,
   CurrencyIsoCode,
-  IsoCodes,
 } from '../../price/value-objects/currency-amount.value-object';
 import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
@@ -32,10 +32,10 @@ const identifiers = {
 };
 
 const allowedIsoCodes = [
-  IsoCodes.BRL,
-  IsoCodes.ETH,
-  IsoCodes.KNN,
-  IsoCodes.USD,
+  IsoCodeType.BRL,
+  IsoCodeType.ETH,
+  IsoCodeType.KNN,
+  IsoCodeType.USD,
 ];
 
 const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
@@ -102,7 +102,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
 
     let order = new Order({
       paymentOption: PaymentOption.BrazilianPix,
-      isoCode: IsoCodes.BRL,
+      isoCode: IsoCodeType.BRL,
       total,
       userIdentifier: request.userIdentifier,
       identifierType: request.identifierType,
@@ -166,7 +166,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       throw new Error('invalid identifierType');
     }
 
-    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodes)) {
+    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodeType)) {
       throw new Error('invalid isoCode');
     }
 
@@ -190,7 +190,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       }
     }
 
-    if (amount.isoCode === IsoCodes.BRL) {
+    if (amount.isoCode === IsoCodeType.BRL) {
       CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
     }
 

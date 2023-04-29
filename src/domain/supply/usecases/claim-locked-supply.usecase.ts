@@ -23,8 +23,9 @@ import { CreateOrderTransitionInteractor } from '../../order/interactors/create-
 import { FetchableChallengePort } from '../ports/fetchable-challenge.port';
 import { Answer } from '../entities/answer.entity';
 import { PersistableAnswerPort } from '../ports/persistable-answer.port';
-import { MailerPort, MailMessage } from 'src/domain/common/ports/mailer.port';
+import { MailerPort } from '../../common/ports/mailer.port';
 import claimOtpTemplate from '../../supply/mails/claim-otp.template';
+import { Chain } from '../../common/entities/chain.entity';
 
 const DEFAULT_KNN_TRUNCATE_OPTIONS = {
   truncateDecimals: 8,
@@ -170,7 +171,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     entry: ClaimLockedSupplyDto,
   ): Promise<MinimalSignedClaim[]> {
     if (banlistByIP[entry.clientIp]) {
-      this.logger.debug(
+      this.logger.warning(
         `[skip] banned user ${entry.clientIp} (attempted: ${hideEmailPartially(
           entry.emailAddress,
         )})`,
@@ -318,7 +319,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
   }
 
   private async reportFailure(entry: ClaimLockedSupplyDto): Promise<void> {
-    this.logger.debug(
+    this.logger.warning(
       `[sec-warning] Attempt failure: ${JSON.stringify({
         ...entry,
         emailAddres: hideEmailPartially(entry.emailAddress),
@@ -451,6 +452,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       amountOfTokens: entity.getAmountOfTokens(),
       lockTransactionHash: entity.getLockTransactionHash(),
       contractAddress: entity.getContractAddress(),
+      chainId: entity.getChainId(),
       reference: entity.getPaymentSequence(),
       createdAt: entity.getCreatedAt(),
     };

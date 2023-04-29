@@ -23,13 +23,13 @@ export class CreateSettlementUseCase implements CreateSettlementInteractor {
       const orderWithPayment = ordersToProcess[sequence];
 
       try {
-        this.logger.info(
+        this.logger.debug(
           `[init] settlement of #${sequence} started (${orderWithPayment.order.getId()})`,
         );
 
         await this.processOrderSettlementInteractor.execute(orderWithPayment);
       } catch (err) {
-        this.logger.error(
+        this.logger.debug(
           err,
           `[error] settlement of #${sequence} FAILED (${orderWithPayment.order.getId()})`,
         );

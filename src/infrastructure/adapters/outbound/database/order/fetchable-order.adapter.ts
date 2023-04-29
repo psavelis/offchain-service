@@ -47,6 +47,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "lock"."uint256_amount" as "totalLockedUint256",
       "claim"."transaction_hash" as "claimTransactionHash",
       coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress",
+      coalesce("lock_receipt"."chainId", "claim_receipt"."chainId") as "chainId",
       "payment"."sequence" as "paymentSequence",
       "payment"."provider_id" as "paymentProviderId"
       from "order"
@@ -75,6 +76,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
           claimTransactionHash,
           totalLockedUint256,
           contractAddress,
+          chainId,
         },
       ] = records;
 
@@ -105,6 +107,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       order.setContractAddress(contractAddress);
     }
 
+    if (chainId) {
+      order.setChainId(chainId);
+    }
+
     return order;
   }
 
@@ -132,16 +138,29 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'lock.transaction_hash as lockTransactionHash',
         'lock.uint256_amount as totalLockedUint256',
         'claim.transaction_hash as claimTransactionHash',
-        this.db().raw('coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"'),
+        this.db().raw(
+          'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
+        ),
+        this.db().raw(
+          'coalesce("lock_receipt"."chainId", "claim_receipt"."chainId") as "chainId"',
+        ),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',
       ])
       .from(tableName)
       .leftJoin('payment', 'order.id', 'payment.order_id')
       .leftJoin('lock', 'order.id', 'lock.order_id')
-      .leftJoin('receipt as lock_receipt', 'lock.transaction_hash', 'lock_receipt.transaction_hash')
+      .leftJoin(
+        'receipt as lock_receipt',
+        'lock.transaction_hash',
+        'lock_receipt.transaction_hash',
+      )
       .leftJoin('claim', 'order.id', 'claim.order_id')
-      .leftJoin('receipt as claim_receipt', 'claim.transaction_hash', 'claim_receipt.transaction_hash')
+      .leftJoin(
+        'receipt as claim_receipt',
+        'claim.transaction_hash',
+        'claim_receipt.transaction_hash',
+      )
       .whereIn(`order.end_to_end_id`, endToEndIds);
 
     if (!records?.length) {
@@ -158,6 +177,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         claimTransactionHash,
         totalLockedUint256,
         contractAddress,
+        chainId,
       } = rawOrder;
 
       const order = new Order(orderProps, id);
@@ -185,6 +205,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
       if (contractAddress) {
         order.setContractAddress(contractAddress);
+      }
+
+      if (chainId) {
+        order.setChainId(chainId);
       }
 
       result[orderProps.endToEndId] = order;
@@ -290,16 +314,29 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'lock.uint256_amount as totalLockedUint256',
         'claim.transaction_hash as claimTransactionHash',
         'claim.id as claimId',
-        this.db().raw('coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"'),
+        this.db().raw(
+          'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
+        ),
+        this.db().raw(
+          'coalesce("lock_receipt"."chainId", "claim_receipt"."chainId") as "chainId"',
+        ),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',
       ])
       .from(tableName)
       .innerJoin('payment', 'order.id', 'payment.order_id')
       .innerJoin('lock', 'order.id', 'lock.order_id')
-      .innerJoin('receipt as lock_receipt', 'lock.transaction_hash', 'lock_receipt.transaction_hash')
+      .innerJoin(
+        'receipt as lock_receipt',
+        'lock.transaction_hash',
+        'lock_receipt.transaction_hash',
+      )
       .leftJoin('claim', 'order.id', 'claim.order_id')
-      .leftJoin('receipt as claim_receipt', 'claim.transaction_hash', 'claim_receipt.transaction_hash')
+      .leftJoin(
+        'receipt as claim_receipt',
+        'claim.transaction_hash',
+        'claim_receipt.transaction_hash',
+      )
       .whereIn('order.status', orderStatus)
       .andWhere((qb) => qb.whereNull('claim.id'));
 
@@ -317,6 +354,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         claimTransactionHash,
         totalLockedUint256,
         contractAddress,
+        chainId,
       } = rawOrder;
 
       const order = new Order(orderProps, id);
@@ -344,6 +382,10 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
       if (contractAddress) {
         order.setContractAddress(contractAddress);
+      }
+
+      if (chainId) {
+        order.setChainId(chainId);
       }
 
       orders[id] = order;

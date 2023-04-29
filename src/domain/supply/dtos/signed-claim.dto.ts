@@ -13,7 +13,7 @@ export interface MinimalSignedClaim {
     status: OrderStatus | undefined;
     statusDescription: string;
     total: number;
-    amountOfTokens: CurrencyAmount<'BRL' | 'ETH' | 'KNN' | 'USD'>;
+    amountOfTokens: CurrencyAmount<'BRL' | 'ETH' | 'KNN' | 'USD' | 'MATIC'>;
     lockTransactionHash: string;
     reference: number | undefined;
     createdAt: Date;

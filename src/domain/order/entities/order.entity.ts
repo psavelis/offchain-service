@@ -68,6 +68,7 @@ export class Order extends Entity<OrderProps> {
   private lockTransactionHash?: string;
   private totalLockedUint256?: string;
   private contractAddress?: string;
+  private chainId?: number;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -156,6 +157,10 @@ export class Order extends Entity<OrderProps> {
 
   public setContractAddress(contractAddress: string) {
     this.contractAddress = contractAddress;
+  }
+
+  public setChainId(chainId: number) {
+    this.chainId = chainId;
   }
 
   public hasPayments() {
@@ -287,5 +292,9 @@ export class Order extends Entity<OrderProps> {
 
   public getContractAddress() {
     return this.contractAddress;
+  }
+
+  public getChainId() {
+    return this.chainId;
   }
 }

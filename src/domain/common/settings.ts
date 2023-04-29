@@ -37,18 +37,30 @@ export interface Settings {
     user: string;
   };
   blockchain: {
-    providerEndpoint: string;
-    claimManagerKey: string;
-    legacyClaimSignerKey: string;
-    currentClaimSignerKey: string;
-    badgesMinterSignerKey: string;
-    contracts: {
-      saleAddress: string;
-      legacyPreSaleAddress: string;
-      badgeAddress: string;
+    ethereum: {
+      providerEndpoint: string;
+      claimManagerKey: string;
+      legacyClaimSignerKey: string;
+      currentClaimSignerKey: string;
+      badgesMinterSignerKey: string;
+      contracts: {
+        saleAddress: string;
+        legacyPreSaleAddress: string;
+        badgeAddress: string;
+      };
+      network: string;
+      providerApiKey: string;
     };
-    network: string;
-    providerApiKey: string;
+    polygon: {
+      providerEndpoint: string;
+      claimManagerKey: string;
+      claimSignerKey: string;
+      contracts: {
+        saleAddress: string;
+      };
+      network: string;
+      providerApiKey: string;
+    };
   };
   smtp: {
     sender: string;

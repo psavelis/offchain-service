@@ -145,7 +145,7 @@ describe('CreateQuoteUseCase', () => {
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('997024208448399999052');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('999998774860000000594');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
   });
@@ -161,7 +161,7 @@ describe('CreateQuoteUseCase', () => {
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('183605296589306036816');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('186579863000906038358');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
   });

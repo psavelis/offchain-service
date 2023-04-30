@@ -2,18 +2,23 @@ import { CreateQuoteDto, TransactionType } from '../dtos/create-quote.dto';
 import { Quote } from '../entities/quote.entity';
 import { CreateQuoteInteractor } from '../interactors/create-quote.interactor';
 import { FetchableEthBasisPort } from '../ports/fetchable-eth-basis.port';
+import { FetchableMaticBasisPort } from '../ports/fetchable-matic-basis.port';
 import { FetchableKnnBasisPort } from '../ports/fetchable-knn-basis.port';
 import { FetchableUsdBasisPort } from '../ports/fetchable-usd-basis.port';
 import { PersistableQuotePort } from '../ports/persistable-quote.port';
+
 import { EthQuoteBasis } from '../value-objects/eth-quote-basis.value-object';
 import { KnnQuoteBasis } from '../value-objects/knn-quote-basis.value-object';
 import { UsdQuoteBasis } from '../value-objects/usd-quote-basis.value-object';
+import { MaticQuoteBasis } from '../value-objects/matic-quote-basis.value-object';
+
 import {
   CurrencyAmount,
   CurrencyIsoCode,
 } from '../value-objects/currency-amount.value-object';
 import { CalculusPort } from '../../price/ports/calculus.port';
-import { FetchableGasPricePort } from '../ports/fetchable-gas-price.port';
+import { FetchableEthereumGasPricePort } from '../ports/fetchable-ethereum-gas-price.port';
+import { FetchablePolygonGasPricePort } from '../ports/fetchable-polygon-gas-price.port';
 import { Settings } from '../../common/settings';
 import {
   validateDecimals,
@@ -21,6 +26,17 @@ import {
   onlyDigits,
 } from '../../common/util';
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
+
+const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
+
+const isoCodeForGasInMATIC = [
+  IsoCodeType.BRL,
+  IsoCodeType.USD,
+  IsoCodeType.KNN,
+  IsoCodeType.MATIC,
+];
+
+const isoCodeForGasInETH = [IsoCodeType.ETH];
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -31,12 +47,19 @@ export type CalculationStrategy = (
   usdQuotation: UsdQuoteBasis,
   knnQuotation: KnnQuoteBasis,
   ethQuotation: EthQuoteBasis,
+  maticQuotation: EthQuoteBasis,
 ) => QuotationAggregate;
 
 const estimatedGasInWEI: Record<TransactionType, number> = {
   Transfer: 20_000,
   LockSupply: 37_800,
   Claim: 87_510,
+};
+
+const estimatedGasInMATIC: Record<TransactionType, number> = {
+  Transfer: 20_000,
+  LockSupply: 37_800, // TODO: mudar para o valor de gas do contrato da polygon
+  Claim: 87_510, // TODO: mudar para o valor de gas do contrato da polygon
 };
 
 export interface CalculationStrategyAggregate
@@ -50,7 +73,9 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     readonly ethPort: FetchableEthBasisPort,
     readonly knnPort: FetchableKnnBasisPort,
     readonly usdPort: FetchableUsdBasisPort,
-    readonly gasPricePort: FetchableGasPricePort,
+    readonly maticPort: FetchableMaticBasisPort,
+    readonly ethereumGasPricePort: FetchableEthereumGasPricePort,
+    readonly polygonGasPricePort: FetchablePolygonGasPricePort,
     readonly calculusPort: CalculusPort,
     readonly persistableQuotePort: PersistableQuotePort,
   ) {
@@ -59,7 +84,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       USD: this.calculateUSD.bind(this),
       ETH: this.calculateETH.bind(this),
       KNN: this.calculateKNN.bind(this),
-      MATIC: this.calculateETH.bind(this), // TODO: CALCUULATE MATIC
+      MATIC: this.calculateMATIC.bind(this),
     };
 
     this.getQuotation = supportedQuotationStrats;
@@ -73,21 +98,26 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     }
 
     if (!onlyCurrencies.test(isoCode)) {
-      throw new Error('Invalid currency');
+      throw new Error('Invalid isoCode input');
     }
 
     if (!validateDecimals(decimals)) {
       throw new Error('Invalid decimals');
+    }
+
+    if (!Object.keys(IsoCodeType).includes(isoCode)) {
+      throw new Error('Invalid currency');
     }
   };
 
   async execute(entry: CreateQuoteDto): Promise<Quote> {
     this.validateEntry(entry);
 
-    const [ethBasis, knnBasis, usdBasis] = await Promise.all([
+    const [ethBasis, knnBasis, usdBasis, maticBasis] = await Promise.all([
       this.ethPort.fetch(entry.forceReload),
       this.knnPort.fetch(entry.forceReload),
       this.usdPort.fetch(entry.forceReload),
+      this.maticPort.fetch(entry.forceReload),
     ]);
 
     const userEstimatedGasFee: QuotationAggregate = await this.calculateGas(
@@ -95,6 +125,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       usdBasis,
       knnBasis,
       ethBasis,
+      maticBasis,
     );
 
     const {
@@ -120,6 +151,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       usdBasis,
       knnBasis,
       ethBasis,
+      maticBasis,
     );
 
     const entryQuotation: QuotationAggregate = this.getQuotation[userCurrency](
@@ -127,6 +159,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       usdBasis,
       knnBasis,
       ethBasis,
+      maticBasis,
     );
 
     const quote = {} as Quote;
@@ -176,7 +209,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       MATIC: this.calculusPort.divide(
         quote.total.ETH,
         quote.finalAmountOfTokens,
-        IsoCodeType.ETH,
+        IsoCodeType.MATIC,
       ),
     };
 
@@ -188,10 +221,38 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     usdQuotation: UsdQuoteBasis,
     knnQuotation: KnnQuoteBasis,
     ethQuotation: EthQuoteBasis,
+    maticQuotation: MaticQuoteBasis,
   ): Promise<QuotationAggregate> {
-    const gasPriceInETH = await this.gasPricePort.fetch(entry.forceReload);
-
     const transactionType = entry?.transactionType ?? 'Claim';
+
+    if (isoCodeForGasInMATIC.includes(IsoCodeType[entry.amount.isoCode])) {
+      const polygonGasPriceInMATIC = await this.polygonGasPricePort.fetch(
+        entry.forceReload,
+      );
+      const amountInWEI: CurrencyAmount = {
+        unassignedNumber: estimatedGasInMATIC[transactionType].toString(),
+        decimals: 0,
+        isoCode: IsoCodeType.MATIC,
+      };
+
+      const amountInMATIC = this.calculusPort.multiply(
+        amountInWEI,
+        polygonGasPriceInMATIC,
+        IsoCodeType.MATIC,
+      );
+
+      return this.calculateMATIC(
+        amountInMATIC,
+        usdQuotation,
+        knnQuotation,
+        ethQuotation,
+        maticQuotation,
+      );
+    }
+
+    const ethereumGasPriceInETH = await this.ethereumGasPricePort.fetch(
+      entry.forceReload,
+    );
 
     const amountInWEI: CurrencyAmount = {
       unassignedNumber: estimatedGasInWEI[transactionType].toString(),
@@ -201,7 +262,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     const amountInETH = this.calculusPort.multiply(
       amountInWEI,
-      gasPriceInETH,
+      ethereumGasPriceInETH,
       IsoCodeType.ETH,
     );
 
@@ -210,6 +271,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       usdQuotation,
       knnQuotation,
       ethQuotation,
+      maticQuotation,
     );
   }
 
@@ -217,42 +279,10 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     amountInBRL: CurrencyAmount<IsoCodeType.BRL>,
     usdQuotation: UsdQuoteBasis,
     knnQuotation: KnnQuoteBasis,
-    ethQuotation: EthQuoteBasis,
+    _: EthQuoteBasis,
+    maticQuotation: MaticQuoteBasis,
   ): QuotationAggregate {
-    let amountInUSD;
-
-    const useFallback = this.shouldUseFallback(usdQuotation, ethQuotation);
-
-    if (useFallback) {
-      const usdQuotationInBRL = this.calculusPort.divide(
-        ethQuotation.BRL,
-        ethQuotation.USD,
-        IsoCodeType.BRL,
-      );
-
-      amountInUSD = this.calculusPort.divide(
-        amountInBRL,
-        usdQuotationInBRL,
-        IsoCodeType.USD,
-      );
-
-      return {
-        BRL: amountInBRL,
-        ETH: this.calculusPort.divide(
-          amountInBRL,
-          ethQuotation.BRL,
-          IsoCodeType.ETH,
-        ),
-        USD: amountInUSD,
-        KNN: this.calculusPort.divide(
-          amountInUSD,
-          knnQuotation.USD,
-          IsoCodeType.KNN,
-        ),
-      };
-    }
-
-    amountInUSD = this.calculusPort.divide(
+    const amountInUSD = this.calculusPort.divide(
       amountInBRL,
       usdQuotation.BRL,
       IsoCodeType.USD,
@@ -263,10 +293,17 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       knnQuotation.USD,
       IsoCodeType.KNN,
     );
+
     const amountInETH = this.calculusPort.multiply(
       amountInKNN,
       knnQuotation.ETH,
       IsoCodeType.ETH,
+    );
+
+    const amountInMATIC = this.calculusPort.multiply(
+      amountInETH,
+      maticQuotation.ETH,
+      IsoCodeType.MATIC,
     );
 
     return {
@@ -274,6 +311,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       BRL: amountInBRL,
       USD: amountInUSD,
       ETH: amountInETH,
+      MATIC: amountInMATIC,
     };
   }
 
@@ -281,42 +319,10 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     amountInUSD: CurrencyAmount<IsoCodeType.USD>,
     usdQuotation: UsdQuoteBasis,
     knnQuotation: KnnQuoteBasis,
-    ethQuotation: EthQuoteBasis,
+    _: EthQuoteBasis,
+    maticQuotation: MaticQuoteBasis,
   ): QuotationAggregate {
-    let amountInBRL: CurrencyAmount<IsoCodeType.BRL>;
-
-    const useFallback = this.shouldUseFallback(usdQuotation, ethQuotation);
-
-    if (useFallback) {
-      const usdQuotationInBRL = this.calculusPort.divide(
-        ethQuotation.BRL,
-        ethQuotation.USD,
-        IsoCodeType.BRL,
-      );
-
-      amountInBRL = this.calculusPort.multiply(
-        amountInUSD,
-        usdQuotationInBRL,
-        IsoCodeType.BRL,
-      );
-
-      return {
-        BRL: amountInBRL,
-        ETH: this.calculusPort.divide(
-          amountInUSD,
-          ethQuotation.USD,
-          IsoCodeType.ETH,
-        ),
-        USD: amountInUSD,
-        KNN: this.calculusPort.divide(
-          amountInUSD,
-          knnQuotation.USD,
-          IsoCodeType.KNN,
-        ),
-      };
-    }
-
-    amountInBRL = this.calculusPort.multiply(
+    const amountInBRL = this.calculusPort.multiply(
       amountInUSD,
       usdQuotation.BRL,
       IsoCodeType.BRL,
@@ -327,10 +333,17 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       knnQuotation.USD,
       IsoCodeType.KNN,
     );
+
     const amountInETH = this.calculusPort.multiply(
       amountInKNN,
       knnQuotation.ETH,
       IsoCodeType.ETH,
+    );
+
+    const amountInMATIC = this.calculusPort.multiply(
+      amountInETH,
+      maticQuotation.ETH,
+      IsoCodeType.MATIC,
     );
 
     return {
@@ -338,6 +351,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       BRL: amountInBRL,
       USD: amountInUSD,
       ETH: amountInETH,
+      MATIC: amountInMATIC,
     };
   }
 
@@ -345,7 +359,8 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     amountInKNN: CurrencyAmount<IsoCodeType.KNN>,
     usdQuotation: UsdQuoteBasis,
     knnQuotation: KnnQuoteBasis,
-    ethQuotation: EthQuoteBasis,
+    _: EthQuoteBasis,
+    maticQuotation: MaticQuoteBasis,
   ): QuotationAggregate {
     const amountInUSD = this.calculusPort.multiply(
       amountInKNN,
@@ -359,20 +374,11 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const useFallback = this.shouldUseFallback(usdQuotation, ethQuotation);
-
-    if (useFallback) {
-      return {
-        BRL: this.calculusPort.multiply(
-          amountInETH,
-          ethQuotation.BRL,
-          IsoCodeType.BRL,
-        ),
-        ETH: amountInETH,
-        USD: amountInUSD,
-        KNN: amountInKNN,
-      };
-    }
+    const amountInMATIC = this.calculusPort.multiply(
+      amountInETH,
+      maticQuotation.ETH,
+      IsoCodeType.MATIC,
+    );
 
     const amountInBRL = this.calculusPort.multiply(
       amountInUSD,
@@ -385,6 +391,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       ETH: amountInETH,
       USD: amountInUSD,
       KNN: amountInKNN,
+      MATIC: amountInMATIC,
     };
   }
 
@@ -392,33 +399,66 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     amountInETH: CurrencyAmount<IsoCodeType.ETH>,
     usdQuotation: UsdQuoteBasis,
     knnQuotation: KnnQuoteBasis,
-    ethQuotation: EthQuoteBasis,
+    _: EthQuoteBasis,
+    maticQuotation: MaticQuoteBasis,
   ): QuotationAggregate {
     const amountInKNN = this.calculusPort.divide(
       amountInETH,
       knnQuotation.ETH,
       IsoCodeType.KNN,
     );
+
     const amountInUSD = this.calculusPort.multiply(
       amountInKNN,
       knnQuotation.USD,
       IsoCodeType.USD,
     );
 
-    const useFallback = this.shouldUseFallback(usdQuotation, ethQuotation);
+    const amountInBRL = this.calculusPort.multiply(
+      amountInUSD,
+      usdQuotation.BRL,
+      IsoCodeType.BRL,
+    );
 
-    if (useFallback) {
-      return {
-        BRL: this.calculusPort.multiply(
-          amountInETH,
-          ethQuotation.BRL,
-          IsoCodeType.BRL,
-        ),
-        ETH: amountInETH,
-        USD: amountInUSD,
-        KNN: amountInKNN,
-      };
-    }
+    const amountInMATIC = this.calculusPort.multiply(
+      amountInETH,
+      maticQuotation.ETH,
+      IsoCodeType.MATIC,
+    );
+
+    return {
+      BRL: amountInBRL,
+      ETH: amountInETH,
+      USD: amountInUSD,
+      KNN: amountInKNN,
+      MATIC: amountInMATIC,
+    };
+  }
+
+  public calculateMATIC(
+    amountInMATIC: CurrencyAmount<IsoCodeType.MATIC>,
+    usdQuotation: UsdQuoteBasis,
+    knnQuotation: KnnQuoteBasis,
+    _: EthQuoteBasis,
+    maticQuotation: MaticQuoteBasis,
+  ): QuotationAggregate {
+    const amountInETH = this.calculusPort.multiply(
+      amountInMATIC,
+      maticQuotation.ETH,
+      IsoCodeType.ETH,
+    );
+
+    const amountInKNN = this.calculusPort.divide(
+      amountInETH,
+      knnQuotation.ETH,
+      IsoCodeType.KNN,
+    );
+
+    const amountInUSD = this.calculusPort.multiply(
+      amountInKNN,
+      knnQuotation.USD,
+      IsoCodeType.USD,
+    );
 
     const amountInBRL = this.calculusPort.multiply(
       amountInUSD,
@@ -431,26 +471,19 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       ETH: amountInETH,
       USD: amountInUSD,
       KNN: amountInKNN,
+      MATIC: amountInMATIC,
     };
   }
 
-  shouldUseFallback(
-    usdQuotation: UsdQuoteBasis,
-    ethQuotation: EthQuoteBasis,
-  ): boolean {
-    const fallbackAvailable =
-      this.calculusPort.isPositive(ethQuotation.USD) &&
-      this.calculusPort.isPositive(ethQuotation.BRL) &&
-      ethQuotation.expiration > new Date();
-
+  shouldUseFallback(usdQuotation: UsdQuoteBasis): boolean {
     const isZero = !parseInt(usdQuotation.BRL.unassignedNumber, 10);
 
     const useFallback =
       this.calculusPort.isNegative(usdQuotation.BRL) || isZero;
     usdQuotation.expiration < new Date();
 
-    if (useFallback && !fallbackAvailable) {
-      throw new Error('No Price Fallback Available');
+    if (useFallback) {
+      throw new Error(NO_PRICE_FALLBACK_AVAILABLE);
     }
 
     return useFallback;

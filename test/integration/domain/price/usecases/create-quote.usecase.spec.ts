@@ -1,16 +1,19 @@
 import { FixedPointCalculusAdapter } from '../../../../../src/infrastructure/adapters/outbound/bignumbers/calculus/fixed-point-calculus.adapter';
 import { Quote } from '../../../../../src/domain/price/entities/quote.entity';
 import { FetchableEthBasisPort } from '../../../../../src/domain/price/ports/fetchable-eth-basis.port';
-import { FetchableGasPricePort } from '../../../../../src/domain/price/ports/fetchable-gas-price.port';
+import { FetchableEthereumGasPricePort } from '../../../../../src/domain/price/ports/fetchable-ethereum-gas-price.port';
+import { FetchablePolygonGasPricePort } from '../../../../../src/domain/price/ports/fetchable-polygon-gas-price.port';
 import { FetchableKnnBasisPort } from '../../../../../src/domain/price/ports/fetchable-knn-basis.port';
 import { FetchableUsdBasisPort } from '../../../../../src/domain/price/ports/fetchable-usd-basis.port';
 import { CurrencyAmount } from '../../../../../src/domain/price/value-objects/currency-amount.value-object';
 import { EthQuoteBasis } from '../../../../../src/domain/price/value-objects/eth-quote-basis.value-object';
 import { KnnQuoteBasis } from '../../../../../src/domain/price/value-objects/knn-quote-basis.value-object';
 import { UsdQuoteBasis } from '../../../../../src/domain/price/value-objects/usd-quote-basis.value-object';
+import { MaticQuoteBasis } from '../../../../../src/domain/price/value-objects/matic-quote-basis.value-object';
 import { CreateQuoteUseCase } from '../../../../../src/domain/price/usecases/create-quote.usecase';
 import { Settings } from '../../../../../src/domain/common/settings';
 import { PersistableQuotePort } from '../../../../../src/domain/price/ports/persistable-quote.port';
+import { FetchableMaticBasisPort } from '../../../../../src/domain/price/ports/fetchable-matic-basis.port';
 
 class FetchableEthBasisMock implements FetchableEthBasisPort {
   fetch(): Promise<EthQuoteBasis> {
@@ -61,7 +64,35 @@ class FetchableUsdBasisMock implements FetchableUsdBasisPort {
   }
 }
 
-class FetchableGasPriceMock implements FetchableGasPricePort {
+class FetchableEthereumGasPriceMock implements FetchableEthereumGasPricePort {
+  fetch(): Promise<CurrencyAmount> {
+    return Promise.resolve({
+      unassignedNumber: '14000000000',
+      decimals: 18,
+      isoCode: 'ETH',
+    });
+  }
+}
+
+class FetchableMaticBasisMock implements FetchableMaticBasisPort {
+  fetch(): Promise<KnnQuoteBasis> {
+    return Promise.resolve({
+      ETH: {
+        unassignedNumber: '000411702224015414',
+        decimals: 18,
+        isoCode: 'ETH',
+      },
+      USD: {
+        unassignedNumber: '50000000',
+        decimals: 8,
+        isoCode: 'USD',
+      },
+      expiration: new Date(2066, 10, 10),
+    });
+  }
+}
+
+class FetchablePolygonGasPriceMock implements FetchablePolygonGasPricePort {
   fetch(): Promise<CurrencyAmount> {
     return Promise.resolve({
       unassignedNumber: '14000000000',
@@ -81,7 +112,10 @@ describe('CreateQuoteUseCase', () => {
   const ethAdapter = new FetchableEthBasisMock();
   const knnAdapter = new FetchableKnnBasisMock();
   const usdAdapter = new FetchableUsdBasisMock();
-  const gasAdapter = new FetchableGasPriceMock();
+  const maticAdapter = new FetchableMaticBasisMock();
+  const ethereumGasAdapter = new FetchableEthereumGasPriceMock();
+  const polygonGasAdapter = new FetchablePolygonGasPriceMock();
+
   const saveQuoteAdapter = new PersistableQuoteMock();
 
   const usecase = new CreateQuoteUseCase(
@@ -93,7 +127,9 @@ describe('CreateQuoteUseCase', () => {
     ethAdapter,
     knnAdapter,
     usdAdapter,
-    gasAdapter,
+    maticAdapter,
+    ethereumGasAdapter,
+    polygonGasAdapter,
     FixedPointCalculusAdapter.getInstance(),
     saveQuoteAdapter,
   );

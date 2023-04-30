@@ -98,7 +98,10 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
   getPreSaleChain(): Chain {
     let chainId = NetworkType.Ethereum;
 
-    if (process.env.NODE_ENV === 'development') {
+    if (
+      process.env.NODE_ENV === 'development' ||
+      process.env.NODE_ENV === 'test'
+    ) {
       chainId = NetworkType.EthereumGoerli;
     }
 

@@ -52,6 +52,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     CreateBrazilianPixOrderUseCase.validate(request);
 
+    // TODO: Importante pegar do ambiente na hora de criar o ORDER
+
     const quote = await this.createQuoteInteractor
       .execute({
         amount: request.amount,

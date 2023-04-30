@@ -31,9 +31,9 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const presale: KannaPreSale = await this.provider.sale();
+    const polygonSale: KannaPreSale = await this.provider.polygonSale();
 
-    const transaction: ContractTransaction = await presale.claim(
+    const transaction: ContractTransaction = await polygonSale.claim(
       onchainAddress,
       uint256Amount,
       uint256Nonce,
@@ -50,12 +50,12 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
     nonce,
   }: ClaimSupplyDto): Promise<void> {
     this.validate(nonce, amount);
-    const presale: KannaPreSale = await this.provider.sale();
+    const polygonSale: KannaPreSale = await this.provider.polygonSale();
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    await presale.estimateGas.claim(
+    await polygonSale.estimateGas.claim(
       onchainAddress,
       uint256Amount,
       uint256Nonce,

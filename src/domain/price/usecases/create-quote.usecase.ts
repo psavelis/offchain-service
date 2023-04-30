@@ -207,7 +207,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
         IsoCodeType.BRL,
       ),
       MATIC: this.calculusPort.divide(
-        quote.total.ETH,
+        quote.total.MATIC,
         quote.finalAmountOfTokens,
         IsoCodeType.MATIC,
       ),

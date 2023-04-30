@@ -27,9 +27,9 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const presale: KannaPreSale = await this.provider.sale();
+    const polygonSale: KannaPreSale = await this.provider.polygonSale();
 
-    const transaction: ContractTransaction = await presale.lockSupply(
+    const transaction: ContractTransaction = await polygonSale.lockSupply(
       uint256Amount,
       uint256Nonce,
     );
@@ -41,12 +41,12 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
 
   async verify({ nonce, amount }: LockSupplyDto): Promise<void> {
     this.validate(nonce, amount);
-    const presale: KannaPreSale = await this.provider.sale();
+    const polygonSale: KannaPreSale = await this.provider.polygonSale();
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    await presale.estimateGas.lockSupply(uint256Amount, uint256Nonce);
+    await polygonSale.estimateGas.lockSupply(uint256Amount, uint256Nonce);
   }
 
   private validate(nonce: number, amount: CurrencyAmount<CurrencyIsoCode>) {

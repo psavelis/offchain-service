@@ -16,7 +16,7 @@ import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE);
+const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
@@ -195,6 +195,5 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     }
 
     // TODO: validar supply (cachear(!))
-    // TODO: criar base type pra trafegar mensagens de erro tratadas para o front
   }
 }

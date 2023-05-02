@@ -211,6 +211,8 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     quote.total = entryQuotation;
 
+    CreateQuoteUseCase.validateMinimumAmount(quote.total.BRL);
+
     quote.netTotal = userQuotation;
 
     quote.totalPerToken = {

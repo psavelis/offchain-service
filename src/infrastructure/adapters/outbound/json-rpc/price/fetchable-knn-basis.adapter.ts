@@ -6,7 +6,7 @@ import { KannaPreSale } from '../protocol/contracts';
 
 const ETH_QUOTATION_DECIMALS = 18;
 const CHAINLINK_USD_QUOTATION_DECIMALS = 8;
-const CACHE_TTL_MS = 1_000 * 300;
+const CACHE_TTL_MS = 1_000 * 900;
 
 export class FetchableKnnBasisJsonRpcAdapter implements FetchableKnnBasisPort {
   static instance: FetchableKnnBasisPort;
@@ -39,7 +39,7 @@ export class FetchableKnnBasisJsonRpcAdapter implements FetchableKnnBasisPort {
   async fetch(forceReload: boolean = false): Promise<KnnQuoteBasis> {
     const cached = FetchableKnnBasisJsonRpcAdapter.getCachedBasis();
 
-    if (cached && !forceReload) {
+    if (cached) {
       return cached;
     }
 

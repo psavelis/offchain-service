@@ -5,7 +5,9 @@ import { FixedPointCalculusAdapter } from '../../adapters/outbound/bignumbers/ca
 import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
 import { FetchableEthBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-eth-basis.adapter';
 import { FetchableMaticBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-matic-basis.adapter';
-import { FetchableUsdBasisHttpAdapter } from '../../adapters/outbound/http/price/fetchable-usd-basis.adapter';
+// DEPRECATED HTTP QUOTE:
+// import { FetchableUsdBasisHttpAdapter } from '../../adapters/outbound/http/price/fetchable-usd-basis.adapter';
+import { FetchableUsdBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-usd-basis.adapter';
 import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
 import { FetchableEthereumGasPriceJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-ethereum-gas-price.adapter';
 import { FetchablePolygonGasPriceJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-polygon-gas-price.adapter';
@@ -41,7 +43,13 @@ export class CreateQuoteFactory {
       const polygonGasAdapter =
         FetchablePolygonGasPriceJsonRpcAdapter.getInstance(settings);
 
-      const usdAdapter = FetchableUsdBasisHttpAdapter.getInstance();
+      const usdAdapter = FetchableUsdBasisJsonRpcAdapter.getInstance(
+        ethereumChainlinkProvider,
+      );
+
+      // DEPRECATED HTTP QUOTE:
+      // const usdAdapter = FetchableUsdBasisHttpAdapter.getInstance();
+
       const ethAdapter = FetchableEthBasisJsonRpcAdapter.getInstance(
         ethereumChainlinkProvider,
       );

@@ -24,6 +24,7 @@ import {
   validateDecimals,
   onlyCurrencies,
   onlyDigits,
+  formatDecimals,
 } from '../../common/util';
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 
@@ -35,8 +36,6 @@ const isoCodeForGasInMATIC = [
   IsoCodeType.KNN,
   IsoCodeType.MATIC,
 ];
-
-const isoCodeForGasInETH = [IsoCodeType.ETH];
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -60,6 +59,11 @@ const estimatedGasInMATIC: Record<TransactionType, number> = {
   Transfer: 20_000,
   LockSupply: 37_800, // TODO: mudar para o valor de gas do contrato da polygon
   Claim: 87_510, // TODO: mudar para o valor de gas do contrato da polygon
+};
+
+const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
+const DEFAULT_BRL_TRUNCATE_OPTIONS = {
+  truncateDecimals: 2,
 };
 
 export interface CalculationStrategyAggregate
@@ -90,9 +94,8 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     this.getQuotation = supportedQuotationStrats;
   }
 
-  validateEntry = ({
-    amount: { unassignedNumber, isoCode, decimals },
-  }: CreateQuoteDto): void => {
+  validateEntry = ({ amount }: CreateQuoteDto): void => {
+    const { unassignedNumber, isoCode, decimals } = amount;
     if (!onlyDigits.test(unassignedNumber)) {
       throw new Error('Invalid amount');
     }
@@ -108,7 +111,27 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     if (!Object.keys(IsoCodeType).includes(isoCode)) {
       throw new Error('Invalid currency');
     }
+
+    if (isoCode === IsoCodeType.BRL) {
+      CreateQuoteUseCase.validateMinimumAmount(amount);
+    }
   };
+
+  private static validateMinimumAmount(
+    amount: CurrencyAmount<CurrencyIsoCode>,
+  ) {
+    const truncated = Number(
+      formatDecimals(
+        amount.unassignedNumber,
+        amount.decimals,
+        DEFAULT_BRL_TRUNCATE_OPTIONS,
+      ),
+    );
+
+    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL) {
+      throw new Error('amount below minimum total');
+    }
+  }
 
   async execute(entry: CreateQuoteDto): Promise<Quote> {
     this.validateEntry(entry);

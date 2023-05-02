@@ -169,7 +169,7 @@ describe('CreateQuoteUseCase', () => {
   it('should calculate a given ETH amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
-        unassignedNumber: '000411702224015414',
+        unassignedNumber: '041170222401541400',
         decimals: 18,
         isoCode: 'ETH',
       },
@@ -177,7 +177,7 @@ describe('CreateQuoteUseCase', () => {
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('1000000000000000000');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('100000000000000000000');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
   });
@@ -201,7 +201,7 @@ describe('CreateQuoteUseCase', () => {
   it('should calculate a given KNN amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
-        unassignedNumber: '1',
+        unassignedNumber: '1000',
         decimals: 0,
         isoCode: 'KNN',
       },
@@ -209,7 +209,7 @@ describe('CreateQuoteUseCase', () => {
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('1');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('1000');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(0);
   });

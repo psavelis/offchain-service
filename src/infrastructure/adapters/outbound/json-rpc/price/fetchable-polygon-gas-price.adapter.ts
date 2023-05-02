@@ -38,10 +38,10 @@ export class FetchablePolygonGasPriceJsonRpcAdapter
     return undefined;
   }
 
-  async fetch(forceReload: boolean = false): Promise<CurrencyAmount> {
+  async fetch(_: boolean = false): Promise<CurrencyAmount> {
     const cached = FetchablePolygonGasPriceJsonRpcAdapter.getCachedBasis();
 
-    if (cached && !forceReload) {
+    if (cached) {
       return cached;
     }
 
@@ -58,7 +58,7 @@ export class FetchablePolygonGasPriceJsonRpcAdapter
     };
 
     FetchablePolygonGasPriceJsonRpcAdapter.cacheExpiration = new Date(
-      new Date().getTime() + 1_000 * 10,
+      new Date().getTime() + 1_000 * 60,
     );
 
     return FetchablePolygonGasPriceJsonRpcAdapter.cachedAmount;

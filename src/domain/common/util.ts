@@ -5,6 +5,16 @@ export const formatDecimals = (
 ) => {
   const separator = options?.separator ?? '.';
 
+  if (!decimalsLength) {
+    return `${value}${separator}${'0'.repeat(options?.truncateDecimals ?? 2)}`;
+  }
+
+  if (decimalsLength < 0) {
+    throw new Error(
+      'formatDecimals: Decimals length must be greater than or equal to zero',
+    );
+  }
+
   const valuePadded = value.padStart(decimalsLength, '0');
 
   const integer = valuePadded.slice(0, -decimalsLength).padStart(1, '0');

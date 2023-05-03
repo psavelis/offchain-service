@@ -14,8 +14,7 @@ import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
-import { LoggablePort } from 'src/domain/common/ports/loggable.port';
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
+import { LoggablePort } from '../../../domain/common/ports/loggable.port';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
@@ -53,16 +52,12 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     CreateBrazilianPixOrderUseCase.validate(request);
 
-    const chainId = process.env.NODE_ENV
-      ? NetworkType.Polygon
-      : NetworkType.PolygonMumbai;
-
     const quote = await this.createQuoteInteractor
       .execute({
         amount: request.amount,
         transactionType:
           request.identifierType === 'CW' ? 'Claim' : 'LockSupply',
-        chainId,
+        chainId: this.settings.blockchain.current.id,
       })
       .catch((err) => {
         this.logger.error(err, '[quote-error]');

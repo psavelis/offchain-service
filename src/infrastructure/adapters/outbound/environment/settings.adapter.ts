@@ -1,5 +1,7 @@
 import { config } from 'dotenv';
 import { Settings } from '../../../../domain/common/settings';
+import { NetworkType } from '../../../../domain/common/enums/network-type.enum';
+import { Chain } from '../../../../domain/common/entities/chain.entity';
 
 export class SettingsAdapter {
   static instance: SettingsAdapter;
@@ -56,6 +58,11 @@ export class SettingsAdapter {
         identitySecret: this.envString('IDENTITY_SECRET'),
       },
       blockchain: {
+        current: new Chain(
+          process.env.NODE_ENV
+            ? NetworkType.Polygon
+            : NetworkType.PolygonMumbai,
+        ),
         ethereum: {
           providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),
           claimManagerKey: this.envString('CLAIM_MANAGER_KEY'),

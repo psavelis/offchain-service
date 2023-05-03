@@ -1,7 +1,7 @@
 import { BigNumber, FixedNumber, utils } from 'ethers';
 import { FetchableUsdBasisPort } from '../../../../../domain/price/ports/fetchable-usd-basis.port';
 import { UsdQuoteBasis } from '../../../../../domain/price/value-objects/usd-quote-basis.value-object';
-import { CurrencyAmount } from 'src/domain/price/value-objects/currency-amount.value-object';
+import { CurrencyAmount } from '../../../../../domain/price/value-objects/currency-amount.value-object';
 import { IChainlinkProtocolProvider } from '../ethereum-chainlink.provider';
 
 const ETH_QUOTATION_DECIMALS = 18;

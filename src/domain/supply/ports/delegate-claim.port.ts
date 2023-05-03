@@ -1,4 +1,3 @@
-import { Chain } from 'src/domain/common/entities/chain.entity';
 import { SignatureResult } from '../../common/ports/signature.port';
 import { Order } from '../../order/entities/order.entity';
 import { ClaimLockedSupplyDto } from '../dtos/claim-locked-supply.dto';

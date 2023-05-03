@@ -3,29 +3,29 @@ import { FetchAvailableSupplyInteractor } from '../../../domain/supply/interacto
 import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
 
 import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import { ClaimLockedSupplyInteractor } from 'src/domain/supply/interactors/claim-locked-supply.interactor';
-import { ClaimLockedSupplyUseCase } from 'src/domain/supply/usecases/claim-locked-supply.usecase';
-import { LoggablePort } from 'src/domain/common/ports/loggable.port';
-import { MailerPort } from 'src/domain/common/ports/mailer.port';
+import { ClaimLockedSupplyInteractor } from '../../../domain/supply/interactors/claim-locked-supply.interactor';
+import { ClaimLockedSupplyUseCase } from '../../../domain/supply/usecases/claim-locked-supply.usecase';
+import { LoggablePort } from '../../../domain/common/ports/loggable.port';
+import { MailerPort } from '../../../domain/common/ports/mailer.port';
 import Mailer from '../../adapters/outbound/smtp/mailer.adapter';
-import { KnexPostgresDatabase } from 'src/infrastructure/adapters/outbound/database/knex-postgres.db';
-import { FetchableOrderDbAdapter } from 'src/infrastructure/adapters/outbound/database/order/fetchable-order.adapter';
-import Logger from 'src/infrastructure/adapters/outbound/log/logger';
+import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
+import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
+import Logger from '../../adapters/outbound/log/logger';
 import { ECDSASignatureAdapter } from '../../adapters/outbound/encryption/ecdsa/ecdsa-signature.adapter';
-import { SignaturePort } from 'src/domain/common/ports/signature.port';
-import { Aes256EncryptionAdapter } from 'src/infrastructure/adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
-import { DelegateClaimPort } from 'src/domain/supply/ports/delegate-claim.port';
+import { SignaturePort } from '../../../domain/common/ports/signature.port';
+import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
+import { DelegateClaimPort } from '../../../domain/supply/ports/delegate-claim.port';
 import { DelegateClaimRpcAdapter } from '../../adapters/outbound/json-rpc/supply/delegate-claim.adapter';
-import { PersistableChallengePort } from 'src/domain/supply/ports/persistable-challenge.port';
+import { PersistableChallengePort } from '../../../domain/supply/ports/persistable-challenge.port';
 import { PersistableChallengeDbAdapter } from '../../adapters/outbound/database/supply/persistable-challenge.adapter';
-import { CreateOrderTransitionInteractor } from 'src/domain/order/interactors/create-order-status-transition.interactor';
-import { CreateOrderStatusTransitionUseCase } from 'src/domain/order/usecases/create-order-status-transition.usecase';
-import { PersistableOrderStatusTransitionPort } from 'src/domain/order/ports/persistable-order-status-transition.port';
-import { PersistableOrderStatusTransitionDbAdapter } from 'src/infrastructure/adapters/outbound/database/order/persistable-order-status-transition.adapter';
-import { FetchableChallengePort } from 'src/domain/supply/ports/fetchable-challenge.port';
+import { CreateOrderTransitionInteractor } from '../../../domain/order/interactors/create-order-status-transition.interactor';
+import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecases/create-order-status-transition.usecase';
+import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
+import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbound/database/order/persistable-order-status-transition.adapter';
+import { FetchableChallengePort } from '../../../domain/supply/ports/fetchable-challenge.port';
 
 import { FetchableChallengeDbAdapter } from '../../adapters/outbound/database/supply/fetchable-challenge.adapter';
-import { PersistableAnswerPort } from 'src/domain/supply/ports/persistable-answer.port';
+import { PersistableAnswerPort } from '../../../domain/supply/ports/persistable-answer.port';
 import { PersistableAnswerDbAdapter } from '../../adapters/outbound/database/supply/persistable-answer.adapter';
 
 export class ClaimLockedSupplyFactory {

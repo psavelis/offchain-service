@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 import { KnexPostgresDatabase } from '../knex-postgres.db';
 import { PersistableOrderStatusTransitionPort } from '../../../../../domain/order/ports/persistable-order-status-transition.port';
 import { Order } from '../../../../../domain/order/entities/order.entity';
-import { TransitionInfo } from 'src/domain/order/dtos/transition-info.dto';
+import { TransitionInfo } from '../../../../../domain/order/dtos/transition-info.dto';
 
 const tableName = 'order_status_transition';
 export class PersistableOrderStatusTransitionDbAdapter

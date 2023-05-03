@@ -1,5 +1,4 @@
 import { FetchableOrderDbAdapter } from '../../../../../../../src/infrastructure/adapters/outbound/database/order/fetchable-order.adapter';
-import { SettingsAdapter } from '../../../../../../../src/infrastructure/adapters/outbound/environment/settings.adapter';
 import { Settings } from '../../../../../../../src/domain/common/settings';
 import { KnexPostgresDatabase } from '../../../../../../../src/infrastructure/adapters/outbound/database/knex-postgres.db';
 

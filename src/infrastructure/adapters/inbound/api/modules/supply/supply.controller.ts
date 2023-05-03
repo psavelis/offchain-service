@@ -9,8 +9,11 @@ import {
   Req,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
-import { MinimalSignedClaim } from 'src/domain/supply/dtos/signed-claim.dto';
+import {
+  Loggable,
+  LoggablePort,
+} from '../../../../../../domain/common/ports/loggable.port';
+import { MinimalSignedClaim } from '../../../../../../domain/supply/dtos/signed-claim.dto';
 import { ClaimLockedSupplyDto } from '../../../../../../domain/supply/dtos/claim-locked-supply.dto';
 import {
   ClaimLockedSupply,

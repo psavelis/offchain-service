@@ -28,7 +28,7 @@ import {
 } from '../../common/util';
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 import { Chain } from '../../common/entities/chain.entity';
-import { LayerType } from 'src/domain/common/enums/layer-type.enum';
+import { LayerType } from '../../common/enums/layer-type.enum';
 
 const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
 

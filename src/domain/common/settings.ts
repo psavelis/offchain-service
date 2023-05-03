@@ -1,3 +1,5 @@
+import { Chain } from './entities/chain.entity';
+
 export interface Settings {
   cbc: {
     key: string;
@@ -37,6 +39,7 @@ export interface Settings {
     user: string;
   };
   blockchain: {
+    current: Chain;
     ethereum: {
       providerEndpoint: string;
       claimManagerKey: string;

@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { OrderWithPayment } from 'src/domain/order/dtos/order-with-payment.dto';
+import { OrderWithPayment } from '../../../../../domain/order/dtos/order-with-payment.dto';
 import { EndToEndId } from '../../../../../domain/order/dtos/order-dictionary.dto';
 import {
   Order,

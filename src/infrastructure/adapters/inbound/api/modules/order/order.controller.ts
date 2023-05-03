@@ -20,8 +20,8 @@ import {
   Observable,
   switchMap,
 } from 'rxjs';
-import { BrazilianPixOrderDto } from 'src/domain/order/dtos/brazilian-pix-order.dto';
-import { OrderDto } from 'src/domain/order/dtos/order.dto';
+import { BrazilianPixOrderDto } from '../../../../../../domain/order/dtos/brazilian-pix-order.dto';
+import { OrderDto } from '../../../../../../domain/order/dtos/order.dto';
 import { CreateOrderDto } from '../../../../../../domain/order/dtos/create-order.dto';
 import {
   CreateOrder,

@@ -96,6 +96,7 @@ export class ProcessStatementTransactionUseCase
             decimals: 2,
             isoCode: 'BRL',
           },
+          chainId: matchingOrder.getChainId(),
           transactionType:
             matchingOrder.getIdentifierType() === 'EA' ? 'LockSupply' : 'Claim',
         });

@@ -14,6 +14,7 @@ import {
   CreateQuote,
   CreateQuoteInteractor,
 } from '../../../../../../domain/price/interactors/create-quote.interactor';
+import { NetworkType } from '../../../../../../domain/common/enums/network-type.enum';
 
 let running = false;
 
@@ -37,6 +38,7 @@ export class PriceController {
             decimals: 0,
             isoCode: 'BRL',
           },
+          chainId: NetworkType.Polygon,
           forceReload: true,
         })
         .catch((err) => {

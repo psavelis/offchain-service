@@ -1,4 +1,4 @@
-import { IsoCodeType } from 'src/domain/common/enums/iso-codes.enum';
+import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 import { TransactionType } from '../dtos/create-quote.dto';
 import {
   CurrencyAmount,

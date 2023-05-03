@@ -7,10 +7,10 @@ import { CreateOrderInteractor } from '../../../domain/order/interactors/create-
 
 import { CreateBrazilianPixOrderUseCase } from '../../../domain/order/usecases/create-brazilian-pix-order.usecase';
 import { CreateQuoteFactory } from '../price/create-quote.factory';
-import { LoggablePort } from 'src/domain/common/ports/loggable.port';
-import Logger from 'src/infrastructure/adapters/outbound/log/logger';
+import { LoggablePort } from '../../../domain/common/ports/loggable.port';
+import Logger from '../../adapters/outbound/log/logger';
 import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
-import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
+import { EncryptionPort } from '../../../domain/common/ports/encryption.port';
 
 export class CreateOrderFactory {
   static instance: CreateOrderInteractor;

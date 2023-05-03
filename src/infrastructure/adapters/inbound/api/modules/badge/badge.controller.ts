@@ -16,7 +16,7 @@ import {
 } from '../../../../../../domain/badge/interactors/sign-mint.interactor';
 import { VerifyMint } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { VerifyMintInteractor } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
-import { SignMintRequestDto } from 'src/domain/badge/dtos/sign-mint-request.dto';
+import { SignMintRequestDto } from '../../../../../../domain/badge/dtos/sign-mint-request.dto';
 
 @Controller('badge')
 export class BadgeController {

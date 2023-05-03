@@ -13,9 +13,9 @@ import { PersistableLockPort } from '../ports/persistable-lock.port';
 import { OnChainReceipt } from '../dtos/onchain-receipt.dto';
 import { PersistableReceiptPort } from '../ports/persistable-receipt.port';
 import { Receipt } from '../entities/receipt.entity';
-import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
-import { Settings } from 'src/domain/common/settings';
-import { LoggablePort } from 'src/domain/common/ports/loggable.port';
+import { EncryptionPort } from '../../common/ports/encryption.port';
+import { Settings } from '../../common/settings';
+import { LoggablePort } from '../../common/ports/loggable.port';
 
 const Email = 'EA';
 const CryptoWallet = 'CW';

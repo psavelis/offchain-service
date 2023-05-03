@@ -8,8 +8,8 @@ import { ConfirmationRecord } from '../dtos/confirmation-record.dto';
 import { Clearing } from '../entities/clearing.entity';
 import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
 import { Transaction } from '../value-objects/transaction.value-object';
-import { CreateQuoteInteractor } from 'src/domain/price/interactors/create-quote.interactor';
-import { formatDecimals } from 'src/domain/common/util';
+import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { formatDecimals } from '../../common/util';
 
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,

@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import { Settings } from '../../../../domain/common/settings';
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
-import { Chain } from 'src/domain/common/entities/chain.entity';
+import { NetworkType } from '../../../../domain/common/enums/network-type.enum';
+import { Chain } from '../../../../domain/common/entities/chain.entity';
 
 export class SettingsAdapter {
   static instance: SettingsAdapter;

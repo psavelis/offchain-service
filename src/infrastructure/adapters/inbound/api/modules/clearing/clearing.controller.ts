@@ -4,7 +4,10 @@ import {
   CreateClearing,
   CreateClearingInteractor,
 } from '../../../../../../domain/clearing/interactors/create-clearing.interactor';
-import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
+import {
+  Loggable,
+  LoggablePort,
+} from '../../../../../../domain/common/ports/loggable.port';
 
 let running = false;
 

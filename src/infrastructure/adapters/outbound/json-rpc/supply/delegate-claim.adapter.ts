@@ -12,7 +12,7 @@ import { KannaPreSale } from '../protocol/contracts';
 import { Settings } from '../../../../../domain/common/settings';
 import { SignerType } from '../../../../../domain/common/enums/signer-type.enum';
 import { Chain } from '../../../../../domain/common/entities/chain.entity';
-import { LayerType } from 'src/domain/common/enums/layer-type.enum';
+import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
 
 const claimType =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce)';

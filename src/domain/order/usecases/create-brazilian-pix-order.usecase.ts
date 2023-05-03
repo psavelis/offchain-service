@@ -14,8 +14,7 @@ import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
-import { LoggablePort } from 'src/domain/common/ports/loggable.port';
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
+import { LoggablePort } from '../../../domain/common/ports/loggable.port';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 

@@ -14,6 +14,7 @@ import { CreateQuoteUseCase } from '../../../../../src/domain/price/usecases/cre
 import { Settings } from '../../../../../src/domain/common/settings';
 import { PersistableQuotePort } from '../../../../../src/domain/price/ports/persistable-quote.port';
 import { FetchableMaticBasisPort } from '../../../../../src/domain/price/ports/fetchable-matic-basis.port';
+import { NetworkType } from '../../../../../src/domain/common/enums/network-type.enum';
 
 class FetchableEthBasisMock implements FetchableEthBasisPort {
   fetch(): Promise<EthQuoteBasis> {
@@ -134,6 +135,8 @@ describe('CreateQuoteUseCase', () => {
     saveQuoteAdapter,
   );
 
+  const chainId = NetworkType.PolygonMumbai;
+
   it('should calculate a given USD amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
@@ -141,6 +144,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 2,
         isoCode: 'USD',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -157,6 +161,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 2,
         isoCode: 'BRL',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -173,6 +178,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 18,
         isoCode: 'ETH',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -189,6 +195,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 0,
         isoCode: 'ETH',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -205,6 +212,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 0,
         isoCode: 'KNN',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;

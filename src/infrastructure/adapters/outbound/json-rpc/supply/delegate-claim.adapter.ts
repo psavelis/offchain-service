@@ -129,7 +129,6 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
 
     const paymentSequence = String(order.getPaymentSequence());
 
-    // TODO: para contratos l2, colocar o chainId (do bloco), no final do hash
     await saleContract.estimateGas.claimLocked(
       claimRequest.cryptoWallet!,
       order.getAmountOfTokens().unassignedNumber,

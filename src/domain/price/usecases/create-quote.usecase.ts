@@ -27,15 +27,10 @@ import {
   formatDecimals,
 } from '../../common/util';
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
+import { Chain } from '../../common/entities/chain.entity';
+import { LayerType } from 'src/domain/common/enums/layer-type.enum';
 
 const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
-
-const isoCodeForGasInMATIC = [
-  IsoCodeType.BRL,
-  IsoCodeType.USD,
-  IsoCodeType.KNN,
-  IsoCodeType.MATIC,
-];
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -250,7 +245,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   ): Promise<QuotationAggregate> {
     const transactionType = entry?.transactionType ?? 'Claim';
 
-    if (isoCodeForGasInMATIC.includes(IsoCodeType[entry.amount.isoCode])) {
+    if (new Chain(entry.chainId).layer === LayerType.L2) {
       const polygonGasPriceInMATIC = await this.polygonGasPricePort.fetch(
         entry.forceReload,
       );

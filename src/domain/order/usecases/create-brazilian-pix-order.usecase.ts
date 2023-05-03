@@ -15,6 +15,7 @@ import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from 'src/domain/common/ports/loggable.port';
+import { NetworkType } from 'src/domain/common/enums/network-type.enum';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
@@ -52,11 +53,16 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     CreateBrazilianPixOrderUseCase.validate(request);
 
+    const chainId = process.env.NODE_ENV
+      ? NetworkType.Polygon
+      : NetworkType.PolygonMumbai;
+
     const quote = await this.createQuoteInteractor
       .execute({
         amount: request.amount,
         transactionType:
           request.identifierType === 'CW' ? 'Claim' : 'LockSupply',
+        chainId,
       })
       .catch((err) => {
         this.logger.error(err, '[quote-error]');
@@ -75,6 +81,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     );
 
     CreateBrazilianPixOrderUseCase.validateMinimumAmount(quote.total.BRL);
+
+    // TODO: validar supply (cachear(!))
 
     const totalGas = Number(
       formatDecimals(
@@ -193,7 +201,5 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     if (amount.isoCode === IsoCodeType.BRL) {
       CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
     }
-
-    // TODO: validar supply (cachear(!))
   }
 }

@@ -29,7 +29,7 @@ const QUOTATION_EXPIRATION_SECONDS = 360;
 
 export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
   static instance: FetchableUsdBasisPort;
-  static cachedBasis: UsdQuoteBasis;
+  static cachedBasis: UsdQuoteBasis | null;
 
   private constructor() {
     FetchableUsdBasisHttpAdapter.cachedBasis = null;
@@ -44,7 +44,7 @@ export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
     return FetchableUsdBasisHttpAdapter.instance;
   }
 
-  static getCachedBasis(): UsdQuoteBasis {
+  static getCachedBasis(): UsdQuoteBasis | null {
     if (
       FetchableUsdBasisHttpAdapter.cachedBasis &&
       FetchableUsdBasisHttpAdapter.cachedBasis.expiration > new Date()
@@ -63,7 +63,6 @@ export class FetchableUsdBasisHttpAdapter implements FetchableUsdBasisPort {
     }
 
     const quotation = await fetch(
-      // TODO: parametrizar
       'https://economia.awesomeapi.com.br/json/last/usd',
     );
 

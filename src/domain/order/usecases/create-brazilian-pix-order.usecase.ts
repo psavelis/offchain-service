@@ -53,16 +53,12 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
     CreateBrazilianPixOrderUseCase.validate(request);
 
-    const chainId = process.env.NODE_ENV
-      ? NetworkType.Polygon
-      : NetworkType.PolygonMumbai;
-
     const quote = await this.createQuoteInteractor
       .execute({
         amount: request.amount,
         transactionType:
           request.identifierType === 'CW' ? 'Claim' : 'LockSupply',
-        chainId,
+        chainId: this.settings.blockchain.current.id,
       })
       .catch((err) => {
         this.logger.error(err, '[quote-error]');

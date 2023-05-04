@@ -340,7 +340,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,
@@ -380,7 +380,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,
@@ -414,7 +414,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,
@@ -460,7 +460,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.BRL,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,

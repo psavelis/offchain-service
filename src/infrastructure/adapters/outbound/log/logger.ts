@@ -15,26 +15,22 @@ export default class Logger implements LoggablePort {
 
     const level = process.env.LOG_LEVEL as Level;
 
-    const ports: LoggablePort[] = [
-      new PinoLogger(
-        process.env.APP_NAME,
-        level
-      )
-    ];
+    const ports: LoggablePort[] = [new PinoLogger(process.env.APP_NAME, level)];
 
     if (process.env.DISCORD_LOG_WEBHOOK) {
-      ports.push(new DiscordLogger(
-        process.env.APP_NAME,
-        process.env.DISCORD_LOG_WEBHOOK,
-        (process.env.DISCORD_LOG_LEVEL ?? level) as Level
-      ));
+      ports.push(
+        new DiscordLogger(
+          process.env.APP_NAME,
+          process.env.DISCORD_LOG_WEBHOOK,
+          (process.env.DISCORD_LOG_LEVEL ?? level) as Level,
+        ),
+      );
     }
 
     return new this(ports);
   }
 
-  private constructor(private readonly ports: LoggablePort[]) {
-  }
+  private constructor(private readonly ports: LoggablePort[]) {}
 
   public debug(msg: string, params?: any): void {
     for (const port of this.ports) {

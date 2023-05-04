@@ -142,7 +142,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
           'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
         ),
         this.db().raw(
-          'coalesce("lock_receipt"."chain_id", "claim_receipt"."chainId") as "chainId"',
+          'coalesce("lock_receipt"."chain_id", "claim_receipt"."chain_id") as "chainId"',
         ),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',

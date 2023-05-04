@@ -3,13 +3,14 @@ import { Level, levels } from 'pino';
 import NodeDiscordLogger from 'node-discord-logger';
 import { LoggablePort } from '../../../../domain/common/ports/loggable.port';
 
+const MAX_DISCORD_MESSAGE_LENGTH = 2000;
 export default class DiscordLogger implements LoggablePort {
-  private readonly logger: NodeDiscordLogger;
+  private readonly nodeDiscordLogger: NodeDiscordLogger;
 
   constructor(name: string, hook: string, private level: Level) {
-    this.logger = new NodeDiscordLogger({
+    this.nodeDiscordLogger = new NodeDiscordLogger({
       serviceName: name,
-      hook
+      hook,
     });
   }
 
@@ -22,13 +23,15 @@ export default class DiscordLogger implements LoggablePort {
       return;
     }
 
-    this.logger.debug({
-      message: msg,
-      meta: {
-        level: 'Debug'
-      },
-      json: params
-    });
+    this.nodeDiscordLogger
+      .debug({
+        message: DiscordLogger.truncate(msg),
+        meta: {
+          level: 'Debug',
+        },
+        json: params,
+      })
+      .catch((err) => console.error(err));
   }
 
   public info(msg: string, params?: any): void {
@@ -36,13 +39,15 @@ export default class DiscordLogger implements LoggablePort {
       return;
     }
 
-    this.logger.info({
-      message: msg,
-      meta: {
-        level: 'Info'
-      },
-      json: params
-    });
+    this.nodeDiscordLogger
+      .info({
+        message: DiscordLogger.truncate(msg),
+        meta: {
+          level: 'Info',
+        },
+        json: params,
+      })
+      .catch((e) => console.log(e));
   }
 
   public warning(msg: string, params?: any): void {
@@ -50,13 +55,15 @@ export default class DiscordLogger implements LoggablePort {
       return;
     }
 
-    this.logger.warn({
-      message: msg,
-      meta: {
-        level: 'Warning'
-      },
-      json: params
-    });
+    this.nodeDiscordLogger
+      .warn({
+        message: DiscordLogger.truncate(msg),
+        meta: {
+          level: 'Warning',
+        },
+        json: params,
+      })
+      .catch((err) => console.error(err));
   }
 
   public error(error: Error, msg: string, params?: any): void {
@@ -64,13 +71,19 @@ export default class DiscordLogger implements LoggablePort {
       return;
     }
 
-    this.logger.error({
-      message: msg,
-      meta: {
-        level: 'Error'
-      },
-      error,
-      json: params
-    });
+    this.nodeDiscordLogger
+      .error({
+        message: DiscordLogger.truncate(msg),
+        meta: {
+          level: 'Error',
+        },
+        error,
+        json: params,
+      })
+      .catch((err) => console.error(err));
+  }
+
+  static truncate(string = '') {
+    return string.substring(0, MAX_DISCORD_MESSAGE_LENGTH);
   }
 }

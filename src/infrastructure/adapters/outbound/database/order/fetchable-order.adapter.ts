@@ -47,7 +47,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "lock"."uint256_amount" as "totalLockedUint256",
       "claim"."transaction_hash" as "claimTransactionHash",
       coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress",
-      coalesce("lock_receipt"."chainId", "claim_receipt"."chainId") as "chainId",
+      coalesce("lock_receipt"."chain_id", "claim_receipt"."chain_id") as "chainId",
       "payment"."sequence" as "paymentSequence",
       "payment"."provider_id" as "paymentProviderId"
       from "order"
@@ -142,7 +142,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
           'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
         ),
         this.db().raw(
-          'coalesce("lock_receipt"."chainId", "claim_receipt"."chainId") as "chainId"',
+          'coalesce("lock_receipt"."chain_id", "claim_receipt"."chainId") as "chainId"',
         ),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',
@@ -318,7 +318,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
           'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
         ),
         this.db().raw(
-          'coalesce("lock_receipt"."chainId", "claim_receipt"."chainId") as "chainId"',
+          'coalesce("lock_receipt"."chain_id", "claim_receipt"."chainId") as "chainId"',
         ),
         'payment.sequence as paymentSequence',
         'payment.provider_id as paymentProviderId',

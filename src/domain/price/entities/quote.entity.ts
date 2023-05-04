@@ -1,15 +1,15 @@
+import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 import { TransactionType } from '../dtos/create-quote.dto';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
-  IsoCodes,
 } from '../value-objects/currency-amount.value-object';
 
 export interface Quote<T extends CurrencyIsoCode = CurrencyIsoCode> {
   id: string;
   transactionType: TransactionType;
   userAmount: CurrencyAmount<T>;
-  finalAmountOfTokens: CurrencyAmount<IsoCodes.KNN>;
+  finalAmountOfTokens: CurrencyAmount<IsoCodeType.KNN>;
   total: {
     [k in CurrencyIsoCode]: CurrencyAmount<k>;
   };

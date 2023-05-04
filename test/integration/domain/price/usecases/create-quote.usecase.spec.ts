@@ -1,16 +1,20 @@
 import { FixedPointCalculusAdapter } from '../../../../../src/infrastructure/adapters/outbound/bignumbers/calculus/fixed-point-calculus.adapter';
 import { Quote } from '../../../../../src/domain/price/entities/quote.entity';
 import { FetchableEthBasisPort } from '../../../../../src/domain/price/ports/fetchable-eth-basis.port';
-import { FetchableGasPricePort } from '../../../../../src/domain/price/ports/fetchable-gas-price.port';
+import { FetchableEthereumGasPricePort } from '../../../../../src/domain/price/ports/fetchable-ethereum-gas-price.port';
+import { FetchablePolygonGasPricePort } from '../../../../../src/domain/price/ports/fetchable-polygon-gas-price.port';
 import { FetchableKnnBasisPort } from '../../../../../src/domain/price/ports/fetchable-knn-basis.port';
 import { FetchableUsdBasisPort } from '../../../../../src/domain/price/ports/fetchable-usd-basis.port';
 import { CurrencyAmount } from '../../../../../src/domain/price/value-objects/currency-amount.value-object';
 import { EthQuoteBasis } from '../../../../../src/domain/price/value-objects/eth-quote-basis.value-object';
 import { KnnQuoteBasis } from '../../../../../src/domain/price/value-objects/knn-quote-basis.value-object';
 import { UsdQuoteBasis } from '../../../../../src/domain/price/value-objects/usd-quote-basis.value-object';
+import { MaticQuoteBasis } from '../../../../../src/domain/price/value-objects/matic-quote-basis.value-object';
 import { CreateQuoteUseCase } from '../../../../../src/domain/price/usecases/create-quote.usecase';
 import { Settings } from '../../../../../src/domain/common/settings';
 import { PersistableQuotePort } from '../../../../../src/domain/price/ports/persistable-quote.port';
+import { FetchableMaticBasisPort } from '../../../../../src/domain/price/ports/fetchable-matic-basis.port';
+import { NetworkType } from '../../../../../src/domain/common/enums/network-type.enum';
 
 class FetchableEthBasisMock implements FetchableEthBasisPort {
   fetch(): Promise<EthQuoteBasis> {
@@ -61,7 +65,35 @@ class FetchableUsdBasisMock implements FetchableUsdBasisPort {
   }
 }
 
-class FetchableGasPriceMock implements FetchableGasPricePort {
+class FetchableEthereumGasPriceMock implements FetchableEthereumGasPricePort {
+  fetch(): Promise<CurrencyAmount> {
+    return Promise.resolve({
+      unassignedNumber: '14000000000',
+      decimals: 18,
+      isoCode: 'ETH',
+    });
+  }
+}
+
+class FetchableMaticBasisMock implements FetchableMaticBasisPort {
+  fetch(): Promise<KnnQuoteBasis> {
+    return Promise.resolve({
+      ETH: {
+        unassignedNumber: '000411702224015414',
+        decimals: 18,
+        isoCode: 'ETH',
+      },
+      USD: {
+        unassignedNumber: '50000000',
+        decimals: 8,
+        isoCode: 'USD',
+      },
+      expiration: new Date(2066, 10, 10),
+    });
+  }
+}
+
+class FetchablePolygonGasPriceMock implements FetchablePolygonGasPricePort {
   fetch(): Promise<CurrencyAmount> {
     return Promise.resolve({
       unassignedNumber: '14000000000',
@@ -81,7 +113,10 @@ describe('CreateQuoteUseCase', () => {
   const ethAdapter = new FetchableEthBasisMock();
   const knnAdapter = new FetchableKnnBasisMock();
   const usdAdapter = new FetchableUsdBasisMock();
-  const gasAdapter = new FetchableGasPriceMock();
+  const maticAdapter = new FetchableMaticBasisMock();
+  const ethereumGasAdapter = new FetchableEthereumGasPriceMock();
+  const polygonGasAdapter = new FetchablePolygonGasPriceMock();
+
   const saveQuoteAdapter = new PersistableQuoteMock();
 
   const usecase = new CreateQuoteUseCase(
@@ -93,10 +128,14 @@ describe('CreateQuoteUseCase', () => {
     ethAdapter,
     knnAdapter,
     usdAdapter,
-    gasAdapter,
+    maticAdapter,
+    ethereumGasAdapter,
+    polygonGasAdapter,
     FixedPointCalculusAdapter.getInstance(),
     saveQuoteAdapter,
   );
+
+  const chainId = NetworkType.PolygonMumbai;
 
   it('should calculate a given USD amount', async () => {
     const quote: Quote = await usecase.execute({
@@ -105,15 +144,14 @@ describe('CreateQuoteUseCase', () => {
         decimals: 2,
         isoCode: 'USD',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('1000000000000000000000');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('999998774860000000594');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given BRL amount', async () => {
@@ -123,37 +161,31 @@ describe('CreateQuoteUseCase', () => {
         decimals: 2,
         isoCode: 'BRL',
       },
+      chainId,
     });
 
-    const { finalAmountOfTokens, netTotalInUsd } = quote;
+    const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('186581088140906037764');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('186579863000906038358');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    expect(netTotalInUsd.unassignedNumber).toBe('93290544070453018882');
-    expect(netTotalInUsd.isoCode).toBe('USD');
-    expect(netTotalInUsd.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given ETH amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
-        unassignedNumber: '000411702224015414',
+        unassignedNumber: '041170222401541400',
         decimals: 18,
         isoCode: 'ETH',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('1000000000000000000');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('100000000000000000000');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given ETH amount', async () => {
@@ -163,6 +195,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 0,
         isoCode: 'ETH',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -170,25 +203,22 @@ describe('CreateQuoteUseCase', () => {
     expect(finalAmountOfTokens.unassignedNumber).toBe('2428940000000000774443');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
-
-    console.info(quote);
   });
 
   it('should calculate a given KNN amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
-        unassignedNumber: '1',
+        unassignedNumber: '1000',
         decimals: 0,
         isoCode: 'KNN',
       },
+      chainId,
     });
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('1');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('1000');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(0);
-
-    console.info(quote);
   });
 });

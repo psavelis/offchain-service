@@ -9,7 +9,10 @@ import { ClaimLockedSupplyDto } from '../../../../../domain/supply/dtos/claim-lo
 import { DelegateClaimPort } from '../../../../../domain/supply/ports/delegate-claim.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
 import { KannaPreSale } from '../protocol/contracts';
-import { Settings } from 'src/domain/common/settings';
+import { Settings } from '../../../../../domain/common/settings';
+import { SignerType } from '../../../../../domain/common/enums/signer-type.enum';
+import { Chain } from '../../../../../domain/common/entities/chain.entity';
+import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
 
 const claimType =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce)';
@@ -81,9 +84,15 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       ],
     };
 
-    const isLegacy = this.isLegacy(order);
+    const chain = new Chain(order.getChainId());
 
-    const signature = await this.signaturePort.sign(payload, isLegacy);
+    const isLegacy = this.isLegacy(order, chain);
+
+    const signature = await this.signaturePort.sign(
+      payload,
+      isLegacy ? SignerType.PreSaleClaimManager : SignerType.SaleClaimManager,
+      chain,
+    );
 
     this.logger.debug(
       `[delegate-sign][signature-generated] Order ${order.getId()} has been signed referencing #${paymentSequence} issued by [${
@@ -94,10 +103,15 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     return signature;
   }
 
-  isLegacy(order: Order) {
-    const currentContract = this.settings.blockchain.contracts.saleAddress;
+  isLegacy(order: Order, chain: Chain) {
+    if (chain.layer !== LayerType.L1) {
+      return false;
+    }
 
-    return order.getContractAddress() !== currentContract;
+    const preSaleContract =
+      this.settings.blockchain.ethereum.contracts.legacyPreSaleAddress;
+
+    return order.getContractAddress() === preSaleContract;
   }
 
   async estimateClaimLocked(
@@ -105,13 +119,17 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     order: Order,
     signature: SignatureResult,
   ): Promise<void> {
-    const presale: KannaPreSale = this.isLegacy(order)
+    const chain = new Chain(order.getChainId());
+
+    const saleContract: KannaPreSale = this.isLegacy(order, chain)
       ? await this.provider.legacyPreSale()
+      : chain.layer === LayerType.L2
+      ? await this.provider.polygonSale()
       : await this.provider.sale();
 
     const paymentSequence = String(order.getPaymentSequence());
 
-    await presale.estimateGas.claimLocked(
+    await saleContract.estimateGas.claimLocked(
       claimRequest.cryptoWallet!,
       order.getAmountOfTokens().unassignedNumber,
       paymentSequence,

@@ -5,6 +5,16 @@ export const formatDecimals = (
 ) => {
   const separator = options?.separator ?? '.';
 
+  if (!decimalsLength) {
+    return `${value}${separator}${'0'.repeat(options?.truncateDecimals ?? 2)}`;
+  }
+
+  if (decimalsLength < 0) {
+    throw new Error(
+      'formatDecimals: Decimals length must be greater than or equal to zero',
+    );
+  }
+
   const valuePadded = value.padStart(decimalsLength, '0');
 
   const integer = valuePadded.slice(0, -decimalsLength).padStart(1, '0');
@@ -27,8 +37,7 @@ export const hideEmailPartially = (emailAddress: string) => {
   });
 };
 
-export const onlyDigits = /^\d+$/;
-
-export const onlyCurrencies = /^[A-Z]{3,5}$/;
-
+export const cryptoWalletRegEx: RegExp = /^0x[a-fA-F0-9]{40}$/g;
+export const onlyDigits: RegExp = /^\d+$/;
+export const onlyCurrencies: RegExp = /^[A-Z]{3,5}$/;
 export const validateDecimals = (n: number) => n >= 0 && n <= 18;

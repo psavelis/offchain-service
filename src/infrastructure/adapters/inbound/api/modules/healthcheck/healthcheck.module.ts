@@ -2,8 +2,8 @@ import { Module, Scope } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthcheckController } from './healthcheck.controller';
 
-import { Loggable } from 'src/domain/common/ports/loggable.port';
-import { DatabaseHealthcheck } from 'src/domain/healthcheck/usecases/database-connection.usecase';
+import { Loggable } from '../../../../../../domain/common/ports/loggable.port';
+import { DatabaseHealthcheck } from '../../../../../../domain/healthcheck/usecases/database-connection.usecase';
 import { DatabaseHealthcheckFactory } from '../../../../../factories/healthcheck/database-healthcheck.factory';
 import { LoggablePortFactory } from '../../../../../factories/common/loggable-port.factory';
 

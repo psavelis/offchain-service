@@ -4,19 +4,20 @@ import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
 import { EncryptionPort } from '../../common/ports/encryption.port';
+import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 
 import {
   CurrencyAmount,
   CurrencyIsoCode,
-  IsoCodes,
 } from '../../price/value-objects/currency-amount.value-object';
-import { formatDecimals } from '../../common/util';
+import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
 import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
-import { LoggablePort } from 'src/domain/common/ports/loggable.port';
+import { LoggablePort } from '../../../domain/common/ports/loggable.port';
+import { LayerType } from '../../common/enums/layer-type.enum';
 
-const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE);
+const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
@@ -32,10 +33,10 @@ const identifiers = {
 };
 
 const allowedIsoCodes = [
-  IsoCodes.BRL,
-  IsoCodes.ETH,
-  IsoCodes.KNN,
-  IsoCodes.USD,
+  IsoCodeType.BRL,
+  IsoCodeType.ETH,
+  IsoCodeType.KNN,
+  IsoCodeType.USD,
 ];
 
 const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
@@ -50,6 +51,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   ) {}
 
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
+    this.validateCurrentChain(request);
+
     CreateBrazilianPixOrderUseCase.validate(request);
 
     const quote = await this.createQuoteInteractor
@@ -57,6 +60,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         amount: request.amount,
         transactionType:
           request.identifierType === 'CW' ? 'Claim' : 'LockSupply',
+        chainId: this.settings.blockchain.current.id,
       })
       .catch((err) => {
         this.logger.error(err, '[quote-error]');
@@ -75,6 +79,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     );
 
     CreateBrazilianPixOrderUseCase.validateMinimumAmount(quote.total.BRL);
+
+    // TODO: validar supply (cachear(!))
 
     const totalGas = Number(
       formatDecimals(
@@ -102,7 +108,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
 
     let order = new Order({
       paymentOption: PaymentOption.BrazilianPix,
-      isoCode: IsoCodes.BRL,
+      isoCode: IsoCodeType.BRL,
       total,
       userIdentifier: request.userIdentifier,
       identifierType: request.identifierType,
@@ -145,6 +151,15 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     };
   }
 
+  private validateCurrentChain(request: CreateOrderDto) {
+    if (
+      request.amount.isoCode === IsoCodeType.MATIC &&
+      this.settings.blockchain.current.layer !== LayerType.L2
+    ) {
+      throw new Error('MATIC orders not available on L1');
+    }
+  }
+
   private static validateMinimumAmount(
     amount: CurrencyAmount<CurrencyIsoCode>,
   ) {
@@ -166,7 +181,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       throw new Error('invalid identifierType');
     }
 
-    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodes)) {
+    if (!allowedIsoCodes.includes(amount.isoCode as IsoCodeType)) {
       throw new Error('invalid isoCode');
     }
 
@@ -175,7 +190,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     }
 
     if (identifiers.CriptoWallet === identifierType) {
-      if (!userIdentifier.match(/(\b0x[a-f0-9]{40}\b)/g)) {
+      if (!userIdentifier.match(cryptoWalletRegEx)) {
         throw new Error('invalid wallet address');
       }
     }
@@ -190,11 +205,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       }
     }
 
-    if (amount.isoCode === IsoCodes.BRL) {
+    if (amount.isoCode === IsoCodeType.BRL) {
       CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
     }
-
-    // TODO: validar supply (cachear(!))
-    // TODO: criar base type pra trafegar mensagens de erro tratadas para o front
   }
 }

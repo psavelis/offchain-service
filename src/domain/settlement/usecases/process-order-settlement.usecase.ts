@@ -8,7 +8,7 @@ import { CreateOrderTransitionInteractor } from '../../order/interactors/create-
 import { MailerPort } from '../../common/ports/mailer.port';
 import purchaseConfirmationTemplate from '../../order/mails/purchase-confirmation.template';
 import { formatDecimals } from '../../common/util';
-import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
+import { EncryptionPort } from '../../common/ports/encryption.port';
 
 const DEFAULT_KNN_DECIMALS = 8;
 const MAINNET_CHAIN_ID = 1;

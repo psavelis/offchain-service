@@ -6,13 +6,17 @@ import {
   Inject,
 } from '@nestjs/common';
 import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
+import { Throttle } from '@nestjs/throttler';
 
-import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
+import {
+  Loggable,
+  LoggablePort,
+} from '../../../../../../domain/common/ports/loggable.port';
 
 import {
   DatabaseHealthcheck,
   DatabaseConnectionUseCase,
-} from 'src/domain/healthcheck/usecases/database-connection.usecase';
+} from '../../../../../../domain/healthcheck/usecases/database-connection.usecase';
 
 @Controller('healthcheck')
 export class HealthcheckController {
@@ -25,6 +29,7 @@ export class HealthcheckController {
   ) {}
 
   @Get()
+  @Throttle(60, 60)
   @HealthCheck()
   async healthcheck() {
     try {

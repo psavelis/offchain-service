@@ -7,4 +7,5 @@ export interface CreateQuoteDto {
   amount: CurrencyAmount;
   transactionType?: TransactionType;
   forceReload?: boolean;
+  chainId: number;
 }

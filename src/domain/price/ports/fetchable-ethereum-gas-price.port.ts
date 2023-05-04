@@ -1,5 +1,5 @@
 import { CurrencyAmount } from '../value-objects/currency-amount.value-object';
 
-export interface FetchableGasPricePort {
+export interface FetchableEthereumGasPricePort {
   fetch(forceReload?: boolean): Promise<CurrencyAmount>;
 }

@@ -8,8 +8,9 @@ import { ConfirmationRecord } from '../dtos/confirmation-record.dto';
 import { Clearing } from '../entities/clearing.entity';
 import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
 import { Transaction } from '../value-objects/transaction.value-object';
-import { CreateQuoteInteractor } from 'src/domain/price/interactors/create-quote.interactor';
-import { formatDecimals } from 'src/domain/common/util';
+import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { formatDecimals } from '../../common/util';
+import { Settings } from '../../common/settings';
 
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
@@ -24,6 +25,7 @@ export class ProcessStatementTransactionUseCase
   implements ProcessStatementTransactionInteractor
 {
   constructor(
+    readonly settings: Settings,
     readonly logger: LoggablePort,
     readonly createPaymentInteractor: CreatePaymentInteractor,
     readonly createQuoteInteractor: CreateQuoteInteractor,
@@ -96,6 +98,7 @@ export class ProcessStatementTransactionUseCase
             decimals: 2,
             isoCode: 'BRL',
           },
+          chainId: this.settings.blockchain.current.id,
           transactionType:
             matchingOrder.getIdentifierType() === 'EA' ? 'LockSupply' : 'Claim',
         });

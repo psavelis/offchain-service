@@ -30,7 +30,7 @@ import Mailer from '../../adapters/outbound/smtp/mailer.adapter';
 import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecases/create-order-status-transition.usecase';
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
 import { CreateOrderTransitionInteractor } from '../../../domain/order/interactors/create-order-status-transition.interactor';
-import { EncryptionPort } from 'src/domain/common/ports/encryption.port';
+import { EncryptionPort } from '../../../domain/common/ports/encryption.port';
 import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
 
 const disabled = {
@@ -56,8 +56,10 @@ export class CreateSettlementFactory {
       const claimSupplyPort: ClaimSupplyPort =
         ClaimSupplyRpcAdapter.getInstance(kannaProvider);
 
-      const lockSupplyPort: LockSupplyPort =
-        LockSupplyRpcAdapter.getInstance(kannaProvider);
+      const lockSupplyPort: LockSupplyPort = LockSupplyRpcAdapter.getInstance(
+        settings,
+        kannaProvider,
+      );
 
       const persistableClaimPort: PersistableClaimPort =
         PersistableClaimDbAdapter.getInstance(knexPostgresDb);

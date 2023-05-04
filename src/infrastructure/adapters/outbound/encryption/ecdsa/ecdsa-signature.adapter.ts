@@ -6,29 +6,59 @@ import {
   SignatureResult,
 } from '../../../../../domain/common/ports/signature.port';
 
+import { Chain } from '../../../../../domain/common/entities/chain.entity';
 import { Settings } from '../../../../../domain/common/settings';
+import { SignerType } from '../../../../../domain/common/enums/signer-type.enum';
+import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
+import { NetworkType } from '../../../../../domain/common/enums/network-type.enum';
 
 const contractOffset = BigNumber.from('1');
 
 export class ECDSASignatureAdapter implements SignaturePort {
   static instance: SignaturePort;
-  private legacySignerWallet: Wallet;
-  private currentSignerWallet: Wallet;
+  private signers: Record<LayerType, Record<SignerType, Wallet>>;
 
   private constructor(readonly settings: Settings) {
-    const provider = new ethers.providers.JsonRpcProvider(
-      settings.blockchain.providerEndpoint,
+    const ethereumProvider = new ethers.providers.JsonRpcProvider(
+      settings.blockchain.ethereum.providerEndpoint,
     );
 
-    this.legacySignerWallet = new ethers.Wallet(
-      settings.blockchain.legacyClaimSignerKey,
-      provider,
+    const polygonProvider = new ethers.providers.JsonRpcProvider(
+      settings.blockchain.polygon.providerEndpoint,
     );
 
-    this.currentSignerWallet = new ethers.Wallet(
-      settings.blockchain.currentClaimSignerKey,
-      provider,
-    );
+    const layer1Signers = {
+      [SignerType.PreSaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.ethereum.legacyClaimSignerKey,
+        ethereumProvider,
+      ),
+
+      [SignerType.SaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.ethereum.currentClaimSignerKey,
+        ethereumProvider,
+      ),
+
+      [SignerType.BadgesMinter]: new ethers.Wallet(
+        settings.blockchain.ethereum.badgesMinterSignerKey,
+        ethereumProvider,
+      ),
+    };
+
+    const layer2Signers = {
+      [SignerType.SaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.polygon.claimSignerKey,
+        polygonProvider,
+      ),
+
+      // unavailable
+      [SignerType.PreSaleClaimManager]: undefined,
+      [SignerType.BadgesMinter]: undefined,
+    };
+
+    this.signers = {
+      [LayerType.L1]: layer1Signers,
+      [LayerType.L2]: layer2Signers,
+    };
   }
 
   static getInstance(settings: Settings) {
@@ -41,7 +71,8 @@ export class ECDSASignatureAdapter implements SignaturePort {
 
   async sign(
     payload: SignaturePayload,
-    legacy: boolean,
+    signerType: SignerType,
+    chain: Chain,
   ): Promise<SignatureResult> {
     const hex32nonce = hexlify(randomBytes(32));
 
@@ -50,11 +81,24 @@ export class ECDSASignatureAdapter implements SignaturePort {
     const types = [...payload.types, 'uint256'];
     const values = [...payload.values, uint256Nonce];
 
+    if (chain.layer !== LayerType.L1) {
+      types.push('uint256');
+      values.push(String(chain.id));
+    }
+
     const messageHash = ethers.utils.keccak256(
       ethers.utils.defaultAbiCoder.encode(types, values),
     );
 
-    const signer = legacy ? this.legacySignerWallet : this.currentSignerWallet;
+    const signer = this.signers[chain.layer][signerType];
+
+    if (!signer) {
+      throw new Error(
+        `Signer ${SignerType[signerType]} is not available on Layer ${
+          LayerType[chain.layer]
+        } (Network=${NetworkType[chain.id]}, ID=${chain.id})`,
+      );
+    }
 
     const signature = await signer.signMessage(
       ethers.utils.arrayify(messageHash),
@@ -64,6 +108,7 @@ export class ECDSASignatureAdapter implements SignaturePort {
       signature,
       nonce: uint256Nonce.toString(),
       cryptoWallet: payload.values[1],
+      chain,
     };
   }
 

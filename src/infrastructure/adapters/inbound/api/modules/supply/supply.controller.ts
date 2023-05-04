@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Inject,
@@ -10,8 +9,11 @@ import {
   Req,
 } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { Loggable, LoggablePort } from 'src/domain/common/ports/loggable.port';
-import { MinimalSignedClaim } from 'src/domain/supply/dtos/signed-claim.dto';
+import {
+  Loggable,
+  LoggablePort,
+} from '../../../../../../domain/common/ports/loggable.port';
+import { MinimalSignedClaim } from '../../../../../../domain/supply/dtos/signed-claim.dto';
 import { ClaimLockedSupplyDto } from '../../../../../../domain/supply/dtos/claim-locked-supply.dto';
 import {
   ClaimLockedSupply,
@@ -51,6 +53,9 @@ export class SupplyController {
           throw err;
         });
     } catch (err) {
+      console.log(
+        `putClaim ${SupplyController.name}, [${ip}@${req?.headers['user-agent']}], ${err.message}`,
+      );
       this.logger.debug(err, '[400] PUT /supply/claim');
     }
   }
@@ -81,6 +86,9 @@ export class SupplyController {
 
       return result;
     } catch (err) {
+      console.log(
+        `patchClaim ${SupplyController.name}, [${ip}@${req?.headers['user-agent']}], ${err.message}`,
+      );
       this.logger.debug(err, '[400] PATCH /supply/claim ');
     }
   }

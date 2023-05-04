@@ -26,11 +26,11 @@ import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecas
 import { CreateOrderTransitionInteractor } from '../../../domain/order/interactors/create-order-status-transition.interactor';
 import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbound/database/order/persistable-order-status-transition.adapter';
 import { PersistableOrderStatusTransitionPort } from '../../../domain/order/ports/persistable-order-status-transition.port';
-import { Clearing } from 'src/domain/clearing/entities/clearing.entity';
-import { RefreshOrderInteractor } from 'src/domain/order/interactors/refresh-order.interactor';
-import { PersistableOrderDbAdapter } from 'src/infrastructure/adapters/outbound/database/order/persistable-order.adapter';
-import { PersistableOrderPort } from 'src/domain/order/ports/persistable-order.port';
-import { CreateQuoteInteractor } from 'src/domain/price/interactors/create-quote.interactor';
+import { Clearing } from '../../../domain/clearing/entities/clearing.entity';
+import { RefreshOrderInteractor } from '../../../domain/order/interactors/refresh-order.interactor';
+import { PersistableOrderDbAdapter } from '../../adapters/outbound/database/order/persistable-order.adapter';
+import { PersistableOrderPort } from '../../../domain/order/ports/persistable-order.port';
+import { CreateQuoteInteractor } from '../../../domain/price/interactors/create-quote.interactor';
 import { CreateQuoteFactory } from '../price/create-quote.factory';
 
 const disabled = {
@@ -91,6 +91,7 @@ export class CreateClearingFactory {
 
       const processTransactionInteractor: ProcessStatementTransactionInteractor =
         new ProcessStatementTransactionUseCase(
+          settings,
           logger,
           createPaymentInteractor,
           createQuoteInteractor,

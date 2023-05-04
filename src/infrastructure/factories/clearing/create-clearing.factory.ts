@@ -91,6 +91,7 @@ export class CreateClearingFactory {
 
       const processTransactionInteractor: ProcessStatementTransactionInteractor =
         new ProcessStatementTransactionUseCase(
+          settings,
           logger,
           createPaymentInteractor,
           createQuoteInteractor,

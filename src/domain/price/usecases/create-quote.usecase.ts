@@ -150,19 +150,8 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       amount: { isoCode: userCurrency },
     } = entry;
 
-    let entryAmount: CurrencyAmount<CurrencyIsoCode> = entry.amount;
-
-    if (userCurrency === IsoCodeType.BRL || userCurrency === IsoCodeType.USD) {
-      entryAmount = this.calculusPort.sub(
-        entry.amount,
-        userEstimatedGasFee[userCurrency],
-      );
-    } else if (userCurrency === IsoCodeType.KNN) {
-      entryAmount = this.calculusPort.sum(
-        entry.amount,
-        userEstimatedGasFee[userCurrency],
-      );
-    }
+    const entryAmount: CurrencyAmount<CurrencyIsoCode> =
+      this.prepareEntryAmount(entry, userCurrency, userEstimatedGasFee);
 
     const userQuotation: QuotationAggregate = this.getQuotation[userCurrency](
       entryAmount,
@@ -234,6 +223,37 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     };
 
     return quote;
+  }
+
+  private prepareEntryAmount(
+    entry: CreateQuoteDto,
+    userCurrency: string,
+    userEstimatedGasFee: QuotationAggregate,
+  ) {
+    let entryAmount: CurrencyAmount<CurrencyIsoCode> = entry.amount;
+
+    if (userCurrency === IsoCodeType.BRL || userCurrency === IsoCodeType.USD) {
+      const gasFee = userEstimatedGasFee[userCurrency];
+      try {
+        entryAmount = this.calculusPort.sub(entry.amount, gasFee);
+      } catch (err) {
+        {
+          if (err.message?.includes('negative')) {
+            const message = `Gas fee (${gasFee}) is higher than the amount (${entryAmount}) entered. (${err.message})`;
+
+            throw new Error(message);
+          }
+
+          throw err;
+        }
+      }
+    } else if (userCurrency === IsoCodeType.KNN) {
+      entryAmount = this.calculusPort.sum(
+        entry.amount,
+        userEstimatedGasFee[userCurrency],
+      );
+    }
+    return entryAmount;
   }
 
   async calculateGas(
@@ -320,7 +340,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,
@@ -360,7 +380,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,
@@ -394,7 +414,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.ETH,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,
@@ -440,7 +460,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       IsoCodeType.BRL,
     );
 
-    const amountInMATIC = this.calculusPort.multiply(
+    const amountInMATIC = this.calculusPort.divide(
       amountInETH,
       maticQuotation.ETH,
       IsoCodeType.MATIC,

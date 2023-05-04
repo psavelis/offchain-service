@@ -56,8 +56,10 @@ export class CreateSettlementFactory {
       const claimSupplyPort: ClaimSupplyPort =
         ClaimSupplyRpcAdapter.getInstance(kannaProvider);
 
-      const lockSupplyPort: LockSupplyPort =
-        LockSupplyRpcAdapter.getInstance(kannaProvider);
+      const lockSupplyPort: LockSupplyPort = LockSupplyRpcAdapter.getInstance(
+        settings,
+        kannaProvider,
+      );
 
       const persistableClaimPort: PersistableClaimPort =
         PersistableClaimDbAdapter.getInstance(knexPostgresDb);

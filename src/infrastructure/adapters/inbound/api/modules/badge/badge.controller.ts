@@ -28,7 +28,7 @@ export class BadgeController {
   ) {}
 
   @Get('')
-  @Throttle(3, 60)
+  @Throttle(4, 60)
   async getBadges(
     @Query('CW') base64CryptoWallet: string,
     @Req() req,

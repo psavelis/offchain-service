@@ -39,10 +39,10 @@ export class ImportDelegateSignatureClaimUseCase
     return claimedWithSignature;
   }
 
-  async reconcile(
+  reconcile(
     unsettledOrders: Order[],
     onchainUserReceipts: OnChainUserReceipt[],
-  ): Promise<OnchainDelegateClaimEvent[]> {
+  ): OnchainDelegateClaimEvent[] {
     const orders: UnsettledDictionary = this.parseDictionary(unsettledOrders);
 
     const settled: OnchainDelegateClaimEvent[] = [];

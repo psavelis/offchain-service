@@ -15,6 +15,7 @@ import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
 import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from '../../../domain/common/ports/loggable.port';
+import { LayerType } from '../../common/enums/layer-type.enum';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
@@ -50,6 +51,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   ) {}
 
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
+    this.validateCurrentChain(request);
+
     CreateBrazilianPixOrderUseCase.validate(request);
 
     const quote = await this.createQuoteInteractor
@@ -146,6 +149,15 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       lockTransactionHash: undefined,
       claimTransactionHash: undefined,
     };
+  }
+
+  private validateCurrentChain(request: CreateOrderDto) {
+    if (
+      request.amount.isoCode === IsoCodeType.MATIC &&
+      this.settings.blockchain.current.layer !== LayerType.L2
+    ) {
+      throw new Error('MATIC orders not available on L1');
+    }
   }
 
   private static validateMinimumAmount(

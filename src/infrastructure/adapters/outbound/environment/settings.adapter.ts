@@ -58,10 +58,17 @@ export class SettingsAdapter {
         identitySecret: this.envString('IDENTITY_SECRET'),
       },
       blockchain: {
+        // TODO: toggle for l2 bridge
+        // current: new Chain(
+        //   process.env.NODE_ENV === 'production'
+        //     ? NetworkType.Polygon
+        //     : NetworkType.PolygonMumbai,
+        // ),
+
         current: new Chain(
-          process.env.NODE_ENV
-            ? NetworkType.Polygon
-            : NetworkType.PolygonMumbai,
+          process.env.NODE_ENV === 'production'
+            ? NetworkType.Ethereum
+            : NetworkType.EthereumGoerli,
         ),
         ethereum: {
           providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),

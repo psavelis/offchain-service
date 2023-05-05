@@ -247,7 +247,7 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     if (result) {
       processedPayments[providerPaymentId] = result;
 
-      this.logger.info(
+      this.logger.debug(
         `Confirmed: #${result.payment.getSequence()} (ProviderID: ${providerPaymentId}) => OrderID: ${order.getId()})`,
       );
 

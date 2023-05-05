@@ -13,6 +13,7 @@ import { Settings } from '../../../../../domain/common/settings';
 import { SignerType } from '../../../../../domain/common/enums/signer-type.enum';
 import { Chain } from '../../../../../domain/common/entities/chain.entity';
 import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
+import { NetworkType } from 'src/domain/common/enums/network-type.enum';
 
 const claimType =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce)';
@@ -94,8 +95,10 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       chain,
     );
 
-    this.logger.debug(
-      `[delegate-sign][signature-generated] Order ${order.getId()} has been signed referencing #${paymentSequence} issued by [${
+    this.logger.info(
+      `Signature: ${order.getEndToEndId()} has been signed on ${
+        NetworkType[chain.id]
+      } ${chain.layer} referencing #${paymentSequence} issued by [${
         claimRequest.clientIp
       } @ ${claimRequest.clientAgent}]`,
     );
@@ -137,8 +140,10 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       signature.nonce,
     );
 
-    this.logger.info(
-      `[estimate-sign][signature-verified] Order ${order.getId()} has been signed referencing #${paymentSequence} issued by [${
+    this.logger.debug(
+      `[estimate-sign][signature-verified] Order ${order.getId()} has been signed on ${
+        NetworkType[chain.id]
+      } ${chain.layer} referencing #${paymentSequence} issued by [${
         claimRequest.clientIp
       }] @ ${claimRequest.clientAgent}`,
     );

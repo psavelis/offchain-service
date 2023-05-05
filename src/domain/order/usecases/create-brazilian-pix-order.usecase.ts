@@ -1,5 +1,5 @@
 import { CreateOrderDto } from '../dtos/create-order.dto';
-import { Order, PaymentOption } from '../entities/order.entity';
+import { Order, OrderStatus, PaymentOption } from '../entities/order.entity';
 import { CreateOrderInteractor } from '../interactors/create-order.interactor';
 import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
 import { PersistableOrderPort } from '../ports/persistable-order.port';
@@ -63,7 +63,10 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         chainId: this.settings.blockchain.current.id,
       })
       .catch((err) => {
-        this.logger.error(err, '[quote-error]');
+        this.logger.error(
+          err,
+          `[quote-error] Cannot place order for user ${request.clientIp}! (${request.clientAgent})]`,
+        );
       });
 
     if (!quote) {
@@ -134,6 +137,14 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       order.getTotal(),
       order.getEndToEndId(),
       this.settings.pix.productDescription,
+    );
+
+    this.logger.info(
+      `New Order: ${order.getEndToEndId()} ${
+        OrderStatus[order.getStatus()]
+      } (${order.getStatusDescription()}) expires at ${order
+        .getExpiresAt()
+        .toISOString()}`,
     );
 
     return {

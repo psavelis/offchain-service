@@ -16,6 +16,9 @@ import { Receipt } from '../entities/receipt.entity';
 import { EncryptionPort } from '../../common/ports/encryption.port';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from '../../common/ports/loggable.port';
+import { NetworkType } from '../../common/enums/network-type.enum';
+import { LayerType } from '../../common/enums/layer-type.enum';
+import { Chain } from 'src/domain/common/entities/chain.entity';
 
 const Email = 'EA';
 const CryptoWallet = 'CW';
@@ -80,7 +83,19 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
 
       await this.persistableClaimPort.update(claim);
 
+      const chain = new Chain(receipt.chainId);
+
       order.setStatus(OrderStatus.Claimed);
+
+      this.logger.info(
+        `Settlement: ${order.getEndToEndId()} (Nonce ${
+          payment.sequence
+        }) was succesfuly settled on holder wallet at ${
+          NetworkType[chain.id]
+        } ${LayerType[chain.layer]} (Txn: ${chain.getBlockExplorerUrl(
+          receipt.transactionHash,
+        )})`,
+      );
 
       return {
         order,
@@ -117,6 +132,16 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
       await this.persistableLockPort.update(lock);
 
       order.setStatus(OrderStatus.Locked);
+
+      const chain = new Chain(receipt.chainId);
+
+      this.logger.info(
+        `Settlement: ${order.getEndToEndId()} (Nonce ${
+          payment.sequence
+        }) was succesfuly locked to holder email at ${NetworkType[chain.id]} ${
+          LayerType[chain.layer]
+        } (Txn: ${chain.getBlockExplorerUrl(receipt.transactionHash)})`,
+      );
 
       return {
         order,

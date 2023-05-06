@@ -158,9 +158,15 @@ export class ProcessStatementTransactionUseCase
 
       matchingOrder.setStatus(OrderStatus.Confirmed);
 
+      const reason = `#${payment.getSequence()} streamed from cID:${clearing.getId()} with external: ${providerPaymentId}`;
+
       await this.orderTransitionInteractor.execute(matchingOrder, {
-        reason: `#${payment.getSequence()} streamed from ${clearing.getId()} with external: ${providerPaymentId}`,
+        reason,
       });
+
+      this.logger.info(
+        `New Payment! ${order.getEndToEndId()} was sucessfuly paid: (${reason})`,
+      );
 
       return {
         payment,

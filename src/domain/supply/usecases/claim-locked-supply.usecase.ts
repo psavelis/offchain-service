@@ -71,7 +71,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
   async executeChallenge(entry: ClaimLockedSupplyDto) {
     if (banlistByIP[entry.clientIp]) {
-      this.logger.debug(
+      this.logger.warning(
         `[skip] banned user ${entry.clientIp} (attempted: ${hideEmailPartially(
           entry.emailAddress,
         )})`,

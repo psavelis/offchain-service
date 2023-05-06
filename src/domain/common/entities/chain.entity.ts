@@ -76,4 +76,12 @@ export class Chain {
     obj.toJSON = undefined;
     return JSON.stringify(obj, keys);
   }
+
+  public getBlockExplorerUrl(txnHash: string) {
+    if (this.layer === LayerType.L1) {
+      return `https://etherscan.io/tx/${txnHash}`;
+    } else if (this.layer === LayerType.L2) {
+      return `https://polygonscan.com/tx/${txnHash}`;
+    }
+  }
 }

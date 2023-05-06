@@ -239,7 +239,17 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       } catch (err) {
         {
           if (err.message?.includes('negative')) {
-            const message = `Gas fee (${gasFee}) is higher than the amount (${entryAmount}) entered. (${err.message})`;
+            const message = `Gas fee (${formatDecimals(
+              gasFee.unassignedNumber,
+              gasFee.decimals,
+              DEFAULT_BRL_TRUNCATE_OPTIONS,
+            )} ${
+              entryAmount.isoCode
+            }) is higher than the amount (${formatDecimals(
+              entryAmount.unassignedNumber,
+              entryAmount.decimals,
+              DEFAULT_BRL_TRUNCATE_OPTIONS,
+            )} ${entryAmount.isoCode}) entered. (${err.message})`;
 
             throw new Error(message);
           }

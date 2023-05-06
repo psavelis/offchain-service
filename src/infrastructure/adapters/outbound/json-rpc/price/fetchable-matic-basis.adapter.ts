@@ -109,7 +109,7 @@ export class FetchableMaticBasisJsonRpcAdapter
     )
       .subUnsafe(
         FixedNumber.fromValue(
-          utils.parseUnits('0.0005', MATIC_QUOTATION_DECIMALS),
+          utils.parseUnits('0.00000001', MATIC_QUOTATION_DECIMALS),
           MATIC_QUOTATION_DECIMALS,
           'ufixed128x18',
         ),

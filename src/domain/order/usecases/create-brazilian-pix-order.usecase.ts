@@ -140,9 +140,9 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     );
 
     this.logger.info(
-      `New Order: ${order.getEndToEndId()} ${
+      `New Order ${
         OrderStatus[order.getStatus()]
-      } (${order.getStatusDescription()}) expires at ${order
+      } (${order.getStatusDescription()}): ${order.getEndToEndId()} expires at ${order
         .getExpiresAt()
         .toISOString()}`,
     );

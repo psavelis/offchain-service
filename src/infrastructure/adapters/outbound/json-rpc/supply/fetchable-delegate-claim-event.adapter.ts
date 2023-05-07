@@ -43,6 +43,7 @@ export class FetchableDelegateClaimEventRpcAdapter
                 gasUsed: Number(gasUsed),
                 cumulativeGasUsed: Number(cumulativeGasUsed),
                 effectiveGasPrice: Number(effectiveGasPrice),
+                uint256Amount: amountInKNN.toString(),
               };
 
               return userReceipt;

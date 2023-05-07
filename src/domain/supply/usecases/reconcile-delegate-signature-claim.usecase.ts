@@ -1,22 +1,18 @@
 import { OnChainUserReceipt } from '../dtos/onchain-user-receipt.dto';
-import { ImportDelegateSignatureClaimInteractor } from '../interactors/import-delegate-signature-claim.interactor';
+import { ReconcileDelegateSignatureClaimInteractor } from '../interactors/reconcile-delegate-signature-claim.interactor';
 import { FetchableDelegateClaimEventPort } from '../ports/fetchable-delegate-claim-event.port';
 import { FetchableOrderPort } from '../../order/ports/fetchable-order.port';
 import { Order, OrderStatus } from '../../order/entities/order.entity';
 import { OnchainDelegateClaimEvent } from '../dtos/onchain-delegate-claim-event.dto';
 import { LoggablePort } from '../../common/ports/loggable.port';
-import { Settings } from '../../common/settings';
-import { EncryptionPort } from '../../common/ports/encryption.port';
 
 type PaymentSequence = number;
 type UnsettledDictionary = Record<PaymentSequence, Order>;
 
-export class ImportDelegateSignatureClaimUseCase
-  implements ImportDelegateSignatureClaimInteractor
+export class ReconcileDelegateSignatureClaimUseCase
+  implements ReconcileDelegateSignatureClaimInteractor
 {
   constructor(
-    readonly settings: Settings,
-    readonly encryptionPort: EncryptionPort,
     readonly logger: LoggablePort,
     readonly fetchableDelegateClaimEventPort: FetchableDelegateClaimEventPort,
     readonly fetchableOrderPort: FetchableOrderPort,
@@ -27,6 +23,7 @@ export class ImportDelegateSignatureClaimUseCase
       this.fetchableOrderPort.fetchLockedAndNotClaimedInStatus(
         OrderStatus.Owned,
         OrderStatus.Challenged,
+        OrderStatus.Locked,
       ),
       this.fetchableDelegateClaimEventPort.fetch(),
     ]);
@@ -54,14 +51,23 @@ export class ImportDelegateSignatureClaimUseCase
         continue;
       }
 
-      if (order.getTotalKnn() !== userReceipt.amountInKnn) {
+      if (
+        order.getTotalKnn() > userReceipt.amountInKnn + 0.001 ||
+        order.getTotalKnn() < userReceipt.amountInKnn - 0.001
+      ) {
         this.logger.warning(
-          `[reconcile-unsettled-orders] Order ${order.getId()} (Payment #${order.getPaymentSequence()}) has a mismatched claimed amount. Expected ${order.getTotalKnn()} but got ${
+          `[SECURITY][reconcile-unsettled-orders] Order ${order.getId()} (Payment #${order.getPaymentSequence()}) has a mismatched claimed amount. Expected ${order.getTotalKnn()} but got ${
             userReceipt.amountInKnn
           }`,
         );
 
         continue;
+      }
+
+      if (order.getStatus() === OrderStatus.Locked) {
+        this.logger.warning(
+          `[SECURITY][reconcile-unsettled-orders] Order ${order.getId()} (Payment #${order.getPaymentSequence()}) was claimed without answering the challenge`,
+        );
       }
 
       settled.push({

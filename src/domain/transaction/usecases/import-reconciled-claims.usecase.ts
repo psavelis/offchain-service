@@ -7,6 +7,7 @@ import { Order, OrderStatus } from '../../order/entities/order.entity';
 import { OnChainUserReceipt } from '../../supply/dtos/onchain-user-receipt.dto';
 import { LoggablePort } from '../../common/ports/loggable.port';
 import { Chain } from '../../common/entities/chain.entity';
+import { PersistableClaimReceiptPort } from '../ports/persistable-claim-receipt.port';
 
 export class ImportReconciledClaimsUseCase
   implements ImportReconciledClaimsInteractor
@@ -15,50 +16,100 @@ export class ImportReconciledClaimsUseCase
     readonly logger: LoggablePort,
     readonly reconcileDelegateClaims: ReconcileDelegateSignatureClaimInteractor,
     readonly createOrderTransition: CreateOrderTransitionInteractor,
+    readonly persistableClaimReceiptPort: PersistableClaimReceiptPort,
   ) {}
 
   async execute(): Promise<void> {
     const results = await this.reconcileDelegateClaims.execute();
+    let errorCount = 0;
 
     for (const { order, userReceipt } of results) {
       try {
-        await this.importReconciledClaim(order, userReceipt);
+        const success = await this.importReconciledClaim(order, userReceipt);
+
+        if (!success) {
+          errorCount++;
+        }
       } catch (err) {
-        this.logger.error(
-          err,
-          `Failed to import reconciled claim for order ${order.getId()} (#${order.getPaymentSequence()}). Transaction: ${new Chain(
-            userReceipt.chainId,
-          ).getBlockExplorerUrl(userReceipt.transactionHash)}`,
-        );
+        this.displayFailure(err, order, userReceipt);
       }
     }
 
-    if (results?.length > 0) {
-      this.logger.info(
-        `${results.length} claims reconciled.`,
-        results.reduce((record, { order, userReceipt }) => {
-          record[`#${order.getPaymentSequence()}`] = `${new Chain(
-            userReceipt.chainId,
-          ).getBlockExplorerUrl(userReceipt.transactionHash)}`;
+    this.displaySummary(results, errorCount);
+  }
 
-          return record;
-        }, {} as Record<string, string>),
+  async importReconciledClaim(
+    order: Order,
+    userReceipt: OnChainUserReceipt,
+  ): Promise<Boolean> {
+    try {
+      await this.persistableClaimReceiptPort.create(order, userReceipt);
+
+      order.setStatus(OrderStatus.Claimed);
+
+      const info: TransitionInfo = {
+        reason: 'Claim imported from blockchain',
+        pastDue: userReceipt.pastDue,
+      };
+
+      await this.createOrderTransition.execute(order, info);
+
+      return true;
+    } catch (err) {
+      console.error(
+        `[import-reconciled-claim]: #${order.getPaymentSequence()}=>${
+          err.message
+        }`,
       );
+
+      return false;
     }
   }
 
-  async importReconciledClaim(order: Order, userReceipt: OnChainUserReceipt) {
-    // await this.persistableClaimReceiptPort.create(order, userReceipt);
-    // TODO: @@@ insert receipt (check if exists before insert)
-    // TODO: @@@ update claim with inserted receipt (fetch and check to see if theres a different receipt)
+  private displayFailure(
+    err: any,
+    order: Order,
+    userReceipt: OnChainUserReceipt,
+  ) {
+    this.logger.error(
+      err,
+      `Failed to import reconciled claim for order ${order.getId()} (#${order.getPaymentSequence()}). Transaction: ${new Chain(
+        userReceipt.chainId,
+      ).getBlockExplorerUrl(userReceipt.transactionHash)}`,
+    );
+  }
 
-    order.setStatus(OrderStatus.Claimed);
+  private displaySummary(
+    results: OnchainDelegateClaimEvent[],
+    errorCount: number,
+  ) {
+    if (results?.length > 0) {
+      const resultMessage = `${results.length} claims reconciled.${
+        errorCount > 0 ? ` ${errorCount} errors.` : ''
+      }`;
 
-    // const info: TransitionInfo = {
-    //   reason: 'Claim imported from blockchain',
-    //   pastDue: userReceipt.pastDue,
-    // };
+      if (errorCount === 0) {
+        this.logger.info(resultMessage);
+      } else {
+        this.logger.warning(resultMessage);
+      }
 
-    // await this.createOrderTransition.execute(order, info);
+      this.displayAnalysisMessage(resultMessage, results);
+    }
+  }
+
+  private displayAnalysisMessage(
+    resultMessage: string,
+    results: OnchainDelegateClaimEvent[],
+  ) {
+    const details = results.reduce((record, { order, userReceipt }) => {
+      record[`#${order.getPaymentSequence()}`] = `${new Chain(
+        userReceipt.chainId,
+      ).getBlockExplorerUrl(userReceipt.transactionHash)}`;
+
+      return record;
+    }, {});
+
+    console.info(resultMessage, JSON.stringify(details));
   }
 }

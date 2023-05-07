@@ -13,4 +13,5 @@ export interface OnChainUserReceipt {
   cumulativeGasUsed: number;
   effectiveGasPrice: number;
   pastDue?: Date;
+  uint256Amount?: string;
 }

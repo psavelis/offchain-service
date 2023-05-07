@@ -15,6 +15,8 @@ import { FetchableDelegateClaimEventPort } from '../../../domain/supply/ports/fe
 import { FetchableDelegateClaimEventRpcAdapter } from '../../adapters/outbound/json-rpc/supply/fetchable-delegate-claim-event.adapter';
 import { FetchableOrderPort } from '../../../domain/order/ports/fetchable-order.port';
 
+import { PersistableClaimReceiptDbAdapter } from '../../adapters/outbound/database/transaction/persistable-claim-receipt.adapter';
+
 const disabled = {
   execute: () => Promise.resolve(),
 };
@@ -54,10 +56,14 @@ export class ImportReconciledClaimsFactory {
         persistableOrderStatusTransitionPort,
       );
 
+      const persistableClaimReceiptPort =
+        PersistableClaimReceiptDbAdapter.getInstance(knexPostgresDb);
+
       this.instance = new ImportReconciledClaimsUseCase(
         logger,
         reconcileUseCase,
         createOrderTransition,
+        persistableClaimReceiptPort,
       );
     }
 

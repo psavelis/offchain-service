@@ -165,7 +165,7 @@ export class ProcessStatementTransactionUseCase
       });
 
       this.logger.info(
-        `New Payment! ${order.getEndToEndId()} was sucessfuly paid: (${reason})`,
+        `New Payment Confirmed: ${order.getEndToEndId()} was sucessfuly paid (#${payment.getSequence()})`,
       );
 
       return {

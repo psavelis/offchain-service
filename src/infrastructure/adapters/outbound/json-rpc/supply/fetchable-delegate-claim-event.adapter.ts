@@ -10,6 +10,9 @@ import { ClaimEvent } from '../protocol/contracts/KannaPreSale';
 export class FetchableDelegateClaimEventRpcAdapter
   implements FetchableDelegateClaimEventPort
 {
+  lastEthereumBlockNumber: number | undefined = undefined;
+  lastPolygonBlockNumber: number | undefined = undefined;
+
   constructor(
     readonly settings: Settings,
     readonly provider: IKannaProtocolProvider,
@@ -44,7 +47,16 @@ export class FetchableDelegateClaimEventRpcAdapter
 
               return userReceipt;
             },
-          );
+          )
+          .then((receipt: OnChainUserReceipt) => {
+            return event
+              .getBlock()
+              .then((block) => {
+                const pastDue = new Date(block.timestamp * 1000);
+                return { ...receipt, pastDue };
+              })
+              .catch(() => receipt);
+          });
       }),
     );
 
@@ -66,8 +78,11 @@ export class FetchableDelegateClaimEventRpcAdapter
     ]);
 
     const [saleEvents, preSaleEvents]: ClaimEvent[][] = await Promise.all([
-      sale.queryFilter(sale.filters.Claim()),
-      preSale.queryFilter(preSale.filters.Claim()),
+      sale.queryFilter(sale.filters.Claim(), this.lastEthereumBlockNumber),
+      preSale.queryFilter(
+        preSale.filters.Claim(),
+        this.lastEthereumBlockNumber,
+      ),
     ]);
 
     if (this.settings.blockchain.current.layer !== LayerType.L1) {
@@ -79,8 +94,26 @@ export class FetchableDelegateClaimEventRpcAdapter
     const chainId = this.settings.blockchain.current.id;
 
     const rawEvents = [
-      saleEvents.map((event) => ({ ...event, chainId })),
-      preSaleEvents.map((event) => ({ ...event, chainId })),
+      saleEvents.map((event) => {
+        if (
+          !this.lastEthereumBlockNumber ||
+          event.blockNumber > this.lastEthereumBlockNumber
+        ) {
+          this.lastEthereumBlockNumber = event.blockNumber;
+        }
+
+        return { ...event, chainId };
+      }),
+      preSaleEvents.map((event) => {
+        if (
+          !this.lastEthereumBlockNumber ||
+          event.blockNumber > this.lastEthereumBlockNumber
+        ) {
+          this.lastEthereumBlockNumber = event.blockNumber;
+        }
+
+        return { ...event, chainId };
+      }),
     ].flat();
 
     return rawEvents;
@@ -95,9 +128,15 @@ export class FetchableDelegateClaimEventRpcAdapter
 
     const [polygonSaleEvents, saleEvents, preSaleEvents]: ClaimEvent[][] =
       await Promise.all([
-        polygonSale.queryFilter(polygonSale.filters.Claim()),
-        sale.queryFilter(sale.filters.Claim()),
-        preSale.queryFilter(preSale.filters.Claim()),
+        polygonSale.queryFilter(
+          polygonSale.filters.Claim(),
+          this.lastPolygonBlockNumber,
+        ),
+        sale.queryFilter(sale.filters.Claim(), this.lastEthereumBlockNumber),
+        preSale.queryFilter(
+          preSale.filters.Claim(),
+          this.lastEthereumBlockNumber,
+        ),
       ]);
 
     const isProduction = process.env.NODE_ENV === 'production';
@@ -111,9 +150,36 @@ export class FetchableDelegateClaimEventRpcAdapter
       : NetworkType.PolygonMumbai;
 
     const rawEvents = [
-      polygonSaleEvents.map((event) => ({ ...event, chainId: polygonChainId })),
-      saleEvents.map((event) => ({ ...event, chainId: ethereumChainId })),
-      preSaleEvents.map((event) => ({ ...event, chainId: ethereumChainId })),
+      polygonSaleEvents.map((event) => {
+        if (
+          !this.lastPolygonBlockNumber ||
+          event.blockNumber > this.lastPolygonBlockNumber
+        ) {
+          this.lastPolygonBlockNumber = event.blockNumber;
+        }
+
+        return { ...event, chainId: polygonChainId };
+      }),
+      saleEvents.map((event) => {
+        if (
+          !this.lastEthereumBlockNumber ||
+          event.blockNumber > this.lastEthereumBlockNumber
+        ) {
+          this.lastEthereumBlockNumber = event.blockNumber;
+        }
+
+        return { ...event, chainId: polygonChainId };
+      }),
+      preSaleEvents.map((event) => {
+        if (
+          !this.lastEthereumBlockNumber ||
+          event.blockNumber > this.lastEthereumBlockNumber
+        ) {
+          this.lastEthereumBlockNumber = event.blockNumber;
+        }
+
+        return { ...event, chainId: polygonChainId };
+      }),
     ].flat();
     return rawEvents;
   }

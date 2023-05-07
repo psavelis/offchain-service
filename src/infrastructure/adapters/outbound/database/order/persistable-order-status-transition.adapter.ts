@@ -31,12 +31,20 @@ export class PersistableOrderStatusTransitionDbAdapter
       orderId: order.getId(),
       toStatus: order.getStatus(),
       reason: info.reason,
+      pastDue: info.pastDue,
     };
 
-    await this.db().raw(
-      `insert into ${tableName} (order_id, from_status, to_status, reason) values (:orderId, (select o.status from "order" as o where o.id = :orderId), :toStatus, :reason);`,
-      param,
-    );
+    if (!param.pastDue) {
+      await this.db().raw(
+        `insert into ${tableName} (order_id, from_status, to_status, reason) values (:orderId, (select o.status from "order" as o where o.id = :orderId), :toStatus, :reason);`,
+        param,
+      );
+    } else {
+      await this.db().raw(
+        `insert into ${tableName} (order_id, from_status, to_status, reason, created_at) values (:orderId, (select o.status from "order" as o where o.id = :orderId), :toStatus, :reason, :pastDue);`,
+        param,
+      );
+    }
 
     await this.db().raw(
       `update "order" as o set status = :toStatus where o.id = :orderId;`,

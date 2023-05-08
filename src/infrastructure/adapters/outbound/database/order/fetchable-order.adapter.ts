@@ -48,7 +48,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "order"."expires_at" as "expiresAt",
       "lock"."transaction_hash" as "lockTransactionHash",
       "lock"."uint256_amount" as "totalLockedUint256",
-      "claim"."transaction_hash" as "claimTransactionHash",
+      coalesce("claim"."transaction_hash", "claim"."user_transaction_hash") as "claimTransactionHash",
       coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress",
       coalesce("lock_receipt"."chain_id", "claim_receipt"."chain_id") as "chainId",
       "payment"."sequence" as "paymentSequence",
@@ -143,7 +143,9 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'order.expires_at as expiresAt',
         'lock.transaction_hash as lockTransactionHash',
         'lock.uint256_amount as totalLockedUint256',
-        'claim.transaction_hash as claimTransactionHash',
+        this.db().raw(
+          'coalesce("claim"."transaction_hash", "claim"."user_transaction_hash") as "claimTransactionHash"',
+        ),
         this.db().raw(
           'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
         ),
@@ -324,7 +326,9 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'order.expires_at as expiresAt',
         'lock.transaction_hash as lockTransactionHash',
         'lock.uint256_amount as totalLockedUint256',
-        'claim.transaction_hash as claimTransactionHash',
+        this.db().raw(
+          'coalesce("claim"."transaction_hash", "claim"."user_transaction_hash") as "claimTransactionHash"',
+        ),
         'claim.id as claimId',
         this.db().raw(
           'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',

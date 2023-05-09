@@ -9,7 +9,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
   constructor(
     readonly logger: LoggablePort,
     readonly fetchablePurchasePort: FetchablePurchasePort,
-    readonly fetchablOnChainPurchaseEventPort: FetchableOnChainPurchaseEventPort,
+    readonly fetchableOnChainPurchaseEventPort: FetchableOnChainPurchaseEventPort,
     readonly persistablePurchasePort: PersistablePurchasePort,
   ) {}
 
@@ -19,7 +19,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
         await this.fetchablePurchasePort.fetchLastBlocks();
 
       const purchases: Purchase[] =
-        await this.fetchablOnChainPurchaseEventPort.fetchByBlockNumber(
+        await this.fetchableOnChainPurchaseEventPort.fetchByBlockNumber(
           ethereumLastBock,
           polygonLastBlock,
         );
@@ -40,11 +40,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
         return;
       }
 
-      this.logger.info(
-        `[import-purchases] ${purchases.length - errors}/${
-          purchases.length
-        } suceeded!`,
-      );
+      this.logger.info(`${purchases.length} transactions synced from chain.`);
     } catch (err) {
       this.logger.error(err, '[import-purchases][aborted]');
     }
@@ -59,9 +55,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
           purchase.purchaseTransactionHash,
         );
 
-        if (
-          exists?.purchaseTransactionHash === purchase.purchaseTransactionHash
-        ) {
+        if (exists) {
           console.info(
             `[import-purchases][block-overlap] skipping already imported ${purchase.network} purchase: ${purchase.purchaseTransactionHash}`,
           );

@@ -87,16 +87,13 @@ export class FetchableOnChainPurchaseEventRpcAdapter
 
   private async getEvents(fromEthereumBlock: number, fromPolygonBlock: number) {
     if (this.settings.blockchain.current.layer === LayerType.L1) {
-      return this.getLayer1OnlyEvents(fromEthereumBlock, fromPolygonBlock);
+      return this.getLayer1OnlyEvents(fromEthereumBlock);
     }
 
     return this.getL1andL2Events(fromEthereumBlock, fromPolygonBlock);
   }
 
-  private async getLayer1OnlyEvents(
-    fromEthereumBlock: number,
-    fromPolygonBlock: number,
-  ) {
+  private async getLayer1OnlyEvents(fromEthereumBlock: number) {
     const [sale, preSale] = await Promise.all([
       this.provider.sale(),
       this.provider.legacyPreSale(),
@@ -104,7 +101,7 @@ export class FetchableOnChainPurchaseEventRpcAdapter
 
     const [saleEvents, preSaleEvents]: PurchaseEvent[][] = await Promise.all([
       sale.queryFilter(sale.filters.Purchase(), fromEthereumBlock),
-      preSale.queryFilter(preSale.filters.Purchase(), fromPolygonBlock),
+      preSale.queryFilter(preSale.filters.Purchase(), fromEthereumBlock),
     ]);
 
     if (this.settings.blockchain.current.layer !== LayerType.L1) {

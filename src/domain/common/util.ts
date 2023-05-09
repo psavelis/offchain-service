@@ -27,6 +27,15 @@ export const formatDecimals = (
   return `${integer}${separator}${decimals}`;
 };
 
+const commonPrecision = 1_000_000_000;
+
+export const unsafeMul = function (a, b) {
+  a *= commonPrecision;
+  b *= commonPrecision;
+
+  return (a * b) / (commonPrecision * commonPrecision);
+};
+
 export const hideEmailPartially = (emailAddress: string) => {
   return emailAddress.replace(/(.{3})(.*)(?=@)/, (gp1, gp2, gp3) => {
     for (let i = 0; i < gp3.length; i++) {

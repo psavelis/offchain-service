@@ -169,7 +169,7 @@ export class FetchableDelegateClaimEventRpcAdapter
           this.lastEthereumBlockNumber = event.blockNumber;
         }
 
-        return { ...event, chainId: polygonChainId };
+        return { ...event, chainId: ethereumChainId };
       }),
       preSaleEvents.map((event) => {
         if (
@@ -179,7 +179,7 @@ export class FetchableDelegateClaimEventRpcAdapter
           this.lastEthereumBlockNumber = event.blockNumber;
         }
 
-        return { ...event, chainId: polygonChainId };
+        return { ...event, chainId: ethereumChainId };
       }),
     ].flat();
     return rawEvents;

@@ -3,18 +3,19 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './modules/app/app.module';
+import helmet from 'helmet';
 
 const apiName = 'offchain-purchase-service';
 
 export async function bootstrap(host: string, prefix: string, port: number) {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    cors: {
-      origin: [process.env.CORS_ORIGIN],
-      methods: ['POST', 'PUT', 'GET', 'PATCH'],
-    },
-  });
-
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.use(helmet());
   app.setGlobalPrefix(prefix);
+
+  app.enableCors({
+    origin: [process.env.CORS_ORIGIN],
+    methods: ['POST', 'PUT', 'GET', 'PATCH'],
+  });
 
   app.disable('x-powered-by');
   app.enable('trust proxy');

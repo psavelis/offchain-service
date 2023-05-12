@@ -103,6 +103,7 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
       };
     } else if (identifierType === Email) {
       const lockPayload: LockSupplyDto = {
+        chain: new Chain(order.getDesiredChainId()),
         amount: order.getAmountOfTokens(),
         nonce: payment.sequence,
       };

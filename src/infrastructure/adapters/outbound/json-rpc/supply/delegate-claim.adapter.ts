@@ -85,7 +85,7 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       ],
     };
 
-    const chain = new Chain(order.getChainId());
+    const chain = new Chain(order.getSettledChainId());
 
     const isLegacy = this.isLegacy(order, chain);
 
@@ -122,7 +122,7 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     order: Order,
     signature: SignatureResult,
   ): Promise<void> {
-    const chain = new Chain(order.getChainId());
+    const chain = new Chain(order.getSettledChainId());
 
     const saleContract: KannaPreSale = this.isLegacy(order, chain)
       ? await this.provider.legacyPreSale()

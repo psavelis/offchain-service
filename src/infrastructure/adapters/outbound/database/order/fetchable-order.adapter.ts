@@ -35,6 +35,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "order"."iso_code" as "isoCode",
       "order"."end_to_end_id" as "endToEndId",
       "order"."total",
+      "order"."desired_chain_id",
       'order.total_gas as totalGas',
       'order.total_knn as totalKnn',
       'order.total_net as totalNet',
@@ -111,7 +112,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
     }
 
     if (chainId) {
-      order.setChainId(chainId);
+      order.setSettledChainId(chainId);
     }
 
     return order;
@@ -130,6 +131,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'order.iso_code as isoCode',
         'order.end_to_end_id as endToEndId',
         'order.total',
+        'order.desired_chain_id',
         'order.total_gas as totalGas',
         'order.total_knn as totalKnn',
         'order.total_net as totalNet',
@@ -216,7 +218,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       }
 
       if (chainId) {
-        order.setChainId(chainId);
+        order.setSettledChainId(chainId);
       }
 
       result[orderProps.endToEndId] = order;
@@ -234,6 +236,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       "order"."iso_code" as "isoCode",
       "order"."end_to_end_id" as "endToEndId",
       "order"."total",
+      "order"."desired_chain_id",
       'order.total_gas as totalGas',
       'order.total_knn as totalKnn',
       'order.total_net as totalNet',
@@ -313,6 +316,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
         'order.iso_code as isoCode',
         'order.end_to_end_id as endToEndId',
         'order.total',
+        'order.desired_chain_id',
         'order.total_gas as totalGas',
         'order.total_knn as totalKnn',
         'order.total_net as totalNet',
@@ -401,7 +405,7 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
       }
 
       if (chainId) {
-        order.setChainId(chainId);
+        order.setSettledChainId(chainId);
       }
 
       orders[id] = order;

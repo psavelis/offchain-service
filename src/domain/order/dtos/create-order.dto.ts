@@ -1,3 +1,4 @@
+import { NetworkType } from 'src/domain/common/enums/network-type.enum';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
@@ -9,6 +10,7 @@ export interface CreateOrderDto {
   paymentOption: PaymentOption;
   userIdentifier: string;
   identifierType: UserIdentifier;
+  chainId: NetworkType;
   clientAgent?: string;
   clientIp?: string;
 }

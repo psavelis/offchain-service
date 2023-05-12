@@ -4,6 +4,7 @@ import {
 } from '../../price/value-objects/currency-amount.value-object';
 import { Entity, Props } from '../../common/entity';
 import { Convert } from '../../common/uuid';
+import { NetworkType } from 'src/domain/common/enums/network-type.enum';
 
 export enum PaymentOption {
   BrazilianPix = 1,
@@ -50,6 +51,7 @@ export interface OrderProps extends Props {
   amountOfTokens: CurrencyAmount;
   userIdentifier: string;
   identifierType: UserIdentifier;
+  desiredChainId: NetworkType;
 
   parentId?: string;
   clientIp?: string;
@@ -68,7 +70,7 @@ export class Order extends Entity<OrderProps> {
   private lockTransactionHash?: string;
   private totalLockedUint256?: string;
   private contractAddress?: string;
-  private chainId?: number;
+  private settledChainId?: number;
 
   constructor(props: OrderProps, id?: string) {
     super(props, id);
@@ -159,8 +161,8 @@ export class Order extends Entity<OrderProps> {
     this.contractAddress = contractAddress;
   }
 
-  public setChainId(chainId: number) {
-    this.chainId = chainId;
+  public setSettledChainId(chainId: number) {
+    this.settledChainId = chainId;
   }
 
   public hasPayments() {
@@ -294,7 +296,11 @@ export class Order extends Entity<OrderProps> {
     return this.contractAddress;
   }
 
-  public getChainId() {
-    return this.chainId;
+  public getDesiredChainId() {
+    return this.props.desiredChainId;
+  }
+
+  public getSettledChainId() {
+    return this.settledChainId;
   }
 }

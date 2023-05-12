@@ -172,6 +172,13 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   }
 
   private validateCurrentChain(request: CreateOrderDto) {
+    if (!request.chainId) {
+      const message = `Missing chainId! Available options are: ${allowedChains
+        .map((chainId) => `'${chainId}' (for ${NetworkType[chainId]})`)
+        .join(', ')})`;
+      throw new Error(message);
+    }
+
     const isLayer2Available =
       this.settings.blockchain.current.layer === LayerType.L2;
 

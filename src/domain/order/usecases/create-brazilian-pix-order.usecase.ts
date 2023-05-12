@@ -179,20 +179,6 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       throw new Error(message);
     }
 
-    const isLayer2Available =
-      this.settings.blockchain.current.layer === LayerType.L2;
-
-    const isLayer2Request =
-      request.amount.isoCode === IsoCodeType.MATIC ||
-      new Chain(request.chainId).layer === LayerType.L1;
-
-    if (isLayer2Request && !isLayer2Available) {
-      const message = `Orders are available only on Layer1 (IsoCode: ${
-        request.amount.isoCode
-      }, ChainId: ${request.chainId}-${NetworkType[request.chainId]})`;
-      throw new Error(message);
-    }
-
     if (!allowedChains.includes(request.chainId)) {
       const message = `Orders not allowed on chainId: ${
         request.chainId
@@ -200,6 +186,20 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         .map((chainId) => `${chainId}-${NetworkType[chainId]}`)
         .join(', ')})`;
 
+      throw new Error(message);
+    }
+
+    const isLayer2Available =
+      this.settings.blockchain.current.layer === LayerType.L2;
+
+    const isLayer2Request =
+      request.amount.isoCode === IsoCodeType.MATIC ||
+      new Chain(request.chainId).layer !== LayerType.L1;
+
+    if (isLayer2Request && !isLayer2Available) {
+      const message = `Orders are available only on Layer1 (IsoCode: ${
+        request.amount.isoCode
+      }, ChainId: ${request.chainId}-${NetworkType[request.chainId]})`;
       throw new Error(message);
     }
   }

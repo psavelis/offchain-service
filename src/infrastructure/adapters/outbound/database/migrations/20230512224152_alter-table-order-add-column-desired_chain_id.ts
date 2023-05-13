@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
+import { NetworkType } from '../../../../../domain/common/enums/network-type.enum';
 
 const tableName = 'order';
 const columnName = 'desired_chain_id';

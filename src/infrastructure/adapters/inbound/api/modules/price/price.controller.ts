@@ -61,7 +61,7 @@ export class PriceController {
                 isoCode: 'BRL',
               },
               chainId: NetworkType.Polygon,
-              forceReload: true,
+              forceReload: false,
             })
             .catch((err) => {
               console.error(

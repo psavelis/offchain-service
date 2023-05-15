@@ -18,7 +18,7 @@ import { Settings } from '../../common/settings';
 import { LoggablePort } from '../../common/ports/loggable.port';
 import { NetworkType } from '../../common/enums/network-type.enum';
 import { LayerType } from '../../common/enums/layer-type.enum';
-import { Chain } from 'src/domain/common/entities/chain.entity';
+import { Chain } from '../../common/entities/chain.entity';
 
 const Email = 'EA';
 const CryptoWallet = 'CW';

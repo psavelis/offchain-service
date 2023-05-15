@@ -4,7 +4,7 @@ import {
 } from '../../price/value-objects/currency-amount.value-object';
 import { Entity, Props } from '../../common/entity';
 import { Convert } from '../../common/uuid';
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
+import { NetworkType } from '../../common/enums/network-type.enum';
 
 export enum PaymentOption {
   BrazilianPix = 1,

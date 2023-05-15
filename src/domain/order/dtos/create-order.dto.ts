@@ -1,4 +1,4 @@
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
+import { NetworkType } from '../../common/enums/network-type.enum';
 import {
   CurrencyAmount,
   CurrencyIsoCode,

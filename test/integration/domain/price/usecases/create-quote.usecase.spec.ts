@@ -135,21 +135,19 @@ describe('CreateQuoteUseCase', () => {
     saveQuoteAdapter,
   );
 
-  const chainId = NetworkType.PolygonMumbai;
-
   it('should calculate a given USD amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
-        unassignedNumber: '50000',
+        unassignedNumber: '60000',
         decimals: 2,
         isoCode: 'USD',
       },
-      chainId,
+      chainId: NetworkType.EthereumGoerli,
     });
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('999998774860000000594');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('1197024208448399999052');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
   });
@@ -157,16 +155,16 @@ describe('CreateQuoteUseCase', () => {
   it('should calculate a given BRL amount', async () => {
     const quote: Quote = await usecase.execute({
       amount: {
-        unassignedNumber: '50000',
+        unassignedNumber: '60000',
         decimals: 2,
         isoCode: 'BRL',
       },
-      chainId,
+      chainId: NetworkType.EthereumGoerli,
     });
 
     const { finalAmountOfTokens } = quote;
 
-    expect(finalAmountOfTokens.unassignedNumber).toBe('186579863000906038358');
+    expect(finalAmountOfTokens.unassignedNumber).toBe('220921514217487244368');
     expect(finalAmountOfTokens.isoCode).toBe('KNN');
     expect(finalAmountOfTokens.decimals).toBe(18);
   });
@@ -178,7 +176,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 18,
         isoCode: 'ETH',
       },
-      chainId,
+      chainId: NetworkType.EthereumGoerli,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -195,7 +193,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 0,
         isoCode: 'ETH',
       },
-      chainId,
+      chainId: NetworkType.EthereumGoerli,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -212,7 +210,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 0,
         isoCode: 'KNN',
       },
-      chainId,
+      chainId: NetworkType.PolygonMumbai,
     });
 
     const { finalAmountOfTokens } = quote;

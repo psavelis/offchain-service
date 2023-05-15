@@ -38,7 +38,7 @@ export class PriceController {
             decimals: 0,
             isoCode: 'BRL',
           },
-          chainId: NetworkType.Polygon,
+          chainId: NetworkType.Ethereum,
           forceReload: true,
         })
         .catch((err) => {
@@ -49,6 +49,29 @@ export class PriceController {
         })
         .finally(() => {
           running = false;
+        })
+        .then(() => {
+          running = true;
+
+          return this.createQuote
+            .execute({
+              amount: {
+                unassignedNumber: '1000',
+                decimals: 0,
+                isoCode: 'BRL',
+              },
+              chainId: NetworkType.Polygon,
+              forceReload: true,
+            })
+            .catch((err) => {
+              console.error(
+                'Quote.CronJob',
+                JSON.stringify({ msg: err.message, trace: err.stack }),
+              );
+            })
+            .finally(() => {
+              running = false;
+            });
         });
     });
 

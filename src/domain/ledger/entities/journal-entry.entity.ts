@@ -46,6 +46,9 @@ export interface JournalEntryProps extends Props {
   entryDate: Date;
   isoCode: IsoCodeType;
   blockNumber: number;
+  gasUsed: number;
+  cumulativeGasUsed: number;
+  effectiveGasPrice: number;
 }
 
 export class JournalEntry extends SequenceEntity<JournalEntryProps> {
@@ -184,5 +187,9 @@ export class JournalEntry extends SequenceEntity<JournalEntryProps> {
 
   set entryType(entryType: JournalEntryType) {
     this.props.entryType = entryType;
+  }
+
+  set entryDate(entryDate: Date) {
+    this.props.entryDate = entryDate;
   }
 }

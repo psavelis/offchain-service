@@ -79,6 +79,7 @@ export class SettingsAdapter {
           providerApiKey: this.envString('RPC_PROVIDER_API_KEY'),
           network: this.envString('RPC_NETWORK'),
           contracts: {
+            tokenAddress: this.envString('ERC20_CONTRACT_ADDRESS'),
             legacyPreSaleAddress: this.envString('PRESALE_CONTRACT_ADDRESS'),
             saleAddress: this.envString('SALE_CONTRACT_ADDRESS'),
             badgeAddress: this.envString('BADGE_CONTRACT_ADDRESS'),
@@ -91,6 +92,7 @@ export class SettingsAdapter {
           providerApiKey: this.envString('POLYGON_RPC_PROVIDER_API_KEY'),
           network: this.envString('POLYGON_RPC_NETWORK'),
           contracts: {
+            fxTokenAddress: this.envString('POLYGON_ERC20_CONTRACT_ADDRESS'),
             saleAddress: this.envString('POLYGON_SALE_CONTRACT_ADDRESS'),
           },
         },

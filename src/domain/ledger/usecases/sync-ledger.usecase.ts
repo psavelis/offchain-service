@@ -79,7 +79,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       await this.fetchableJournalEntryPort.fetchLastBlocks();
 
     const journalEntries: JournalEntry[] =
-      await this.fetchableJournalTransferEventPort.fetch(
+      await this.fetchableJournalTransferEventPort.fetchByBlockNumber(
         ethereumLastBock,
         polygonLastBlock,
       );

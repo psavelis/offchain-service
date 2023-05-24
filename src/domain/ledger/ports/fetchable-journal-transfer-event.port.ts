@@ -1,7 +1,7 @@
 import { JournalEntry } from '../entities/journal-entry.entity';
 
 export interface FetchableJournalTransferEventPort {
-  fetch(
+  fetchByBlockNumber(
     ethereumLastBock: number,
     polygonLastBlock: number,
   ): Promise<JournalEntry[]>;

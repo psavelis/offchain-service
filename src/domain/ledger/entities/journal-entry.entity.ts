@@ -177,6 +177,18 @@ export class JournalEntry extends SequenceEntity<JournalEntryProps> {
     return this.props.logIndex;
   }
 
+  get gasUsed(): number {
+    return this.props.gasUsed;
+  }
+
+  get cumulativeGasUsed(): number {
+    return this.props.cumulativeGasUsed;
+  }
+
+  get effectiveGasPrice(): number {
+    return this.props.effectiveGasPrice;
+  }
+
   set movementType(movementType: JournalMovementType) {
     this.props.movementType = movementType;
   }

@@ -47,6 +47,7 @@ export interface Settings {
       currentClaimSignerKey: string;
       badgesMinterSignerKey: string;
       contracts: {
+        tokenAddress: string;
         saleAddress: string;
         legacyPreSaleAddress: string;
         badgeAddress: string;
@@ -59,6 +60,7 @@ export interface Settings {
       claimManagerKey: string;
       claimSignerKey: string;
       contracts: {
+        fxTokenAddress: string;
         saleAddress: string;
       };
       network: string;

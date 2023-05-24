@@ -11,12 +11,14 @@ import { PersistableBalanceJournalPort } from '../ports/persistable-balance-jour
 import { EncryptionPort } from '../../common/ports/encryption.port';
 import { LayerType } from '../../common/enums/layer-type.enum';
 import { CalculusPort } from '../../price/ports/calculus.port';
+import { LoggablePort } from '../../common/ports/loggable.port';
 
 export class SyncLedgerUseCase implements SyncLedgerInteractor {
   private cbcKey: string;
 
   constructor(
     readonly settings: Settings,
+    readonly logger: LoggablePort,
     readonly calculusPort: CalculusPort,
     readonly encryptionPort: EncryptionPort,
     readonly fetchableJournalEntryPort: FetchableJournalEntryPort,
@@ -28,15 +30,35 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
   }
 
   async execute(): Promise<void> {
-    const journalEntries = await this.fetchJournalEvents();
+    let journalEntries: JournalEntry[];
 
-    if (!journalEntries?.length) {
+    try {
+      journalEntries = await this.fetchJournalEvents();
+
+      if (!journalEntries?.length) {
+        return;
+      }
+    } catch (err) {
+      this.logger.error(err, `[journal-fetch][events] ${err.message}`);
+
       return;
     }
 
-    journalEntries.sort(JournalEntry.compare);
+    try {
+      journalEntries.sort(JournalEntry.compare);
+    } catch (err) {
+      this.logger.error(err, `[journal-sort][events] ${err.message}`);
+    }
 
-    await this.syncBalances(journalEntries);
+    try {
+      await this.syncBalances(journalEntries);
+    } catch (err) {
+      this.logger.error(err, `[ledger-sync][balances] ${err.message}`);
+    }
+
+    this.logger.info(
+      `[ledger-sync] ${journalEntries.length} journal entries were processed to balance cache.`,
+    );
   }
 
   private async syncBalances(ascendingJournal: JournalEntry[]) {

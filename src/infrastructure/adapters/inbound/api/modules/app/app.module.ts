@@ -6,6 +6,7 @@ import { ClearingModule } from '../clearing/clearing.module';
 import { PriceModule } from '../price/price.module';
 import { BadgeModule } from '../badge/badge.module';
 import { TransactionModule } from '../transaction/transaction.module';
+import { LedgerModule } from '../ledger/ledger.module';
 import { HealthcheckModule } from '../healthcheck/healthcheck.module';
 import { OrderModule } from '../order/order.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -21,6 +22,7 @@ import { APP_GUARD } from '@nestjs/core';
     SettlementModule,
     BadgeModule,
     TransactionModule,
+    LedgerModule,
     ConfigModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,

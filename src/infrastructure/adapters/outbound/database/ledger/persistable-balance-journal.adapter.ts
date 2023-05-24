@@ -4,6 +4,7 @@ import { PersistableBalanceJournalPort } from '../../../../../domain/ledger/port
 import { Balance } from '../../../../../domain/ledger/entities/balance.entity';
 import { JournalEntry } from '../../../../../domain/ledger/entities/journal-entry.entity';
 import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
+import { P } from 'pino';
 
 export class PersistableBalanceJournalDbAdapter
   implements PersistableBalanceJournalPort
@@ -31,12 +32,12 @@ export class PersistableBalanceJournalDbAdapter
       account: balance.account,
       group: balance.group,
       total: balance.total,
-      l1: balance[LayerType.L1],
-      l2: balance[LayerType.L2],
+      l1: Number(balance[LayerType.L1]),
+      l2: Number(balance[LayerType.L2]),
       status: balance.status,
       nonce: balance.nonce,
-      joinDate: balance.joinDate,
-      exitDate: balance.exitDate,
+      joinDate: balance.joinDate || null,
+      exitDate: balance.exitDate || null,
       lastJournalEntryDate: balance.lastJournalEntryDate,
       lastJournalMovementType: balance.lastJournalMovementType,
       lastJournalEntryAmount: balance.lastJournalEntryAmount,
@@ -46,10 +47,15 @@ export class PersistableBalanceJournalDbAdapter
       updatedAt: new Date(),
     };
 
-    await this.db().raw(
-      'insert into balance (account, group, total, l1, l2, status, nonce, join_date, exit_date, last_journal_entry_date, last_journal_movement_type, last_journal_entry_amount, last_journal_entry_chain_id, checksum, uint256_total) values (:account, :group, :total, :l1, :l2, :status, :nonce, :joinDate, :exitDate, :lastJournalEntryDate, :lastJournalMovementType, :lastJournalEntryAmount, :lastJournalEntryChainId, :checksum, :uint256Total) on conflict (account, group) do update set total = :total, l1 = :l1, l2 = :l2, status = :status, nonce = :nonce, join_date = :joinDate, exit_date = :exitDate, last_journal_entry_date = :lastJournalEntryDate, last_journal_movement_type = :lastJournalMovementType, last_journal_entry_amount = :lastJournalEntryAmount, last_journal_entry_chain_id = :lastJournalEntryChainId, checksum = :checksum, uint256_total = :uint256Total, updated_at = :updatedAt;',
-      param,
-    );
+    try {
+      await this.db().raw(
+        'insert into balance (account, "group", total, l1, l2, status, nonce, join_date, exit_date, last_journal_entry_date, last_journal_movement_type, last_journal_entry_amount, last_journal_entry_chain_id, checksum, uint256_total) values (:account, :group, :total, :l1, :l2, :status, :nonce, :joinDate, :exitDate, :lastJournalEntryDate, :lastJournalMovementType, :lastJournalEntryAmount, :lastJournalEntryChainId, :checksum, :uint256Total) on conflict (account, "group") do update set total = :total, l1 = :l1, l2 = :l2, status = :status, nonce = :nonce, join_date = :joinDate, exit_date = :exitDate, last_journal_entry_date = :lastJournalEntryDate, last_journal_movement_type = :lastJournalMovementType, last_journal_entry_amount = :lastJournalEntryAmount, last_journal_entry_chain_id = :lastJournalEntryChainId, checksum = :checksum, uint256_total = :uint256Total, updated_at = :updatedAt;',
+        param,
+      );
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
 
     const journalParam = {
       chainId: journalEntry.chainId,

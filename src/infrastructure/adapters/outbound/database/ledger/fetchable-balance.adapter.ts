@@ -3,6 +3,7 @@ import { KnexPostgresDatabase } from '../knex-postgres.db';
 import { FetchableBalancePort } from '../../../../../domain/ledger/ports/fetchable-balance.port';
 
 import { Balance } from '../../../../../domain/ledger/entities/balance.entity';
+import { LayerType } from 'src/domain/common/enums/layer-type.enum';
 
 export class FetchableBalanceDbAdapter implements FetchableBalancePort {
   static instance: FetchableBalanceDbAdapter;
@@ -54,6 +55,25 @@ export class FetchableBalanceDbAdapter implements FetchableBalancePort {
       return undefined;
     }
 
-    return new Balance(result.rows[0], result.rows[0].id);
+    return new Balance(
+      {
+        account: result.rows[0].account,
+        group: result.rows[0].group,
+        total: result.rows[0].total,
+        [LayerType.L1]: result.rows[0].l1,
+        [LayerType.L2]: result.rows[0].l2,
+        status: result.rows[0].status,
+        nonce: result.rows[0].nonce,
+        joinDate: result.rows[0].joindate,
+        exitDate: result.rows[0].exitdate,
+        lastJournalEntryDate: result.rows[0].lastjournalentrydate,
+        lastJournalMovementType: result.rows[0].lastjournalmovementtype,
+        lastJournalEntryAmount: result.rows[0].lastjournalentryamount,
+        lastJournalEntryChainId: result.rows[0].lastjournalentrychainid,
+        checksum: result.rows[0].checksum,
+        uint256total: result.rows[0].uint256total,
+      },
+      result.rows[0].id,
+    );
   }
 }

@@ -52,13 +52,14 @@ export class BalanceBuilder {
     const balance = this.balances[journalEntry.account];
     const { total: previousTotal } = balance;
 
-    balance.total += journalEntry.amount;
-    balance[journalEntry.chain.layer] += journalEntry.amount;
+    balance.total = Number(balance.total) + Number(journalEntry.amount);
+    balance[journalEntry.chain.layer] =
+      Number(balance[journalEntry.chain.layer]) + Number(journalEntry.amount);
 
     if (balance.total <= 0.0) {
       balance.status = JournalEntryType.Exit;
       balance.exitDate = journalEntry.entryDate;
-    } else if (previousTotal <= 0.0 && balance.total > 0.0) {
+    } else if (Number(previousTotal) <= 0.0 && balance.total > 0.0) {
       balance.status = JournalEntryType.Join;
       balance.joinDate = balance.joinDate || journalEntry.entryDate;
       balance.exitDate = undefined;
@@ -72,14 +73,14 @@ export class BalanceBuilder {
     balance.lastJournalEntryAmount = journalEntry.amount;
     balance.lastJournalEntryChainId = journalEntry.chain.id;
     balance.group = journalEntry.accountGroup;
-    balance.nonce += 1;
+    balance.nonce = Number(balance.nonce) + 1;
 
     const isMint =
       journalEntry.movementType === JournalMovementType.Debit &&
       journalEntry.accountGroup === AccountGroup.Chain;
 
     if (isMint) {
-      balance.total -= journalEntry.amount;
+      balance.total = Number(balance.total) - Number(journalEntry.amount);
       balance.status = JournalEntryType.Join;
       balance.joinDate = balance.joinDate || journalEntry.entryDate;
       return this;

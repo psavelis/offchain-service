@@ -48,12 +48,16 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       journalEntries.sort(JournalEntry.compare);
     } catch (err) {
       this.logger.error(err, `[journal-sort][events] ${err.message}`);
+
+      return;
     }
 
     try {
       await this.syncBalances(journalEntries);
     } catch (err) {
       this.logger.error(err, `[ledger-sync][balances] ${err.message}`);
+
+      return;
     }
 
     this.logger.info(
@@ -102,8 +106,8 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
 
     const journalEntries: JournalEntry[] =
       await this.fetchableJournalTransferEventPort.fetchByBlockNumber(
-        ethereumLastBock,
-        polygonLastBlock,
+        ethereumLastBock > 0 ? ethereumLastBock : 0,
+        polygonLastBlock > 0 ? polygonLastBlock : 0,
       );
 
     return journalEntries;
@@ -114,7 +118,9 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
 
     const securityTuple = `${dt.getTime()}|${balance.account}|${
       balance.total
-    }|${balance[LayerType.L1]}|${balance[LayerType.L2]}|${balance.nonce}}`;
+    }|${balance[LayerType.L1]}|${balance[LayerType.L2]}|${
+      balance.uint256total
+    }|${balance.nonce}`;
 
     return this.encryptionPort.encrypt(
       securityTuple,
@@ -134,7 +140,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       this.cbcKey,
     );
 
-    const [_, address, total, layer1total, layer2total, nonce] =
+    const [_, address, total, layer1total, layer2total, uint256total, nonce] =
       decryptedChecksum.split('|');
 
     const baseMessage = `[balance-check] invalid balance checksum for account ${balance.account}`;
@@ -144,22 +150,36 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       throw new Error(msg);
     }
 
-    if (Number(total) !== balance.total) {
+    if (
+      Number(total) > Number(balance.total) + 1 ||
+      Number(total) < Number(balance.total) - 1
+    ) {
       const msg = `${baseMessage}: invalid total`;
       throw new Error(msg);
     }
 
-    if (Number(layer1total) !== balance[LayerType.L1]) {
+    if (
+      Number(layer1total) > Number(balance[LayerType.L1]) + 1 ||
+      Number(layer1total) < Number(balance[LayerType.L1]) - 1
+    ) {
       const msg = `${baseMessage}: invalid LayerType.L1_total`;
       throw new Error(msg);
     }
 
-    if (Number(layer2total) !== balance[LayerType.L2]) {
+    if (
+      Number(layer2total) > Number(balance[LayerType.L2]) + 1 ||
+      Number(layer2total) < Number(balance[LayerType.L2]) - 1
+    ) {
       const msg = `${baseMessage}: invalid LayerType.L2_total`;
       throw new Error(msg);
     }
 
-    if (Number(nonce) !== balance.nonce) {
+    if (uint256total !== balance.uint256total) {
+      const msg = `${baseMessage}: invalid uint256total`;
+      throw new Error(msg);
+    }
+
+    if (Number(nonce) !== Number(balance.nonce)) {
       const msg = `${baseMessage}: invalid nonce`;
       throw new Error(msg);
     }

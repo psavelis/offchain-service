@@ -83,6 +83,7 @@ export class SettingsAdapter {
             legacyPreSaleAddress: this.envString('PRESALE_CONTRACT_ADDRESS'),
             saleAddress: this.envString('SALE_CONTRACT_ADDRESS'),
             badgeAddress: this.envString('BADGE_CONTRACT_ADDRESS'),
+            gnosisSafeAddress: this.envString('GNOSIS_SAFE_ADDRESS'),
           },
         },
         polygon: {
@@ -94,6 +95,7 @@ export class SettingsAdapter {
           contracts: {
             fxTokenAddress: this.envString('POLYGON_ERC20_CONTRACT_ADDRESS'),
             saleAddress: this.envString('POLYGON_SALE_CONTRACT_ADDRESS'),
+            gnosisSafeAddress: this.envString('POLYGON_GNOSIS_SAFE_ADDRESS'),
           },
         },
       },

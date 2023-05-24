@@ -58,7 +58,7 @@ export class FetchableJournalEntryDbAdapter
       je.cumulative_gas_used as cumulativeGasUsed,
       je.effective_gas_price as effectiveGasPrice,
       je.created_at as createdAt
-    from journal_entry je where je.chain_id = :chainId and je.transaction_hash = :transactionHash and je.log_index = :logIndex and je.movement_type = :movementType`;
+    from journal je where je.chain_id = :chainId and je.transaction_hash = :transactionHash and je.log_index = :logIndex and je.movement_type = :movementType`;
 
     const param = { chainId, transactionHash, logIndex, movementType };
 
@@ -68,7 +68,27 @@ export class FetchableJournalEntryDbAdapter
       return undefined;
     }
 
-    return new JournalEntry(this.settings, result.rows[0], result.rows[0].id);
+    return new JournalEntry(
+      this.settings,
+      {
+        account: result.rows[0].account,
+        accountGroup: result.rows[0].accountgroup,
+        amount: Number(result.rows[0].amount),
+        blockNumber: Number(result.rows[0].blocknumber),
+        chainId: Number(result.rows[0].chainid),
+        cumulativeGasUsed: Number(result.rows[0].cumulativegasused),
+        effectiveGasPrice: Number(result.rows[0].effectivegasprice),
+        entryDate: new Date(result.rows[0].entrydate),
+        entryType: result.rows[0].entrytype,
+        gasUsed: Number(result.rows[0].gasused),
+        isoCode: result.rows[0].isocode,
+        logIndex: Number(result.rows[0].logindex),
+        movementType: result.rows[0].movementtype,
+        transactionHash: result.rows[0].transactionhash,
+        uint256amount: result.rows[0].uint256amount,
+      },
+      result.rows[0].id,
+    );
   }
 
   async fetchLastBlocks(): Promise<{
@@ -83,9 +103,9 @@ export class FetchableJournalEntryDbAdapter
     };
 
     const query = `select
-      max(je.block_number) filter (where je.chain_id = :l1) as ethereumLastBock,
+      max(je.block_number) filter (where je.chain_id = :l1) as ethereumLastBlock,
       max(je.block_number) filter (where je.chain_id = :l2) as polygonLastBlock
-    from journal_entry je`;
+    from journal je`;
 
     const { rows: records } = await this.db().raw(query, param);
 
@@ -97,8 +117,8 @@ export class FetchableJournalEntryDbAdapter
     }
 
     return {
-      ethereumLastBock: records[0].ethereumLastBock - 1,
-      polygonLastBlock: records[0].polygonLastBlock - 1,
+      ethereumLastBock: records[0].ethereumlastblock - 1,
+      polygonLastBlock: records[0].polygonlastblock - 1,
     };
   }
 }

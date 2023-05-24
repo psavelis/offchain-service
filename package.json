@@ -11,7 +11,8 @@
     "migrations": "ts-node -r dotenv/config node_modules/.bin/knex migrate:latest --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts",
     "migrations:prod": "knex migrate:latest --knexfile dist/infrastructure/adapters/outbound/database/knex-postgres.config.js",
     "healthcheck": "ts-node src/cli.ts healthcheck",
-    "healthcheck:prod": "node dist/cli.js healthcheck"
+    "healthcheck:prod": "node dist/cli.js healthcheck",
+    "migrations:unlock": "ts-node -r dotenv/config node_modules/.bin/knex migrate:unlock --knexfile src/infrastructure/adapters/outbound/database/knex-postgres.config.ts"
   },
   "_moduleAliases": {
     "@domain": "dist/domain",

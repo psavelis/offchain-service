@@ -19,11 +19,13 @@ export async function up(knex: Knex): Promise<void> {
     table.string('last_journal_movement_type').nullable();
     table.decimal('last_journal_entry_amount', 20, 8).nullable();
     table.string('last_journal_entry_chain_id').nullable();
-    table.string('checksum').notNullable();
+    table.text('checksum').notNullable();
     table.string('uint256_total').notNullable();
 
     table.datetime('created_at').defaultTo(knex.fn.now());
     table.datetime('updated_at').nullable();
+
+    table.unique(['account', 'group']);
   });
 }
 

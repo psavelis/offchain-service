@@ -60,7 +60,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       return;
     }
 
-    this.logger.info(
+    console.info(
       `[ledger-sync] ${journalEntries.length} journal entries were processed to balance cache.`,
     );
   }
@@ -101,12 +101,12 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
   }
 
   private async fetchJournalEvents() {
-    const { ethereumLastBock, polygonLastBlock } =
+    const { ethereumLastBlock, polygonLastBlock } =
       await this.fetchableJournalEntryPort.fetchLastBlocks();
 
     const journalEntries: JournalEntry[] =
       await this.fetchableJournalTransferEventPort.fetchByBlockNumber(
-        ethereumLastBock > 0 ? ethereumLastBock : 0,
+        ethereumLastBlock > 0 ? ethereumLastBlock : 0,
         polygonLastBlock > 0 ? polygonLastBlock : 0,
       );
 

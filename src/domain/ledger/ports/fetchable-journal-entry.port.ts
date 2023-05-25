@@ -12,7 +12,7 @@ export interface FetchableJournalEntryPort {
   ): Promise<JournalEntry | undefined>;
 
   fetchLastBlocks(): Promise<{
-    ethereumLastBock: number;
+    ethereumLastBlock: number;
     polygonLastBlock: number;
   }>;
 }

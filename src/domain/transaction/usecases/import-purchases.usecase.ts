@@ -15,12 +15,12 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
 
   async execute(): Promise<void> {
     try {
-      const { ethereumLastBock, polygonLastBlock } =
+      const { ethereumLastBlock, polygonLastBlock } =
         await this.fetchablePurchasePort.fetchLastBlocks();
 
       const purchases: Purchase[] =
         await this.fetchableOnChainPurchaseEventPort.fetchByBlockNumber(
-          ethereumLastBock,
+          ethereumLastBlock,
           polygonLastBlock,
         );
 

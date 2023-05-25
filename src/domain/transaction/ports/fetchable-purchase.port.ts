@@ -5,7 +5,7 @@ export interface FetchablePurchasePort {
     transactionHash: string,
   ): Promise<Purchase | undefined>;
   fetchLastBlocks(): Promise<{
-    ethereumLastBock: number;
+    ethereumLastBlock: number;
     polygonLastBlock: number;
   }>;
 }

@@ -92,7 +92,7 @@ export class FetchableJournalEntryDbAdapter
   }
 
   async fetchLastBlocks(): Promise<{
-    ethereumLastBock: number;
+    ethereumLastBlock: number;
     polygonLastBlock: number;
   }> {
     const isProd = process.env.NODE_ENV === 'production';
@@ -111,14 +111,14 @@ export class FetchableJournalEntryDbAdapter
 
     if (!records?.length) {
       return {
-        ethereumLastBock: 0,
+        ethereumLastBlock: 0,
         polygonLastBlock: 0,
       };
     }
 
     return {
-      ethereumLastBock: records[0].ethereumlastblock,
-      polygonLastBlock: records[0].polygonlastblock,
+      ethereumLastBlock: records[0].ethereumlastblock - 1,
+      polygonLastBlock: records[0].polygonlastblock - 1,
     };
   }
 }

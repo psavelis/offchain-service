@@ -55,9 +55,11 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
     try {
       const counter = await this.syncBalances(journalEntries);
 
-      this.logger.info(
-        `[ledger-sync] ${counter} journal entries were processed to balance cache.`,
-      );
+      if (counter) {
+        this.logger.info(
+          `[ledger-sync] ${counter} journal entries were processed to balance cache.`,
+        );
+      }
     } catch (err) {
       this.logger.error(err, `[ledger-sync][balances] ${err.message}`);
 

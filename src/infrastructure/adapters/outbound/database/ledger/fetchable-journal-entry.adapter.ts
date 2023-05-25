@@ -117,8 +117,8 @@ export class FetchableJournalEntryDbAdapter
     }
 
     return {
-      ethereumLastBock: records[0].ethereumlastblock - 1,
-      polygonLastBlock: records[0].polygonlastblock - 1,
+      ethereumLastBock: records[0].ethereumlastblock,
+      polygonLastBlock: records[0].polygonlastblock,
     };
   }
 }

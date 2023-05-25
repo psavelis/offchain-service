@@ -72,6 +72,7 @@ describe('ReconcileDelegateSignatureClaimUseCase', () => {
       identifierType: 'EA',
       endToEndId: 'QWERTSDZXC',
       status: OrderStatus.Owned,
+      desiredChainId: NetworkType.Ethereum,
     });
 
     order1.setPaymentSequence(1);
@@ -88,6 +89,7 @@ describe('ReconcileDelegateSignatureClaimUseCase', () => {
       identifierType: 'EA',
       endToEndId: 'ZWZRTSDZXZ',
       status: OrderStatus.Owned,
+      desiredChainId: NetworkType.Ethereum,
     });
 
     order2.setPaymentSequence(2);

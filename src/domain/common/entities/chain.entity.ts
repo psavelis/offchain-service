@@ -79,9 +79,13 @@ export class Chain {
 
   public getBlockExplorerUrl(txnHash: string) {
     if (this.layer === LayerType.L1) {
-      return `https://etherscan.io/tx/${txnHash}`;
+      return `https://${
+        process.env.NODE_ENV === 'production' ? '' : 'goerli.'
+      }etherscan.io/tx/${txnHash}`;
     } else if (this.layer === LayerType.L2) {
-      return `https://polygonscan.com/tx/${txnHash}`;
+      return `https://${
+        process.env.NODE_ENV === 'production' ? '' : 'mumbai.'
+      }polygonscan.com/tx/${txnHash}`;
     }
   }
 }

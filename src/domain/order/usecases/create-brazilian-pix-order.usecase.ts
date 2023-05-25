@@ -16,6 +16,8 @@ import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
 import { Settings } from '../../common/settings';
 import { LoggablePort } from '../../../domain/common/ports/loggable.port';
 import { LayerType } from '../../common/enums/layer-type.enum';
+import { NetworkType } from '../../common/enums/network-type.enum';
+import { Chain } from '../../common/entities/chain.entity';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
@@ -37,7 +39,13 @@ const allowedIsoCodes = [
   IsoCodeType.ETH,
   IsoCodeType.KNN,
   IsoCodeType.USD,
+  IsoCodeType.MATIC,
 ];
+
+const allowedChains =
+  process.env.NODE_ENV === 'production'
+    ? [NetworkType.Ethereum, NetworkType.Polygon]
+    : [NetworkType.EthereumGoerli, NetworkType.PolygonMumbai];
 
 const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
 export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
@@ -51,6 +59,14 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   ) {}
 
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
+    const shouldEnforceChainId =
+      !request.chainId &&
+      this.settings.blockchain.current.layer === LayerType.L1;
+
+    if (shouldEnforceChainId) {
+      request.chainId = this.settings.blockchain.current.id;
+    }
+
     this.validateCurrentChain(request);
 
     CreateBrazilianPixOrderUseCase.validate(request);
@@ -60,7 +76,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
         amount: request.amount,
         transactionType:
           request.identifierType === 'CW' ? 'Claim' : 'LockSupply',
-        chainId: this.settings.blockchain.current.id,
+        chainId: request.chainId,
       })
       .catch((err) => {
         this.logger.error(
@@ -121,6 +137,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       totalGas,
       totalNet,
       totalKnn,
+      desiredChainId: request.chainId,
     });
 
     const encryptedIdentifier = await this.encryptionPort.encrypt(
@@ -163,11 +180,35 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   }
 
   private validateCurrentChain(request: CreateOrderDto) {
-    if (
-      request.amount.isoCode === IsoCodeType.MATIC &&
-      this.settings.blockchain.current.layer !== LayerType.L2
-    ) {
-      throw new Error('MATIC orders not available on L1');
+    if (!request.chainId) {
+      const message = `Missing chainId! Available options are: ${allowedChains
+        .map((chainId) => `'${chainId}' (for ${NetworkType[chainId]})`)
+        .join(', ')})`;
+      throw new Error(message);
+    }
+
+    if (!allowedChains.includes(request.chainId)) {
+      const message = `Orders not allowed on chainId: ${
+        request.chainId
+      } (Allowed chains: ${allowedChains
+        .map((chainId) => `${chainId}-${NetworkType[chainId]}`)
+        .join(', ')})`;
+
+      throw new Error(message);
+    }
+
+    const isLayer2Available =
+      this.settings.blockchain.current.layer === LayerType.L2;
+
+    const isLayer2Request =
+      request.amount.isoCode === IsoCodeType.MATIC ||
+      new Chain(request.chainId).layer !== LayerType.L1;
+
+    if (isLayer2Request && !isLayer2Available) {
+      const message = `Orders are available only on Layer1 (IsoCode: ${
+        request.amount.isoCode
+      }, ChainId: ${request.chainId}-${NetworkType[request.chainId]})`;
+      throw new Error(message);
     }
   }
 

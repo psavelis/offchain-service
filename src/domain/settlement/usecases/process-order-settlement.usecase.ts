@@ -9,9 +9,9 @@ import { MailerPort } from '../../common/ports/mailer.port';
 import purchaseConfirmationTemplate from '../../order/mails/purchase-confirmation.template';
 import { formatDecimals } from '../../common/util';
 import { EncryptionPort } from '../../common/ports/encryption.port';
+import { Chain } from '../../common/entities/chain.entity';
 
 const DEFAULT_KNN_DECIMALS = 8;
-const MAINNET_CHAIN_ID = 1;
 
 export class ProcessOrderSettlementUseCase
   implements ProcessOrderSettlementInteractor
@@ -83,9 +83,9 @@ export class ProcessOrderSettlementUseCase
         },
       );
 
-      const url = `https://${
-        receipt.chainId === MAINNET_CHAIN_ID ? '' : 'goerli.'
-      }etherscan.io/tx/${receipt.transactionHash}`;
+      const url = new Chain(receipt.chainId).getBlockExplorerUrl(
+        receipt.transactionHash,
+      );
 
       this.mailer
         .sendMail({

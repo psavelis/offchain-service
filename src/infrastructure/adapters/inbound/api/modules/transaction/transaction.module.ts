@@ -5,7 +5,7 @@ import { TransactionController } from './transaction.controller';
 import { Loggable } from '../../../../../../domain/common/ports/loggable.port';
 import { LoggablePortFactory } from '../../../../../factories/common/loggable-port.factory';
 import { ImportReconciledClaims } from '../../../../../../domain/transaction/interactors/import-reconciled-claims.interactor';
-import { ImportPurchases } from 'src/domain/transaction/interactors/import-purchases.interactor';
+import { ImportPurchases } from '../../../../../../domain/transaction/interactors/import-purchases.interactor';
 
 @Module({
   controllers: [TransactionController],

@@ -13,7 +13,7 @@ import { Settings } from '../../../../../domain/common/settings';
 import { SignerType } from '../../../../../domain/common/enums/signer-type.enum';
 import { Chain } from '../../../../../domain/common/entities/chain.entity';
 import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
-import { NetworkType } from 'src/domain/common/enums/network-type.enum';
+import { NetworkType } from '../../../../../domain/common/enums/network-type.enum';
 
 const claimType =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce)';
@@ -85,7 +85,7 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       ],
     };
 
-    const chain = new Chain(order.getChainId());
+    const chain = new Chain(order.getSettledChainId());
 
     const isLegacy = this.isLegacy(order, chain);
 
@@ -122,7 +122,7 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     order: Order,
     signature: SignatureResult,
   ): Promise<void> {
-    const chain = new Chain(order.getChainId());
+    const chain = new Chain(order.getSettledChainId());
 
     const saleContract: KannaPreSale = this.isLegacy(order, chain)
       ? await this.provider.legacyPreSale()

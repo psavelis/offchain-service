@@ -11,6 +11,7 @@ import { KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
 import { Settings } from '../../../../../domain/common/settings';
 import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
+import { Chain } from '../../../../../domain/common/entities/chain.entity';
 
 export class LockSupplyRpcAdapter implements LockSupplyPort {
   static instance: LockSupplyPort;
@@ -31,12 +32,18 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     return LockSupplyRpcAdapter.instance;
   }
 
-  private toggleNetworkContract(): Promise<KannaPreSale> {
-    if (this.settings.blockchain.current.layer === LayerType.L1)
+  private toggleNetworkContract(chain: Chain): Promise<KannaPreSale> {
+    if (this.settings.blockchain.current.layer === LayerType.L1) {
       return this.provider.sale();
+    }
 
-    if (this.settings.blockchain.current.layer === LayerType.L2)
+    if (this.settings.blockchain.current.layer === LayerType.L2) {
+      if (chain.layer === LayerType.L1) {
+        return this.provider.sale();
+      }
+
       return this.provider.polygonSale();
+    }
 
     const message = `invalid chain: ${JSON.stringify(
       this.settings.blockchain.current || {},
@@ -45,11 +52,13 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     throw new Error(message);
   }
 
-  async lock({ nonce, amount }: LockSupplyDto): Promise<OnChainReceipt> {
+  async lock({ nonce, amount, chain }: LockSupplyDto): Promise<OnChainReceipt> {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const currentContract: KannaPreSale = await this.toggleNetworkContract();
+    const currentContract: KannaPreSale = await this.toggleNetworkContract(
+      chain,
+    );
 
     const transaction: ContractTransaction = await currentContract.lockSupply(
       uint256Amount,
@@ -61,10 +70,12 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     return parseOnChainReceipt(transaction, receipt);
   }
 
-  async verify({ nonce, amount }: LockSupplyDto): Promise<void> {
+  async verify({ nonce, amount, chain }: LockSupplyDto): Promise<void> {
     this.validate(nonce, amount);
 
-    const currentContract: KannaPreSale = await this.toggleNetworkContract();
+    const currentContract: KannaPreSale = await this.toggleNetworkContract(
+      chain,
+    );
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));

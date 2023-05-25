@@ -22,16 +22,19 @@ export class EthereumChainlinkProvider implements IChainlinkProtocolProvider {
           settings.blockchain.ethereum.providerEndpoint,
         );
 
-      const ethUsdAddress =
-        process.env.NODE_ENV === 'production'
-          ? '0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419'
-          : '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e';
+      const isProd = process.env.NODE_ENV === 'production';
 
-      // TODO: só possui prod (mockar dev)
-      const brlUsdAddress = '0x971E8F1B779A5F1C36e1cd7ef44Ba1Cc2F5EeE0f';
+      const ethUsdAddress = isProd
+        ? '0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419'
+        : '0xD4a33860578De61DBAbDc8BFdb98FD742fA7028e';
 
-      // TODO: só possui prod (mockar dev)
-      const maticUsdAddress = '0x7bac85a8a13a4bcd8abb3eb7d6b4d632c5a57676'; // matic-usd.data.eth (https://data.chain.link/ethereum/mainnet/crypto-usd/matic-usd)
+      const brlUsdAddress = isProd
+        ? '0x971E8F1B779A5F1C36e1cd7ef44Ba1Cc2F5EeE0f'
+        : '0xCFC3ee30210FB8da6DAc991A8B8Bde6d87E778dA'; // AggregatorV3Mock.sol
+
+      const maticUsdAddress = isProd
+        ? '0x7bac85a8a13a4bcd8abb3eb7d6b4d632c5a57676' // matic-usd.data.eth (https://data.chain.link/ethereum/mainnet/crypto-usd/matic-usd)
+        : '0x45bAB8f7CB34DE3Ae39708403568b6adC3e3D6d4'; // AggregatorV3Mock.sol
 
       EthereumChainlinkProvider.dataFeed = {
         ['eth-usd']: new ethers.Contract(

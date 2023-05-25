@@ -1,3 +1,5 @@
+export type Nullable<T> = T | undefined | null;
+
 export const formatDecimals = (
   value: string,
   decimalsLength: number,

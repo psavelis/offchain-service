@@ -29,8 +29,36 @@ import {
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 import { Chain } from '../../common/entities/chain.entity';
 import { LayerType } from '../../common/enums/layer-type.enum';
+import { NetworkType } from '../..//common/enums/network-type.enum';
 
 const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
+const ZERO_CURRENCY_AMOUNT: QuotationAggregate = {
+  BRL: {
+    unassignedNumber: '0',
+    decimals: 0,
+    isoCode: IsoCodeType.BRL,
+  },
+  ETH: {
+    unassignedNumber: '0',
+    decimals: 0,
+    isoCode: IsoCodeType.ETH,
+  },
+  USD: {
+    unassignedNumber: '0',
+    decimals: 0,
+    isoCode: IsoCodeType.USD,
+  },
+  KNN: {
+    unassignedNumber: '0',
+    decimals: 0,
+    isoCode: IsoCodeType.KNN,
+  },
+  MATIC: {
+    unassignedNumber: '0',
+    decimals: 0,
+    isoCode: IsoCodeType.MATIC,
+  },
+};
 
 export type QuotationAggregate = {
   [k in CurrencyIsoCode]: CurrencyAmount<k>;
@@ -89,7 +117,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     this.getQuotation = supportedQuotationStrats;
   }
 
-  validateEntry = ({ amount }: CreateQuoteDto): void => {
+  validateEntry = ({ amount, chainId }: CreateQuoteDto): void => {
     const { unassignedNumber, isoCode, decimals } = amount;
     if (!onlyDigits.test(unassignedNumber)) {
       throw new Error('Invalid amount');
@@ -110,6 +138,22 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     if (isoCode === IsoCodeType.BRL) {
       CreateQuoteUseCase.validateMinimumAmount(amount);
     }
+
+    if (!chainId) {
+      throw new Error('chainId not informed!');
+    } else if (!onlyDigits.test(String(chainId)) || !NetworkType[chainId]) {
+      throw new Error('Invalid chainId');
+    }
+
+    const chain = new Chain(chainId);
+    if (amount.isoCode === IsoCodeType.ETH && chain.layer !== LayerType.L1) {
+      throw new Error('Invalid isoCode for L1 chain');
+    } else if (
+      amount.isoCode === IsoCodeType.MATIC &&
+      chain.layer !== LayerType.L2
+    ) {
+      throw new Error('Invalid isoCode for L2 chain');
+    }
   };
 
   private static validateMinimumAmount(
@@ -129,6 +173,13 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   }
 
   async execute(entry: CreateQuoteDto): Promise<Quote> {
+    const shouldEnforceChainId =
+      !entry.chainId && this.settings.blockchain.current.layer === LayerType.L1;
+
+    if (shouldEnforceChainId) {
+      entry.chainId = this.settings.blockchain.current.id;
+    }
+
     this.validateEntry(entry);
 
     const [ethBasis, knnBasis, usdBasis, maticBasis] = await Promise.all([
@@ -276,6 +327,9 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     const transactionType = entry?.transactionType ?? 'Claim';
 
     if (new Chain(entry.chainId).layer === LayerType.L2) {
+      // TODO: remover ao final da campanha
+      return ZERO_CURRENCY_AMOUNT;
+
       const polygonGasPriceInMATIC = await this.polygonGasPricePort.fetch(
         entry.forceReload,
       );

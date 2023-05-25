@@ -452,7 +452,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       amountOfTokens: entity.getAmountOfTokens(),
       lockTransactionHash: entity.getLockTransactionHash(),
       contractAddress: entity.getContractAddress(),
-      chainId: entity.getChainId(),
+      chainId: entity.getSettledChainId(),
       reference: entity.getPaymentSequence(),
       createdAt: entity.getCreatedAt(),
     };

@@ -47,6 +47,8 @@ export interface Settings {
       currentClaimSignerKey: string;
       badgesMinterSignerKey: string;
       contracts: {
+        gnosisSafeAddress: any;
+        tokenAddress: string;
         saleAddress: string;
         legacyPreSaleAddress: string;
         badgeAddress: string;
@@ -59,6 +61,8 @@ export interface Settings {
       claimManagerKey: string;
       claimSignerKey: string;
       contracts: {
+        gnosisSafeAddress: any;
+        fxTokenAddress: string;
         saleAddress: string;
       };
       network: string;

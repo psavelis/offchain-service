@@ -7,11 +7,19 @@ import {
 
 import { Settings } from '../../../../domain/common/settings';
 import { JsonRpcProvider } from '@ethersproject/providers';
+
+import { ERC20 } from './protocol/@openzeppelin/contracts/token/ERC20/ERC20';
+import { ERC20__factory } from './protocol/factories/@openzeppelin/contracts/token/ERC20';
+
 export interface IKannaProtocolProvider {
   sale(): Promise<KannaPreSale>;
   legacyPreSale(): Promise<KannaPreSale>;
   polygonSale(): Promise<KannaPreSale>;
   badges(): Promise<KannaBadges>;
+
+  token(): Promise<ERC20>;
+  tokenPolygon(): Promise<ERC20>;
+
   getDefaultRpcProvider(): JsonRpcProvider;
 }
 
@@ -24,6 +32,8 @@ export class KannaProvider implements IKannaProtocolProvider {
   static instance: IKannaProtocolProvider;
   static ethereumRpcProvider: JsonRpcProvider;
   static polygonRpcProvider: JsonRpcProvider;
+  static ethereumTokenInstanceAsManager: ERC20;
+  static polygonTokenInstanceAsManager: ERC20;
 
   private constructor(readonly settings: Settings) {}
 
@@ -75,6 +85,16 @@ export class KannaProvider implements IKannaProtocolProvider {
           ethereumClaimManagerWallet,
         );
 
+      KannaProvider.ethereumTokenInstanceAsManager = ERC20__factory.connect(
+        settings.blockchain.ethereum.contracts.tokenAddress,
+        ethereumClaimManagerWallet,
+      );
+
+      KannaProvider.polygonTokenInstanceAsManager = ERC20__factory.connect(
+        settings.blockchain.polygon.contracts.fxTokenAddress,
+        polygonClaimManagerWallet,
+      );
+
       KannaProvider.instance = new KannaProvider(settings);
     }
 
@@ -97,5 +117,13 @@ export class KannaProvider implements IKannaProtocolProvider {
 
   polygonSale(): Promise<KannaPreSale> {
     return Promise.resolve(KannaProvider.polygonSaleInstanceAsManager);
+  }
+
+  token(): Promise<ERC20> {
+    return Promise.resolve(KannaProvider.ethereumTokenInstanceAsManager);
+  }
+
+  tokenPolygon(): Promise<ERC20> {
+    return Promise.resolve(KannaProvider.polygonTokenInstanceAsManager);
   }
 }

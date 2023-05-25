@@ -81,8 +81,10 @@ export class BalanceBuilder {
 
     if (isMint) {
       balance.total = Number(balance.total) - Number(journalEntry.amount);
-      balance.status = JournalEntryType.Join;
+      balance[journalEntry.chain.layer] =
+        Number(balance[journalEntry.chain.layer]) - Number(journalEntry.amount);
       balance.joinDate = balance.joinDate || journalEntry.entryDate;
+
       return this;
     }
 

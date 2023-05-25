@@ -59,6 +59,14 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   ) {}
 
   async execute(request: CreateOrderDto): Promise<BrazilianPixOrderDto> {
+    const shouldEnforceChainId =
+      !request.chainId &&
+      this.settings.blockchain.current.layer === LayerType.L1;
+
+    if (shouldEnforceChainId) {
+      request.chainId = this.settings.blockchain.current.id;
+    }
+
     this.validateCurrentChain(request);
 
     CreateBrazilianPixOrderUseCase.validate(request);

@@ -5,7 +5,6 @@ import { PersistableClaimReceiptPort } from '../../../../../domain/transaction/p
 import { OnChainUserReceipt } from '../../../../../domain/supply/dtos/onchain-user-receipt.dto';
 import { Id } from '../../../../../domain/common/uuid';
 
-const tableName = 'order_status_transition';
 export class PersistableClaimReceiptDbAdapter
   implements PersistableClaimReceiptPort
 {

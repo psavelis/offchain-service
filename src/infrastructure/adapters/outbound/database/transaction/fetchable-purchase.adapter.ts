@@ -69,29 +69,29 @@ export class FetchablePurchaseDbAdapter implements FetchablePurchasePort {
   }
 
   async fetchLastBlocks(): Promise<{
-    ethereumLastBock: number;
+    ethereumLastBlock: number;
     polygonLastBlock: number;
   }> {
     const query = `select 
-        coalesce(max(p.ethereum_block_number), 0) + 1 as ethereumLastBock, 
+        coalesce(max(p.ethereum_block_number), 0) + 1 as ethereumLastBlock, 
         coalesce(max(p.polygon_block_number), 0) + 1 as polygonLastBlock
       from purchase p `;
 
     const { rows: records } = await this.db().raw(query);
 
     if (!records?.length) {
-      return { ethereumLastBock: 0, polygonLastBlock: 0 };
+      return { ethereumLastBlock: 0, polygonLastBlock: 0 };
     }
 
     const [
       {
-        ethereumlastbock: ethereumLastBock,
+        ethereumlastblock: ethereumLastBlock,
         polygonlastblock: polygonLastBlock,
       },
     ] = records;
 
     return {
-      ethereumLastBock,
+      ethereumLastBlock,
       polygonLastBlock,
     };
   }

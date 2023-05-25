@@ -173,6 +173,13 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   }
 
   async execute(entry: CreateQuoteDto): Promise<Quote> {
+    const shouldEnforceChainId =
+      !entry.chainId && this.settings.blockchain.current.layer === LayerType.L1;
+
+    if (shouldEnforceChainId) {
+      entry.chainId = this.settings.blockchain.current.id;
+    }
+
     this.validateEntry(entry);
 
     const [ethBasis, knnBasis, usdBasis, maticBasis] = await Promise.all([

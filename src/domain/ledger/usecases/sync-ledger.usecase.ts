@@ -53,19 +53,20 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
     }
 
     try {
-      await this.syncBalances(journalEntries);
+      const counter = await this.syncBalances(journalEntries);
+
+      this.logger.info(
+        `[ledger-sync] ${counter} journal entries were processed to balance cache.`,
+      );
     } catch (err) {
       this.logger.error(err, `[ledger-sync][balances] ${err.message}`);
 
       return;
     }
-
-    console.info(
-      `[ledger-sync] ${journalEntries.length} journal entries were processed to balance cache.`,
-    );
   }
 
   private async syncBalances(ascendingJournal: JournalEntry[]) {
+    let counter = 0;
     for (let index = 0; index < ascendingJournal.length; index++) {
       const entry = ascendingJournal[index];
 
@@ -97,7 +98,10 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       currentBalance.checksum = await this.checksum(currentBalance);
 
       await this.persistableBalanceJournalPort.save(currentBalance, entry);
+      counter += 1;
     }
+
+    return counter;
   }
 
   private async fetchJournalEvents() {

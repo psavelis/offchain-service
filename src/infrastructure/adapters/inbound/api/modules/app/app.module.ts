@@ -9,6 +9,7 @@ import { TransactionModule } from '../transaction/transaction.module';
 import { LedgerModule } from '../ledger/ledger.module';
 import { HealthcheckModule } from '../healthcheck/healthcheck.module';
 import { OrderModule } from '../order/order.module';
+import { StatisticsModule } from '../statistics/statistics.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -23,6 +24,7 @@ import { APP_GUARD } from '@nestjs/core';
     BadgeModule,
     TransactionModule,
     LedgerModule,
+    StatisticsModule,
     ConfigModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,

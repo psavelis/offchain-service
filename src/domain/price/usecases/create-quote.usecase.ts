@@ -31,6 +31,8 @@ import { Chain } from '../../common/entities/chain.entity';
 import { LayerType } from '../../common/enums/layer-type.enum';
 import { NetworkType } from '../..//common/enums/network-type.enum';
 
+import { QuotationAggregate } from '../value-objects/quotation-aggregate.value-object';
+
 const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
 const ZERO_CURRENCY_AMOUNT: QuotationAggregate = {
   BRL: {
@@ -58,10 +60,6 @@ const ZERO_CURRENCY_AMOUNT: QuotationAggregate = {
     decimals: 0,
     isoCode: IsoCodeType.MATIC,
   },
-};
-
-export type QuotationAggregate = {
-  [k in CurrencyIsoCode]: CurrencyAmount<k>;
 };
 
 export type CalculationStrategy = (

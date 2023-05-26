@@ -142,7 +142,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 2,
         isoCode: 'USD',
       },
-      chainId: NetworkType.EthereumGoerli,
+      chainId: NetworkType.EthereumSepolia,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -159,7 +159,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 2,
         isoCode: 'BRL',
       },
-      chainId: NetworkType.EthereumGoerli,
+      chainId: NetworkType.EthereumSepolia,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -176,7 +176,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 18,
         isoCode: 'ETH',
       },
-      chainId: NetworkType.EthereumGoerli,
+      chainId: NetworkType.EthereumSepolia,
     });
 
     const { finalAmountOfTokens } = quote;
@@ -193,7 +193,7 @@ describe('CreateQuoteUseCase', () => {
         decimals: 0,
         isoCode: 'ETH',
       },
-      chainId: NetworkType.EthereumGoerli,
+      chainId: NetworkType.EthereumSepolia,
     });
 
     const { finalAmountOfTokens } = quote;

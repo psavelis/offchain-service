@@ -45,7 +45,7 @@ const allowedIsoCodes = [
 const allowedChains =
   process.env.NODE_ENV === 'production'
     ? [NetworkType.Ethereum, NetworkType.Polygon]
-    : [NetworkType.EthereumGoerli, NetworkType.PolygonMumbai];
+    : [NetworkType.EthereumSepolia, NetworkType.PolygonMumbai];
 
 const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
 export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {

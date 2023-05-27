@@ -326,7 +326,12 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     if (new Chain(entry.chainId).layer === LayerType.L2) {
       // TODO: remover ao final da campanha
-      return ZERO_CURRENCY_AMOUNT;
+      if (
+        entry.amount.isoCode === IsoCodeType.BRL ||
+        entry.amount.isoCode === IsoCodeType.USD
+      ) {
+        return ZERO_CURRENCY_AMOUNT;
+      }
 
       const polygonGasPriceInMATIC = await this.polygonGasPricePort.fetch(
         entry.forceReload,

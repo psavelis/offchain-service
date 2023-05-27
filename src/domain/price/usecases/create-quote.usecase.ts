@@ -326,10 +326,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     if (new Chain(entry.chainId).layer === LayerType.L2) {
       // TODO: remover ao final da campanha
-      if (
-        entry.amount.isoCode === IsoCodeType.BRL ||
-        entry.amount.isoCode === IsoCodeType.USD
-      ) {
+      if (transactionType !== 'Transfer') {
         return ZERO_CURRENCY_AMOUNT;
       }
 

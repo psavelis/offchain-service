@@ -115,20 +115,31 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     };
   }
 
-  private getNetworks(): string[] {
+  private getNetworks(): {
+    chainId: number;
+    name: string;
+  }[] {
     const isSingleLayer =
       this.settings.blockchain.current.layer === LayerType.L1;
 
     const isProd = process.env.NODE_ENV === 'production';
 
-    const current = NetworkType[this.settings.blockchain.current.id];
+    const current = {
+      name: NetworkType[this.settings.blockchain.current.id],
+      chainId: this.settings.blockchain.current.id,
+    };
 
     const networks = isSingleLayer
       ? [current]
       : [
-          NetworkType[
-            isProd ? NetworkType.Ethereum : NetworkType.EthereumSepolia
-          ],
+          {
+            name: NetworkType[
+              isProd ? NetworkType.Ethereum : NetworkType.EthereumSepolia
+            ],
+            chainId: isProd
+              ? NetworkType.Ethereum
+              : NetworkType.EthereumSepolia,
+          },
           current,
         ];
 

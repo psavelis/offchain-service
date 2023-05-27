@@ -43,7 +43,10 @@ export interface TokenomicsDto {
     ETH: number;
     MATIC: number;
   };
-  networks: Array<string>;
+  networks: Array<{
+    chainId: number;
+    name: string;
+  }>;
   contracts: Record<
     string,
     {

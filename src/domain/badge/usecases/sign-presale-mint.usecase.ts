@@ -102,7 +102,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       process.env.NODE_ENV === 'development' ||
       process.env.NODE_ENV === 'test'
     ) {
-      chainId = NetworkType.EthereumGoerli;
+      chainId = NetworkType.EthereumSepolia;
     }
 
     return new Chain(chainId);

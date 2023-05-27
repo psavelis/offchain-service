@@ -127,7 +127,7 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
       ? [current]
       : [
           NetworkType[
-            isProd ? NetworkType.Ethereum : NetworkType.EthereumGoerli
+            isProd ? NetworkType.Ethereum : NetworkType.EthereumSepolia
           ],
           current,
         ];

@@ -10,7 +10,7 @@ const networkLayer = {
   [NetworkType.PolygonzkEVM]: LayerType.L1,
 
   // testnets
-  [NetworkType.EthereumGoerli]: LayerType.L1,
+  [NetworkType.EthereumSepolia]: LayerType.L1,
   [NetworkType.PolygonMumbai]: LayerType.L2,
 
   // experimental
@@ -25,14 +25,14 @@ const networkCurrency = {
   [NetworkType.PolygonzkEVM]: IsoCodeType.ETH,
 
   // testnets
-  [NetworkType.EthereumGoerli]: IsoCodeType.ETH,
+  [NetworkType.EthereumSepolia]: IsoCodeType.ETH,
   [NetworkType.PolygonMumbai]: IsoCodeType.MATIC,
 
   // experimental
   [NetworkType.PolygonzkEVMTestnet]: IsoCodeType.ETH,
 };
 
-const testnets = [NetworkType.EthereumGoerli, NetworkType.PolygonMumbai];
+const testnets = [NetworkType.EthereumSepolia, NetworkType.PolygonMumbai];
 
 export class Chain {
   constructor(readonly chainId: NetworkType) {
@@ -80,7 +80,7 @@ export class Chain {
   public getBlockExplorerUrl(txnHash: string) {
     if (this.layer === LayerType.L1) {
       return `https://${
-        process.env.NODE_ENV === 'production' ? '' : 'goerli.'
+        process.env.NODE_ENV === 'production' ? '' : 'sepolia.'
       }etherscan.io/tx/${txnHash}`;
     } else if (this.layer === LayerType.L2) {
       return `https://${

@@ -5,7 +5,7 @@ export enum NetworkType {
   PolygonzkEVM = 1101,
 
   // testnets
-  EthereumGoerli = 5,
+  EthereumSepolia = 11155111,
   PolygonMumbai = 80001,
   PolygonzkEVMTestnet = 1442,
 }

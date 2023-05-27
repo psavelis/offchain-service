@@ -144,7 +144,7 @@ export class FetchableOnChainPurchaseEventRpcAdapter
 
     const ethereumChainId = isProduction
       ? NetworkType.Ethereum
-      : NetworkType.EthereumGoerli;
+      : NetworkType.EthereumSepolia;
 
     const polygonChainId = isProduction
       ? NetworkType.Polygon

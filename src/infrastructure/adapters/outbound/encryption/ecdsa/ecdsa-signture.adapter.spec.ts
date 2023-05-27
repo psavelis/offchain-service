@@ -29,7 +29,7 @@ describe('ECDSASignatureAdapter', () => {
         values: [ethers.Wallet.createRandom().address, '1', '1'],
       },
       SignerType.SaleClaimManager,
-      new Chain(NetworkType.EthereumGoerli),
+      new Chain(NetworkType.EthereumSepolia),
     );
 
     expect(result).toHaveProperty('signature');

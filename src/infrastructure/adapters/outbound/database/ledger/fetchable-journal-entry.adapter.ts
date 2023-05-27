@@ -98,7 +98,7 @@ export class FetchableJournalEntryDbAdapter
     const isProd = process.env.NODE_ENV === 'production';
 
     const param = {
-      l1: isProd ? NetworkType.Ethereum : NetworkType.EthereumGoerli,
+      l1: isProd ? NetworkType.Ethereum : NetworkType.EthereumSepolia,
       l2: isProd ? NetworkType.Polygon : NetworkType.PolygonMumbai,
     };
 

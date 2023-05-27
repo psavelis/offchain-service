@@ -68,7 +68,7 @@ export class SettingsAdapter {
         current: new Chain(
           process.env.NODE_ENV === 'production'
             ? NetworkType.Ethereum
-            : NetworkType.EthereumGoerli,
+            : NetworkType.EthereumSepolia,
         ),
         ethereum: {
           providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),

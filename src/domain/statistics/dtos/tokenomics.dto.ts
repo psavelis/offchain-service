@@ -1,10 +1,10 @@
-import { Chain } from '../../common/entities/chain.entity';
-import { NetworkType } from '../../common/enums/network-type.enum';
-
 export interface TokenomicsDto {
+  mintDate: Date;
   totalSupply: number;
+  maxSupply: number;
   circulatingSupply: number;
   holders: {
+    totalTransfers: number;
     count: number;
     totalAmount: number;
   };
@@ -13,44 +13,47 @@ export interface TokenomicsDto {
     preSale: number;
     sale: number;
   };
-  // TVL (total locked value)
-  totalLockedValue: {
-    usd: number;
-    brl: number;
-    matic: number;
-    eth: number;
+  totalValueLocked: {
+    BRL: number;
+    USD: number;
+    ETH: number;
+    MATIC: number;
   };
-  // marketCap := circulatingSupply * price
+  fullyDilutedMarketCap: {
+    BRL: number;
+    USD: number;
+    ETH: number;
+    MATIC: number;
+  };
+  circulatingSupplyMarketCap: {
+    BRL: number;
+    USD: number;
+    ETH: number;
+    MATIC: number;
+  };
   marketCap: {
-    usd: number;
-    brl: number;
-    matic: number;
-    eth: number;
-  };
-  // TVM (treasury market value) => to be defined
-  treasuryMarketValue: {
-    usd: number;
-    brl: number;
-    matic: number;
-    eth: number;
+    USD: number;
+    BRL: number;
+    MATIC: number;
+    ETH: number;
   };
   price: {
-    usd: number;
-    brl: number;
-    matic: number;
-    eth: number;
+    BRL: number;
+    USD: number;
+    ETH: number;
+    MATIC: number;
   };
-  networks: Array<Chain>;
+  networks: Array<string>;
   contracts: Record<
-    NetworkType,
+    string,
     {
       token: string;
       treasury: string;
       sale: string;
-      presale?: string;
-      yieldPool?: string;
-      carbonPool?: string;
-      stockOptionPool?: string;
+      presale?: string | undefined;
+      yieldPool?: string | undefined;
+      carbonPool?: string | undefined;
+      stockOptionPool?: string | undefined;
     }
   >;
 }

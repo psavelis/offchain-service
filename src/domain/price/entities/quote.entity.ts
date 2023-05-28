@@ -8,6 +8,7 @@ import {
 export interface Quote<T extends CurrencyIsoCode = CurrencyIsoCode> {
   id: string;
   transactionType: TransactionType;
+  chainId: number;
   userAmount: CurrencyAmount<T>;
   finalAmountOfTokens: CurrencyAmount<IsoCodeType.KNN>;
   total: {

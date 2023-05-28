@@ -221,6 +221,8 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     const quote = {} as Quote;
 
     quote.userAmount = entry.amount;
+
+    quote.chainId = entry.chainId;
     quote.transactionType = entry?.transactionType ?? 'Claim';
 
     quote.finalAmountOfTokens =

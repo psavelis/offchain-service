@@ -115,7 +115,11 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     this.getQuotation = supportedQuotationStrats;
   }
 
-  validateEntry = ({ amount, chainId }: CreateQuoteDto): void => {
+  validateEntry = ({
+    amount,
+    chainId,
+    transactionType,
+  }: CreateQuoteDto): void => {
     const { unassignedNumber, isoCode, decimals } = amount;
     if (!onlyDigits.test(unassignedNumber)) {
       throw new Error('Invalid amount');
@@ -134,7 +138,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     }
 
     if (isoCode === IsoCodeType.BRL) {
-      CreateQuoteUseCase.validateMinimumAmount(amount);
+      CreateQuoteUseCase.validateMinimumAmount(amount, transactionType);
     }
 
     if (!chainId) {
@@ -156,7 +160,12 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
   private static validateMinimumAmount(
     amount: CurrencyAmount<CurrencyIsoCode>,
+    transactionType: TransactionType,
   ) {
+    if (transactionType === 'Transfer') {
+      return;
+    }
+
     const truncated = Number(
       formatDecimals(
         amount.unassignedNumber,
@@ -246,7 +255,10 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
 
     quote.total = entryQuotation;
 
-    CreateQuoteUseCase.validateMinimumAmount(quote.total.BRL);
+    CreateQuoteUseCase.validateMinimumAmount(
+      quote.total.BRL,
+      quote.transactionType,
+    );
 
     quote.netTotal = userQuotation;
 

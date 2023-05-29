@@ -19,5 +19,6 @@ export const parseEntity = (order: Order) => {
     total_gas: order.getTotalGas(),
     total_knn: order.getTotalKnn(),
     total_net: order.getTotalNet(),
+    desired_chain_id: order.getDesiredChainId(),
   };
 };

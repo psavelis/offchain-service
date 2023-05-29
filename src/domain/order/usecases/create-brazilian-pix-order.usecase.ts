@@ -42,11 +42,6 @@ const allowedIsoCodes = [
   IsoCodeType.MATIC,
 ];
 
-const allowedChains =
-  process.env.NODE_ENV === 'production'
-    ? [NetworkType.Ethereum, NetworkType.Polygon]
-    : [NetworkType.EthereumSepolia, NetworkType.PolygonMumbai];
-
 const allowedIdentifiers = [identifiers.CriptoWallet, identifiers.EmailAddress];
 export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   constructor(
@@ -180,6 +175,11 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
   }
 
   private validateCurrentChain(request: CreateOrderDto) {
+    const allowedChains =
+      process.env.NODE_ENV === 'production'
+        ? [NetworkType.Ethereum, NetworkType.Polygon]
+        : [NetworkType.EthereumSepolia, NetworkType.PolygonMumbai];
+
     if (!request.chainId) {
       const message = `Missing chainId! Available options are: ${allowedChains
         .map((chainId) => `'${chainId}' (for ${NetworkType[chainId]})`)

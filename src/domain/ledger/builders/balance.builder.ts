@@ -75,12 +75,12 @@ export class BalanceBuilder {
     balance.group = journalEntry.accountGroup;
     balance.nonce = Number(balance.nonce) + 1;
 
-    const isMint =
+    const isMintOrFxTunnel =
       journalEntry.movementType === JournalMovementType.Debit &&
       (journalEntry.accountGroup === AccountGroup.Chain ||
         journalEntry.accountGroup === AccountGroup.Bridge);
 
-    if (isMint) {
+    if (isMintOrFxTunnel) {
       balance.total = Number(balance.total) - Number(journalEntry.amount);
       balance[journalEntry.chain.layer] =
         Number(balance[journalEntry.chain.layer]) - Number(journalEntry.amount);

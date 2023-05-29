@@ -36,6 +36,10 @@ const testnets = [NetworkType.EthereumSepolia, NetworkType.PolygonMumbai];
 
 export class Chain {
   constructor(readonly chainId: NetworkType) {
+    if (!chainId) {
+      throw new Error('ChainId not defined');
+    }
+
     const environment = process.env.NODE_ENV;
 
     const isProductionToMainnet =

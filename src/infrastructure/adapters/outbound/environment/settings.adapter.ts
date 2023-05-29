@@ -66,6 +66,7 @@ export class SettingsAdapter {
         ),
 
         // toggle for l1 bridge
+        //
         // current: new Chain(
         //   process.env.NODE_ENV === 'production'
         //     ? NetworkType.Ethereum

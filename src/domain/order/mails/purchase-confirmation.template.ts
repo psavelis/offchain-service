@@ -80,18 +80,6 @@ export default `
                     </td>
                 </tr>
             </table>
-            <table
-                style="max-width: 500px; margin: 0 auto; width: 100%;background-color: #13250E; padding: 0px 40px 8px 40px;border-radius: 0px 0px 8px 8px;">
-                <tr>
-                    <td>
-                        <p
-                            style="font-weight: 400; font-size: 12px;line-height: 20px;color: #95DE81;padding: 0px 12px; text-align: left;">
-                            Você também pode verificar o registro de sua reserva de toknes KNN no <a
-                                href="{{transaction}}" target="_blank"
-                                style="text-decoration:underline;color:#95DE81">Etherscan</a>. O resgate dos tokens adquiridos via Pix será liberado no dia 15/02/2023.</p>
-                    </td>
-                </tr>
-            </table>
             <!-- CONTACT -->
             <table
                 style="max-width: 600px; margin: auto; width: 100%;padding: 72px 0px 0px 0px; color: #FAFAFA;text-align: center;">

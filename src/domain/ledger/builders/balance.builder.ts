@@ -77,7 +77,8 @@ export class BalanceBuilder {
 
     const isMint =
       journalEntry.movementType === JournalMovementType.Debit &&
-      journalEntry.accountGroup === AccountGroup.Chain;
+      (journalEntry.accountGroup === AccountGroup.Chain ||
+        journalEntry.accountGroup === AccountGroup.Bridge);
 
     if (isMint) {
       balance.total = Number(balance.total) - Number(journalEntry.amount);

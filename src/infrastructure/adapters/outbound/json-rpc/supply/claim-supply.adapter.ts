@@ -63,10 +63,15 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
 
     const contract: KannaPreSale = await this.toggleNetworkContract(chain);
 
+    const { gasPrice } = await contract.provider.getFeeData();
+
     const transaction: ContractTransaction = await contract.claim(
       onchainAddress,
       uint256Amount,
       uint256Nonce,
+      {
+        gasPrice,
+      },
     );
 
     const receipt: ContractReceipt = await transaction.wait();

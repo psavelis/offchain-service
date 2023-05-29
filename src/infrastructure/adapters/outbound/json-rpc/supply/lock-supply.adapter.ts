@@ -60,9 +60,14 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
       chain,
     );
 
+    const { gasPrice } = await currentContract.provider.getFeeData();
+
     const transaction: ContractTransaction = await currentContract.lockSupply(
       uint256Amount,
       uint256Nonce,
+      {
+        gasPrice,
+      },
     );
 
     const receipt: ContractReceipt = await transaction.wait();

@@ -143,7 +143,7 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     this.logger.debug(
       `[estimate-sign][signature-verified] Order ${order.getId()} has been signed on ${
         NetworkType[chain.id]
-      } ${chain.layer} referencing #${paymentSequence} issued by [${
+      } ${LayerType[chain.layer]} referencing #${paymentSequence} issued by [${
         claimRequest.clientIp
       }] @ ${claimRequest.clientAgent}`,
     );

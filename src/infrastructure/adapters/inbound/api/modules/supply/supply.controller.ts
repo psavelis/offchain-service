@@ -54,7 +54,7 @@ export class SupplyController {
         });
     } catch (err) {
       console.log(
-        `putClaim ${SupplyController.name}, [${ip}@${req?.headers['user-agent']}], ${err.message}`,
+        `putClaim ${SupplyController.name}, [${ip}@${req?.headers['user-agent']}], ${err.message} - entry: ${base64EmailAddress}`,
       );
       this.logger.debug(err, '[400] PUT /supply/claim');
     }

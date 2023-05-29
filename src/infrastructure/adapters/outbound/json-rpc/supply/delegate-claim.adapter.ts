@@ -138,16 +138,6 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
 
     const paymentSequence = String(order.getPaymentSequence());
 
-    console.info(
-      `[saleContract.estimateGas.claimLocked] ${JSON.stringify({
-        recipient: claimRequest.cryptoWallet!,
-        amountInKNN: order.getAmountOfTokens().unassignedNumber,
-        ref: paymentSequence,
-        signature: signature.signature,
-        nonce: signature.nonce,
-      })}`,
-    );
-
     await saleContract.estimateGas.claimLocked(
       claimRequest.cryptoWallet!,
       order.getAmountOfTokens().unassignedNumber,

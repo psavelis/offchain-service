@@ -224,7 +224,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       ),
     );
 
-    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL && truncated !== 4.2) {
+    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL) {
       throw new Error('amount below minimum total');
     }
   }

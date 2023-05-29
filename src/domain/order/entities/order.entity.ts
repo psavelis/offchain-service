@@ -81,7 +81,7 @@ export class Order extends Entity<OrderProps> {
       return;
     }
 
-    if (props.total < DEFAULT_ORDER_MINIMUM_TOTAL && props.total !== 4.2) {
+    if (props.total < DEFAULT_ORDER_MINIMUM_TOTAL) {
       throw new Error('Invalid order total');
     }
 

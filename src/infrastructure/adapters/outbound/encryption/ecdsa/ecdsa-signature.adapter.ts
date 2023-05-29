@@ -100,12 +100,6 @@ export class ECDSASignatureAdapter implements SignaturePort {
       );
     }
 
-    console.info(
-      `Signature-Attempt: ${await signer.getAddress()} => ${JSON.stringify(
-        values,
-      )}`,
-    );
-
     const signature = await signer.signMessage(
       ethers.utils.arrayify(messageHash),
     );

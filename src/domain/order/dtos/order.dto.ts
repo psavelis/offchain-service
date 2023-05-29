@@ -10,4 +10,5 @@ export interface OrderDto {
   identifierType: UserIdentifier;
   lockTransactionHash: string;
   claimTransactionHash: string;
+  chainId: number;
 }

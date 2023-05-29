@@ -29,7 +29,7 @@ export class CreateSettlementUseCase implements CreateSettlementInteractor {
 
         await this.processOrderSettlementInteractor.execute(orderWithPayment);
       } catch (err) {
-        this.logger.debug(
+        console.error(
           err,
           `[error] settlement of #${sequence} FAILED (${orderWithPayment.order.getId()})`,
         );

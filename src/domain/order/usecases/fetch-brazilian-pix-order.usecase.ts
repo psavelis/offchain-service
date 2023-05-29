@@ -59,6 +59,7 @@ export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
       identifierType: entity.getIdentifierType(),
       lockTransactionHash: entity.getLockTransactionHash(),
       claimTransactionHash: entity.getClaimTransactionHash(),
+      chainId: entity.getDesiredChainId(),
     };
   }
 }

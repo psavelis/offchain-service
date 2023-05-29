@@ -171,6 +171,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       base64,
       lockTransactionHash: undefined,
       claimTransactionHash: undefined,
+      chainId: order.getDesiredChainId(),
     };
   }
 

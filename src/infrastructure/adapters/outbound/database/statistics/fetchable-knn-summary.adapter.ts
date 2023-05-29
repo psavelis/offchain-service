@@ -33,8 +33,8 @@ export class FetchableKnnSummaryDbAdapter implements FetchableKnnSummaryPort {
       and account_group  = 'HL'`;
 
     const balanceQuery = `select
-      sum(total)::int as totalSupply,
-      (sum(total) filter (where "group" not in ('TS', 'CN')))::int as circulatingSupply
+      sum(total) filter (where "group" not in ('CN', 'BG'))::int as totalSupply,
+      (sum(total) filter (where "group" not in ('TS', 'CN', 'BG')))::int as circulatingSupply
     from balance`;
 
     const query = `select

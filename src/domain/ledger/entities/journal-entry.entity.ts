@@ -7,6 +7,7 @@ import { LayerType } from '../../common/enums/layer-type.enum';
 import { Chain } from '../../common/entities/chain.entity';
 
 const nullAddress = '0x0000000000000000000000000000000000000000';
+
 export type CryptoWallet = string;
 
 export enum JournalMovementType {
@@ -51,6 +52,17 @@ export interface JournalEntryProps extends Props {
   effectiveGasPrice: number;
 }
 
+const routing = {
+  ['0x0cC2CaeD31490B546c741BD93dbba8Ab387f7F2c']: AccountGroup.Bridge,
+  ['0xd531Cf2142D9b9Dc8b077dF3c4E93B46E7Cf879a']: AccountGroup.Bridge,
+  ['0x8397259c983751DAf40400790063935a11afa28a']: AccountGroup.Bridge,
+  ['0xE633A3eeADF030Edf6ABB6Ebbf792679a475C042']: AccountGroup.Bridge,
+  ['0xfe5e5D361b2ad62c541bAb87C45a0B9B018389a2']: AccountGroup.Bridge,
+  ['0xB005512d330501d93b12Aa4A8FF30bE8858769dE']: AccountGroup.Bridge,
+  ['0xd26CD6ce2a1705C49610F951f232510532c6856D']: AccountGroup.Bridge,
+  ['0xeFfdCB49C2D0EF813764B709Ca3c6fe71f230E3e']: AccountGroup.Bridge,
+};
+
 export class JournalEntry extends SequenceEntity<JournalEntryProps> {
   private static AccountGroupingCache;
   private _chain: Chain;
@@ -67,13 +79,13 @@ export class JournalEntry extends SequenceEntity<JournalEntryProps> {
           [ethereum.contracts.legacyPreSaleAddress]: AccountGroup.PreSale,
           [ethereum.contracts.saleAddress]: AccountGroup.Sale,
           [ethereum.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
-          // [ethereum.contracts.fxRootTunnelAddress]: AccountGroup.Bridge,
+          ...routing,
           [nullAddress]: AccountGroup.Chain,
         },
         [LayerType.L2]: {
           [polygon.contracts.saleAddress]: AccountGroup.Sale,
           [polygon.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
-          // [polygon.contracts.fxChildTunnelAddress]: AccountGroup.Bridge,
+          ...routing,
           [nullAddress]: AccountGroup.Chain,
         },
       };

@@ -39,8 +39,6 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
 
         return;
       }
-
-      this.logger.info(`${purchases.length} transactions synced from chain.`);
     } catch (err) {
       this.logger.error(err, '[import-purchases][aborted]');
     }

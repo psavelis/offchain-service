@@ -18,6 +18,9 @@ import { NetworkType } from '../../../../../domain/common/enums/network-type.enu
 const claimType =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce)';
 
+const claimTypeLayer2 =
+  'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce,uint256 chainId)';
+
 export class DelegateClaimRpcAdapter implements DelegateClaimPort {
   static instance: DelegateClaimPort;
 
@@ -74,7 +77,12 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       );
     }
 
-    const claimTypeHash = this.signaturePort.hash(claimType);
+    const chain = new Chain(order.getSettledChainId());
+
+    const claimTypeHash = this.signaturePort.hash(
+      chain.layer === LayerType.L1 ? claimType : claimTypeLayer2,
+    );
+
     const payload: SignaturePayload = {
       types: ['bytes32', 'address', 'uint256', 'uint256'],
       values: [
@@ -84,8 +92,6 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
         paymentSequence,
       ],
     };
-
-    const chain = new Chain(order.getSettledChainId());
 
     const isLegacy = this.isLegacy(order, chain);
 
@@ -98,7 +104,7 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     this.logger.info(
       `Signature: ${order.getEndToEndId()} has been signed on ${
         NetworkType[chain.id]
-      } ${chain.layer} referencing #${paymentSequence} issued by [${
+      } ${LayerType[chain.layer]} referencing #${paymentSequence} issued by [${
         claimRequest.clientIp
       } @ ${claimRequest.clientAgent}]`,
     );

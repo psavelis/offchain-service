@@ -18,6 +18,7 @@ const decimals = 8;
 
 const mintDate = new Date('2022-12-14T03:41:35.000Z');
 const maxSupply = 19_000_000;
+const totalSupply = 10_000_000;
 
 export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
   static cache: {
@@ -59,6 +60,7 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
       mintDate,
       maxSupply,
       ...knnSummary,
+      totalSupply,
       ...lockedOrdersSummary,
       totalValueLocked,
       price,

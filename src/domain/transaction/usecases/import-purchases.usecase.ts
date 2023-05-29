@@ -54,7 +54,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
         );
 
         if (exists) {
-          console.info(
+          console.debug(
             `[import-purchases][block-overlap] skipping already imported ${purchase.network} purchase: ${purchase.purchaseTransactionHash}`,
           );
 

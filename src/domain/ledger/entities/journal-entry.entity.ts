@@ -76,7 +76,7 @@ export class JournalEntry extends SequenceEntity<JournalEntryProps> {
     if (!JournalEntry.AccountGroupingCache) {
       JournalEntry.AccountGroupingCache = {
         [LayerType.L1]: {
-          [ethereum.contracts.legacyPreSaleAddress]: AccountGroup.PreSale,
+          [ethereum.contracts.legacyPreSaleAddress]: AccountGroup.Sale,
           [ethereum.contracts.saleAddress]: AccountGroup.Sale,
           [ethereum.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
           ...routing,

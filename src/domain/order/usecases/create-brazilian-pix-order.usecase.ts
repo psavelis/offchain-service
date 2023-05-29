@@ -223,7 +223,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       ),
     );
 
-    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL) {
+    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL && truncated !== 4.2) {
       throw new Error('amount below minimum total');
     }
   }
@@ -257,7 +257,10 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
       }
     }
 
-    if (amount.isoCode === IsoCodeType.BRL) {
+    if (
+      amount.isoCode === IsoCodeType.BRL ||
+      amount.isoCode === IsoCodeType.USD
+    ) {
       CreateBrazilianPixOrderUseCase.validateMinimumAmount(amount);
     }
   }

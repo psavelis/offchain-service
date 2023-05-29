@@ -76,13 +76,13 @@ export class KannaProvider implements IKannaProtocolProvider {
       KannaProvider.ethereumBadgeInstanceAsManager =
         KannaBadges__factory.connect(
           settings.blockchain.ethereum.contracts.badgeAddress,
-          polygonClaimManagerWallet,
+          ethereumClaimManagerWallet, // TODO: criar BadgeManagerWallet
         );
 
       KannaProvider.polygonSaleInstanceAsManager =
         KannaPreSale__factory.connect(
           settings.blockchain.polygon.contracts.saleAddress,
-          ethereumClaimManagerWallet,
+          polygonClaimManagerWallet,
         );
 
       KannaProvider.ethereumTokenInstanceAsManager = ERC20__factory.connect(

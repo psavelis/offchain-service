@@ -9,31 +9,61 @@ import { ClaimSupplyPort } from '../../../../../domain/supply/ports/claim-supply
 import { IKannaProtocolProvider } from '../kanna.provider';
 import { KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
+import { Settings } from 'src/domain/common/settings';
+import { Chain } from 'src/domain/common/entities/chain.entity';
+import { LayerType } from 'src/domain/common/enums/layer-type.enum';
 
 export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
   static instance: ClaimSupplyPort;
 
-  private constructor(readonly provider: IKannaProtocolProvider) {}
+  private constructor(
+    readonly settings: Settings,
+    readonly provider: IKannaProtocolProvider,
+  ) {}
 
-  static getInstance(provider: IKannaProtocolProvider) {
+  static getInstance(settings: Settings, provider: IKannaProtocolProvider) {
     if (!ClaimSupplyRpcAdapter.instance) {
-      ClaimSupplyRpcAdapter.instance = new ClaimSupplyRpcAdapter(provider);
+      ClaimSupplyRpcAdapter.instance = new ClaimSupplyRpcAdapter(
+        settings,
+        provider,
+      );
     }
 
     return ClaimSupplyRpcAdapter.instance;
+  }
+
+  public toggleNetworkContract(chain: Chain): Promise<KannaPreSale> {
+    if (this.settings.blockchain.current.layer === LayerType.L1) {
+      return this.provider.sale();
+    }
+
+    if (this.settings.blockchain.current.layer === LayerType.L2) {
+      if (chain.layer === LayerType.L1) {
+        return this.provider.sale();
+      }
+
+      return this.provider.polygonSale();
+    }
+
+    const message = `invalid chain: ${JSON.stringify(
+      this.settings.blockchain.current || {},
+    )}`;
+
+    throw new Error(message);
   }
 
   async claim({
     onchainAddress,
     amount,
     nonce,
+    chain,
   }: ClaimSupplyDto): Promise<OnChainReceipt> {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const polygonSale: KannaPreSale = await this.provider.polygonSale();
+    const contract: KannaPreSale = await this.toggleNetworkContract(chain);
 
-    const transaction: ContractTransaction = await polygonSale.claim(
+    const transaction: ContractTransaction = await contract.claim(
       onchainAddress,
       uint256Amount,
       uint256Nonce,
@@ -48,14 +78,15 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
     onchainAddress,
     amount,
     nonce,
+    chain,
   }: ClaimSupplyDto): Promise<void> {
     this.validate(nonce, amount);
-    const polygonSale: KannaPreSale = await this.provider.polygonSale();
+    const contract: KannaPreSale = await this.toggleNetworkContract(chain);
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    await polygonSale.estimateGas.claim(
+    await contract.estimateGas.claim(
       onchainAddress,
       uint256Amount,
       uint256Nonce,

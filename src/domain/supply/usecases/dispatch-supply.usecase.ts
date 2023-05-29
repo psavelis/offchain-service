@@ -40,6 +40,8 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
     payment,
   }: OrderWithPayment): Promise<OrderWithReceipt> {
     const identifierType = order.getIdentifierType();
+    const desiredChain = new Chain(order.getDesiredChainId());
+
     if (identifierType === CryptoWallet) {
       const decryptedAddress = await this.encryptionPort
         .decrypt(
@@ -57,6 +59,7 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
         onchainAddress: decryptedAddress,
         amount: order.getAmountOfTokens(),
         nonce: payment.sequence,
+        chain: desiredChain,
       };
 
       await this.claimSupplyPort.verify(claimPayload);
@@ -103,7 +106,7 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
       };
     } else if (identifierType === Email) {
       const lockPayload: LockSupplyDto = {
-        chain: new Chain(order.getDesiredChainId()),
+        chain: desiredChain,
         amount: order.getAmountOfTokens(),
         nonce: payment.sequence,
       };

@@ -81,7 +81,7 @@ export class KannaProvider implements IKannaProtocolProvider {
 
       KannaProvider.polygonSaleInstanceAsManager =
         KannaPreSale__factory.connect(
-          settings.blockchain.ethereum.contracts.saleAddress,
+          settings.blockchain.polygon.contracts.saleAddress,
           ethereumClaimManagerWallet,
         );
 

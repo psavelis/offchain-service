@@ -1,3 +1,4 @@
+import { Chain } from 'src/domain/common/entities/chain.entity';
 import {
   CurrencyAmount,
   CurrencyIsoCode,
@@ -7,4 +8,5 @@ export interface ClaimSupplyDto {
   nonce: number;
   onchainAddress: string;
   amount: CurrencyAmount<CurrencyIsoCode>;
+  chain: Chain;
 }

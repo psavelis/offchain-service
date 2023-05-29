@@ -54,7 +54,7 @@ export class CreateSettlementFactory {
       const mailer: MailerPort = Mailer.getInstance(settings);
 
       const claimSupplyPort: ClaimSupplyPort =
-        ClaimSupplyRpcAdapter.getInstance(kannaProvider);
+        ClaimSupplyRpcAdapter.getInstance(settings, kannaProvider);
 
       const lockSupplyPort: LockSupplyPort = LockSupplyRpcAdapter.getInstance(
         settings,

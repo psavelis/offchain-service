@@ -32,7 +32,7 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     return LockSupplyRpcAdapter.instance;
   }
 
-  private toggleNetworkContract(chain: Chain): Promise<KannaPreSale> {
+  public toggleNetworkContract(chain: Chain): Promise<KannaPreSale> {
     if (this.settings.blockchain.current.layer === LayerType.L1) {
       return this.provider.sale();
     }

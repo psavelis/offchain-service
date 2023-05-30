@@ -25,6 +25,7 @@ import {
 } from '../../order/dtos/order-dictionary.dto';
 
 const MAX_CACHED_KEYS = 2000;
+let failing = false;
 
 export class CreateClearingUseCase implements CreateClearingInteractor {
   private cache: Record<ProviderPaymentId, boolean>;
@@ -57,10 +58,17 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
 
     try {
       statement = await this.fetchableStatementPort.fetch(statementParameter);
+      failing = false;
     } catch (err) {
       const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
 
       const msg = err?.message;
+
+      if (failing) {
+        this.logger.error(err, remarks, statementParameter);
+      }
+
+      failing = true;
 
       if (
         msg?.includes('ETIMEDOUT') ||
@@ -69,8 +77,6 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       ) {
         throw err;
       }
-
-      this.logger.error(err, remarks, statementParameter);
 
       await this.persistableClearingPort.create(
         new Clearing({

@@ -5,6 +5,7 @@ import { FetchablePurchasePort } from '../ports/fetchable-purchase.port';
 import { PersistablePurchasePort } from '../ports/persistable-purchase.port';
 import { LoggablePort } from '../../common/ports/loggable.port';
 
+let failing = false;
 export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
   constructor(
     readonly logger: LoggablePort,
@@ -25,6 +26,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
         );
 
       if (!purchases?.length) {
+        failing = false;
         return;
       }
 
@@ -39,8 +41,14 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
 
         return;
       }
+
+      failing = false;
     } catch (err) {
-      this.logger.error(err, '[import-purchases][aborted]');
+      if (failing) {
+        this.logger.error(err, '[import-purchases][aborted]');
+      }
+
+      failing = true;
     }
   }
 

@@ -4,6 +4,7 @@ import {
 } from '../../../../../domain/badge/dtos/badge-event.dto';
 import { FetchableBadgeEventPort } from '../../../../../domain/badge/ports/fetchable-badge-event.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
+import { KannaBadges } from '../protocol/contracts';
 
 export class FetchableBadgeEventJsonRpcAdapter
   implements FetchableBadgeEventPort
@@ -26,9 +27,36 @@ export class FetchableBadgeEventJsonRpcAdapter
     referenceMetadataId: number,
     ...badgeEventTypes: BadgeEventType[]
   ): Promise<BadgeEvent[]> {
-    const kannaBadges = await this.provider.badges();
+    const kannaBadgesL1 = await this.provider.badges();
+    const kannaBadgesL2 = await this.provider.polygonBadges();
 
-    const filters: Promise<BadgeEvent[]>[] = badgeEventTypes.map((type) => {
+    const filtersL1: Promise<BadgeEvent[]>[] = this.fetchEvents(
+      badgeEventTypes,
+      kannaBadgesL1,
+      cryptoWallet,
+      referenceMetadataId,
+    );
+
+    const filtersL2: Promise<BadgeEvent[]>[] = this.fetchEvents(
+      badgeEventTypes,
+      kannaBadgesL2,
+      cryptoWallet,
+      referenceMetadataId,
+    );
+
+    const eventsL1 = (await Promise.all(filtersL1)).flat();
+    const eventsL2 = (await Promise.all(filtersL2)).flat();
+
+    return [...eventsL1, ...eventsL2];
+  }
+
+  private fetchEvents(
+    badgeEventTypes: BadgeEventType[],
+    kannaBadges: KannaBadges,
+    cryptoWallet: string,
+    referenceMetadataId: number,
+  ): Promise<BadgeEvent[]>[] {
+    return badgeEventTypes.map((type) => {
       const f = kannaBadges.filters[type](cryptoWallet, referenceMetadataId);
       return kannaBadges.queryFilter(f).then((events) =>
         events.map(({ transactionHash }) => ({
@@ -38,9 +66,5 @@ export class FetchableBadgeEventJsonRpcAdapter
         })),
       );
     });
-
-    const events = await Promise.all(filters);
-
-    return events.flat();
   }
 }

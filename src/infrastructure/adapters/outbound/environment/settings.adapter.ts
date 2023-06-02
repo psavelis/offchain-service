@@ -58,20 +58,11 @@ export class SettingsAdapter {
         identitySecret: this.envString('IDENTITY_SECRET'),
       },
       blockchain: {
-        // toggle for l2 bridge
         current: new Chain(
           process.env.NODE_ENV === 'production'
             ? NetworkType.Polygon
             : NetworkType.PolygonMumbai,
         ),
-
-        // toggle for l1 bridge
-        //
-        // current: new Chain(
-        //   process.env.NODE_ENV === 'production'
-        //     ? NetworkType.Ethereum
-        //     : NetworkType.EthereumSepolia,
-        // ),
         ethereum: {
           providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),
           claimManagerKey: this.envString('CLAIM_MANAGER_KEY'),
@@ -93,8 +84,12 @@ export class SettingsAdapter {
           claimManagerKey: this.envString('POLYGON_CLAIM_MANAGER_KEY'),
           claimSignerKey: this.envString('POLYGON_SALE_CLAIM_SIGNER_KEY'),
           providerApiKey: this.envString('POLYGON_RPC_PROVIDER_API_KEY'),
+          badgesMinterSignerKey: this.envString(
+            'POLYGON_BADGES_MINTER_SIGNER_KEY',
+          ),
           network: this.envString('POLYGON_RPC_NETWORK'),
           contracts: {
+            badgeAddress: this.envString('POLYGON_BADGE_CONTRACT_ADDRESS'),
             fxTokenAddress: this.envString('POLYGON_ERC20_CONTRACT_ADDRESS'),
             saleAddress: this.envString('POLYGON_SALE_CONTRACT_ADDRESS'),
             gnosisSafeAddress: this.envString('POLYGON_GNOSIS_SAFE_ADDRESS'),

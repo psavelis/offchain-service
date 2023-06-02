@@ -35,11 +35,13 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
 
   async execute({
     cryptoWallet,
-    chain,
+    chainId,
     clientIp,
     clientAgent,
   }: SignMintRequestDto): Promise<SignedMintResponseDto> {
     const { referenceMetadataId } = this.settings.badge.presale;
+
+    const chain = new Chain(chainId);
 
     let verifyResult = await this.verifyMintInteractor.execute({
       cryptoWallet,
@@ -89,7 +91,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       await this.execute({
         cryptoWallet,
         referenceMetadataId,
-        chain,
+        chainId: chain.id,
         clientIp,
         clientAgent,
       });

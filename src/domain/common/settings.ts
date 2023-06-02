@@ -57,11 +57,13 @@ export interface Settings {
       providerApiKey: string;
     };
     polygon: {
+      badgesMinterSignerKey: string;
       providerEndpoint: string;
       claimManagerKey: string;
       claimSignerKey: string;
       contracts: {
-        gnosisSafeAddress: any;
+        badgeAddress: string;
+        gnosisSafeAddress: string;
         fxTokenAddress: string;
         saleAddress: string;
       };

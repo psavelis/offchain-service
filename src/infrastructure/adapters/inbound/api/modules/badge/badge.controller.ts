@@ -17,6 +17,8 @@ import {
 import { VerifyMint } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { VerifyMintInteractor } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { SignMintRequestDto } from '../../../../../../domain/badge/dtos/sign-mint-request.dto';
+import { Chain } from 'src/domain/common/entities/chain.entity';
+import { NetworkType } from 'src/domain/common/enums/network-type.enum';
 
 @Controller('badge')
 export class BadgeController {
@@ -31,6 +33,7 @@ export class BadgeController {
   @Throttle(4, 60)
   async getBadges(
     @Query('CW') base64CryptoWallet: string,
+    @Query('chainId') chainId: number,
     @Req() req,
     @Ip() ip,
   ) {
@@ -44,6 +47,7 @@ export class BadgeController {
 
       const badge = await this.verifyPreSaleMint.execute({
         cryptoWallet,
+        chain: new Chain(chainId),
       });
 
       return [badge];
@@ -58,7 +62,7 @@ export class BadgeController {
   @Post('sign')
   @Throttle(3, 60)
   async signMint(
-    @Body() { cryptoWallet, referenceMetadataId }: SignMintRequestDto,
+    @Body() { cryptoWallet, referenceMetadataId, chainId }: SignMintRequestDto,
     @Req() req,
     @Ip() ip,
   ) {
@@ -70,6 +74,7 @@ export class BadgeController {
       const res = await this.signPreSaleMint.execute({
         cryptoWallet,
         referenceMetadataId,
+        chainId,
         clientIp: ip,
         clientAgent,
       });

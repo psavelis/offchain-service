@@ -4,5 +4,8 @@ export interface SignedMintResponseDto {
   referenceMetadataId: number;
   nonce: string;
   incremental: number;
+  dueDate: number;
   amount: number;
+  switchChainsDate: Date;
+  onHold: boolean;
 }

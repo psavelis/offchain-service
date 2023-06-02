@@ -1,6 +1,8 @@
 import { ethers } from 'ethers';
 import { PreSaleEventType } from '../dtos/presale-event.dto';
 import { VerifyPreSaleMintUseCase } from './verify-presale-mint.usecase';
+import { Chain } from '../../common/entities/chain.entity';
+import { NetworkType } from '../../common/enums/network-type.enum';
 
 const settingsMock: any = {
   badge: {
@@ -36,14 +38,20 @@ describe('VerifyPreSaleMintUseCase', () => {
       fetch: jest.fn().mockResolvedValue([]),
     };
 
+    const fetchableMintHistoryPort = {
+      fetchLast: jest.fn().mockResolvedValue(undefined),
+    };
+
     const usecase = new VerifyPreSaleMintUseCase(
       settingsMock,
       fetchablePresaleEventPort,
       fetchableBadgeEventPort,
+      fetchableMintHistoryPort,
     );
 
     const result = await usecase.execute({
       cryptoWallet: randomWallet.address,
+      chain: new Chain(NetworkType.PolygonMumbai),
     });
 
     expect(result.isVerified).toBeTruthy();
@@ -59,14 +67,20 @@ describe('VerifyPreSaleMintUseCase', () => {
       fetch: jest.fn().mockResolvedValue([]),
     };
 
+    const fetchableMintHistoryPort = {
+      fetchLast: jest.fn().mockResolvedValue(undefined),
+    };
+
     const usecase = new VerifyPreSaleMintUseCase(
       settingsMock,
       fetchablePresaleEventPort,
       fetchableBadgeEventPort,
+      fetchableMintHistoryPort,
     );
 
     const result = await usecase.execute({
       cryptoWallet: randomWallet.address,
+      chain: new Chain(NetworkType.PolygonMumbai),
     });
 
     expect(result.isVerified).toBeFalsy();

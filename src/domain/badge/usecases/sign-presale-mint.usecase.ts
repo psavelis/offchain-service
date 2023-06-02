@@ -12,14 +12,19 @@ import {
 import { Settings } from '../../common/settings';
 import { SignerType } from '../../common/enums/signer-type.enum';
 import { Chain } from '../../common/entities/chain.entity';
-import { NetworkType } from '../../common/enums/network-type.enum';
+import { LayerType } from '../../common/enums/layer-type.enum';
 
-const mintType =
-  'Mint(address to, uint256 id, uint256 amount, uint256 incremental, uint256 nonce)';
+const typeHash = {
+  [LayerType.L1]:
+    'Mint(address to, uint16 id, uint256 amount, uint16 incremental, uint256 dueDate, uint256 nonce)',
+  [LayerType.L2]:
+    'Mint(address to, uint16 id, uint256 amount, uint16 incremental, uint256 dueDate, uint256 nonce, uint256 chainId)',
+};
 
 const amount = 1;
 const incremental = 1;
 
+const signatureExpiration = 60 * 60 * 1000; // 1h
 export class SignPreSaleMintUseCase implements SignMintInteractor {
   constructor(
     readonly settings: Settings,
@@ -30,13 +35,15 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
 
   async execute({
     cryptoWallet,
+    chain,
     clientIp,
     clientAgent,
   }: SignMintRequestDto): Promise<SignedMintResponseDto> {
     const { referenceMetadataId } = this.settings.badge.presale;
 
-    const verifyResult = await this.verifyMintInteractor.execute({
+    let verifyResult = await this.verifyMintInteractor.execute({
       cryptoWallet,
+      chain,
     });
 
     if (!verifyResult.isVerified) {
@@ -46,6 +53,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         amount,
         description: 'Not verified',
         valid: verifyResult.isVerified,
+        chainId: chain.id,
         clientIp,
         clientAgent,
       });
@@ -55,18 +63,58 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       throw new Error(history.description);
     }
 
-    const mintTypeHash = this.signaturePort.hash(mintType);
-    const payload: SignaturePayload = {
-      types: ['bytes32', 'address', 'uint256', 'uint256', 'uint256'],
-      values: [mintTypeHash, cryptoWallet, referenceMetadataId, 1, 1],
-    };
+    const dueDate =
+      verifyResult.dueDate ?? new Date(Date.now() + signatureExpiration);
 
-    const chain = this.getPreSaleChain();
+    await this.persistableMintHistoryPort.create(
+      new MintHistory({
+        referenceMetadataId,
+        cryptoWallet,
+        amount,
+        description: `${amount}x of #${referenceMetadataId} verified and signed`,
+        valid: verifyResult.isVerified,
+        chainId: chain.id,
+        dueDate,
+        clientIp,
+        clientAgent,
+      }),
+    );
+
+    verifyResult = await this.verifyMintInteractor.execute({
+      cryptoWallet,
+      chain,
+    });
+
+    if (!verifyResult.isVerified) {
+      await this.execute({
+        cryptoWallet,
+        referenceMetadataId,
+        chain,
+        clientIp,
+        clientAgent,
+      });
+    }
+
+    const dueDateInUTCEpoch = Math.floor(verifyResult.dueDate.getTime() / 1000);
+
+    const mintTypeHash = this.signaturePort.hash(typeHash[chain.layer]);
+
+    const payload: SignaturePayload = {
+      types: ['bytes32', 'address', 'uint256', 'uint256', 'uint256', 'uint256'],
+      values: [
+        mintTypeHash,
+        cryptoWallet,
+        referenceMetadataId,
+        amount,
+        incremental,
+        dueDateInUTCEpoch,
+      ],
+    };
 
     const { signature, nonce } = await this.signaturePort.sign(
       payload,
       SignerType.BadgesMinter,
-      chain,
+      new Chain(verifyResult.chainId),
     );
 
     const result: SignedMintResponseDto = {
@@ -76,35 +124,11 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       signature,
       incremental,
       nonce,
+      dueDate: dueDateInUTCEpoch,
+      switchChainsDate: verifyResult.switchChainsDate,
+      onHold: verifyResult.onHold,
     };
 
-    await this.persistableMintHistoryPort.create(
-      new MintHistory({
-        referenceMetadataId,
-        cryptoWallet,
-        amount,
-        description: `${
-          incremental ? '\t!' : '\x20'
-        }incremental ${amount}x of #${referenceMetadataId} verified and signed`,
-        valid: verifyResult.isVerified,
-        clientIp,
-        clientAgent,
-      }),
-    );
-
     return result;
-  }
-
-  getPreSaleChain(): Chain {
-    let chainId = NetworkType.Ethereum;
-
-    if (
-      process.env.NODE_ENV === 'development' ||
-      process.env.NODE_ENV === 'test'
-    ) {
-      chainId = NetworkType.EthereumSepolia;
-    }
-
-    return new Chain(chainId);
   }
 }

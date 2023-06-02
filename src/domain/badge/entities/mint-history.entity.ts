@@ -8,6 +8,8 @@ export interface MintHistoryProps extends Props {
   description?: string;
   clientIp?: string;
   clientAgent?: string;
+  dueDate?: Date;
+  chainId: number;
 }
 
 export class MintHistory extends Entity<MintHistoryProps> {
@@ -41,5 +43,13 @@ export class MintHistory extends Entity<MintHistoryProps> {
 
   get clientAgent(): string | undefined {
     return this.props.clientAgent;
+  }
+
+  get dueDate(): Date | undefined {
+    return this.props.dueDate;
+  }
+
+  get chainId(): number {
+    return this.props.chainId;
   }
 }

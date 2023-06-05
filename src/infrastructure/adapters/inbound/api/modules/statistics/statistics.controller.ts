@@ -5,6 +5,7 @@ import {
   Req,
   Ip,
   UnprocessableEntityException,
+  Query,
 } from '@nestjs/common';
 import {
   FetchTokenomics,
@@ -32,6 +33,32 @@ export class StatisticsController {
 
       console.error(
         `tokenomics ${StatisticsController.name} - ${err.message} - ${clientIp}@${clientAgent}`,
+      );
+      throw new UnprocessableEntityException('Bad stats request');
+    }
+  }
+
+  @Get('coinmarketcap')
+  @Throttle(10, 60)
+  async fetchCoinMarketCap(@Req() req, @Ip() ip, @Query('q') query: string) {
+    try {
+      const res = await this.fetchTokenomics.execute();
+
+      if (query === 'totalcoins') {
+        return Number(res.totalSupply);
+      }
+
+      if (query === 'circulating') {
+        return Number(res.circulatingSupply);
+      }
+
+      return res;
+    } catch (err) {
+      const clientAgent = req?.headers['user-agent'];
+      const clientIp = ip;
+
+      console.error(
+        `coinmarketcap ${StatisticsController.name} - ${err.message} - ${clientIp}@${clientAgent}`,
       );
       throw new UnprocessableEntityException('Bad stats request');
     }

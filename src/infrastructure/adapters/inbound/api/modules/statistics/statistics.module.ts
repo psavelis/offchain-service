@@ -1,10 +1,17 @@
-import { Module, Scope } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+  Scope,
+} from '@nestjs/common';
 
 import { Loggable } from '../../../../../../domain/common/ports/loggable.port';
 import { LoggablePortFactory } from '../../../../../factories/common/loggable-port.factory';
 import { FetchTokenomics } from '../../../../../../domain/statistics/interactors/fetch-tokenomics.interactor';
 import { FetchTokenomicsFactory } from '../../../../../factories/statistics/fetch-tokenomics.factory';
 import { StatisticsController } from './statistics.controller';
+import cors from 'cors';
 
 @Module({
   controllers: [StatisticsController],
@@ -21,4 +28,18 @@ import { StatisticsController } from './statistics.controller';
     },
   ],
 })
-export class StatisticsModule {}
+export class StatisticsModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        cors({
+          origin: '*',
+          methods: ['GET'],
+        }),
+      )
+      .forRoutes({
+        path: '/statistics/coinmarketcap',
+        method: RequestMethod.GET,
+      });
+  }
+}

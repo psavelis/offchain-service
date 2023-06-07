@@ -413,4 +413,115 @@ export class FetchableOrderDbAdapter implements FetchableOrderPort {
 
     return orders;
   }
+
+  async fetchManyByStatus(
+    status: OrderStatus[],
+    limit: number,
+  ): Promise<Record<EndToEndId, Order>> {
+    const result: Record<EndToEndId, Order> = {};
+
+    const records = await this.db()
+      .select([
+        'order.id',
+        'order.parent_id as parentId',
+        'order.payment_option as paymentOption',
+        'order.iso_code as isoCode',
+        'order.end_to_end_id as endToEndId',
+        'order.total',
+        'order.desired_chain_id as desiredChainId',
+        'order.total_gas as totalGas',
+        'order.total_knn as totalKnn',
+        'order.total_net as totalNet',
+        'order.amount_of_tokens as amountOfTokens',
+        'order.user_identifier as userIdentifier',
+        'order.identifier_type as identifierType',
+        'order.client_ip as clientIp',
+        'order.client_agent as clientAgent',
+        'order.status',
+        'order.created_at as createdAt',
+        'order.expires_at as expiresAt',
+        'lock.transaction_hash as lockTransactionHash',
+        'lock.uint256_amount as totalLockedUint256',
+        this.db().raw(
+          'coalesce("claim"."transaction_hash", "claim"."user_transaction_hash") as "claimTransactionHash"',
+        ),
+        this.db().raw(
+          'coalesce("lock_receipt"."to", "claim_receipt"."to") as "contractAddress"',
+        ),
+        this.db().raw(
+          'coalesce("lock_receipt"."chain_id", "claim_receipt"."chain_id") as "chainId"',
+        ),
+        'payment.sequence as paymentSequence',
+        'payment.provider_id as paymentProviderId',
+      ])
+      .from(tableName)
+      .leftJoin('payment', 'order.id', 'payment.order_id')
+      .leftJoin('lock', 'order.id', 'lock.order_id')
+      .leftJoin(
+        'receipt as lock_receipt',
+        'lock.transaction_hash',
+        'lock_receipt.transaction_hash',
+      )
+      .leftJoin('claim', 'order.id', 'claim.order_id')
+      .leftJoin(
+        'receipt as claim_receipt',
+        'claim.transaction_hash',
+        'claim_receipt.transaction_hash',
+      )
+      .whereIn(`order.status`, status)
+      .limit(limit);
+
+    if (!records?.length) {
+      return result;
+    }
+
+    for (const rawOrder of records) {
+      const orderProps: OrderProps = rawOrder;
+      const {
+        id,
+        paymentSequence,
+        paymentProviderId,
+        lockTransactionHash,
+        claimTransactionHash,
+        totalLockedUint256,
+        contractAddress,
+        chainId,
+      } = rawOrder;
+
+      const order = new Order(orderProps, id);
+
+      if (paymentSequence) {
+        order.setPaymentSequence(paymentSequence);
+        order.setPaymentCount(1);
+      }
+
+      if (paymentProviderId) {
+        order.setPaymentProviderId(paymentProviderId);
+      }
+
+      if (lockTransactionHash) {
+        order.setLockTransactionHash(lockTransactionHash);
+      }
+
+      if (claimTransactionHash) {
+        order.setClaimTransactionHash(claimTransactionHash);
+      }
+
+      if (totalLockedUint256) {
+        order.setTotalLockedUint256(totalLockedUint256);
+      }
+
+      if (contractAddress) {
+        order.setContractAddress(contractAddress);
+      }
+
+      if (chainId) {
+        order.setSettledChainId(chainId);
+      }
+
+      result[orderProps.endToEndId] = order;
+    }
+
+    return result;
+  }
 }

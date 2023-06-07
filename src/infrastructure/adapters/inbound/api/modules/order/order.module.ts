@@ -6,6 +6,8 @@ import { CreateOrderFactory } from '../../../../../factories/order/create-order.
 import { FetchOrderFactory } from '../../../../../factories/order/fetch-order.factory';
 import { SendOrderReceiptFactory } from '../../../../../factories/order/send-order-receipt.factory';
 import { OrderController } from './order.controller';
+import { ExpireOrders } from '../../../../../../domain/order/interactors/expire-orders.interactor';
+import { ExpireOrdersFactory } from '../../../../../factories/order/expire-orders.factory';
 
 @Module({
   controllers: [OrderController],
@@ -24,6 +26,10 @@ import { OrderController } from './order.controller';
       provide: SendOrderReceipt,
       useFactory: SendOrderReceiptFactory.getInstance,
       scope: Scope.DEFAULT,
+    },
+    {
+      provide: ExpireOrders,
+      useFactory: ExpireOrdersFactory.getInstance,
     },
   ],
 })

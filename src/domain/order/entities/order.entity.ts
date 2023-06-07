@@ -183,7 +183,7 @@ export class Order extends Entity<OrderProps> {
     }
 
     if (
-      this.inStatus(OrderStatus.Requested) &&
+      this.inStatus(OrderStatus.Requested, OrderStatus.Expired) &&
       this.props.expiresAt?.getTime() < new Date().getTime()
     ) {
       return true;

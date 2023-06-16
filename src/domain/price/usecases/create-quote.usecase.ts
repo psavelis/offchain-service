@@ -34,33 +34,6 @@ import { NetworkType } from '../..//common/enums/network-type.enum';
 import { QuotationAggregate } from '../value-objects/quotation-aggregate.value-object';
 
 const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
-const ZERO_CURRENCY_AMOUNT: QuotationAggregate = {
-  BRL: {
-    unassignedNumber: '0',
-    decimals: 0,
-    isoCode: IsoCodeType.BRL,
-  },
-  ETH: {
-    unassignedNumber: '0',
-    decimals: 0,
-    isoCode: IsoCodeType.ETH,
-  },
-  USD: {
-    unassignedNumber: '0',
-    decimals: 0,
-    isoCode: IsoCodeType.USD,
-  },
-  KNN: {
-    unassignedNumber: '0',
-    decimals: 0,
-    isoCode: IsoCodeType.KNN,
-  },
-  MATIC: {
-    unassignedNumber: '0',
-    decimals: 0,
-    isoCode: IsoCodeType.MATIC,
-  },
-};
 
 export type CalculationStrategy = (
   amount: CurrencyAmount,
@@ -339,11 +312,6 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     const transactionType = entry?.transactionType ?? 'Claim';
 
     if (new Chain(entry.chainId).layer === LayerType.L2) {
-      // TODO: remover ao final da campanha
-      if (transactionType !== 'Transfer') {
-        return ZERO_CURRENCY_AMOUNT;
-      }
-
       const polygonGasPriceInMATIC = await this.polygonGasPricePort.fetch(
         entry.forceReload,
       );

@@ -16,4 +16,9 @@ export interface FetchableOrderPort {
   fetchLockedAndNotClaimedInStatus(
     ...orderStatus: OrderStatus[]
   ): Promise<Record<string, Order>>;
+
+  fetchManyByStatus(
+    orderStatus: OrderStatus[],
+    limit: Number,
+  ): Promise<Record<EndToEndId, Order>>;
 }

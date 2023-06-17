@@ -75,7 +75,7 @@ export class ProcessStatementTransactionUseCase
         return undefined;
       }
 
-      if (!matchingOrder.inStatus(OrderStatus.Requested)) {
+      if (!matchingOrder.inStatus(OrderStatus.Requested, OrderStatus.Expired)) {
         this.logger.warning(
           `${findableKeyword} invalid order status: ${
             transaction.providerPaymentId

@@ -37,7 +37,13 @@ import {
   SendOrderReceipt,
   SendOrderReceiptInteractor,
 } from '../../../../../../domain/order/interactors/send-order-receipt.interactor';
+import {
+  ExpireOrders,
+  ExpireOrdersInteractor,
+} from 'src/domain/order/interactors/expire-orders.interactor';
+import { CronJob } from 'cron';
 
+let expirationRunning = false;
 @Controller('order')
 export class OrderController {
   constructor(
@@ -47,7 +53,28 @@ export class OrderController {
     readonly fetchOrder: FetchOrderInteractor,
     @Inject(SendOrderReceipt)
     readonly sendOrderReceipt: SendOrderReceiptInteractor,
-  ) {}
+    @Inject(ExpireOrders)
+    readonly expireOrders: ExpireOrdersInteractor,
+  ) {
+    const job = new CronJob('0 */15 * * * *', () => {
+      if (expirationRunning) {
+        return;
+      }
+
+      expirationRunning = true;
+
+      return this.expireOrders
+        .execute()
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          expirationRunning = false;
+        });
+    });
+
+    job.start();
+  }
 
   @Post('')
   @Throttle(10, 60)

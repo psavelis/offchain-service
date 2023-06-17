@@ -1,4 +1,3 @@
-import { Chain } from '../../common/entities/chain.entity';
 import { NetworkType } from '../../common/enums/network-type.enum';
 import { SignPreSaleMintUseCase } from './sign-presale-mint.usecase';
 
@@ -45,7 +44,7 @@ describe('SignPreSaleMintUseCase', () => {
     const result = await usecase.execute({
       cryptoWallet: '0x0',
       referenceMetadataId: settingsMock.badge.presale.referenceMetadataId,
-      chain: new Chain(NetworkType.PolygonMumbai),
+      chainId: NetworkType.PolygonMumbai,
       clientAgent: 'clientAgent',
       clientIp: 'clientIp',
     });

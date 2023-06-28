@@ -97,7 +97,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       });
     }
 
-    const dueDateInUTCEpoch = Math.floor(verifyResult.dueDate.getTime() / 1000);
+    const dueDateInUTCEpoch = Math.floor(dueDate.getTime() / 1000);
 
     const mintTypeHash = this.signaturePort.hash(typeHash[chain.layer]);
 

@@ -34,10 +34,12 @@ export class PersistableMintHistoryDbAdapter
       description: mintHistory.description,
       client_ip: mintHistory.clientIp,
       client_agent: mintHistory.clientAgent,
+      due_date: mintHistory.dueDate,
+      chain_id: mintHistory.chainId,
     };
 
     return this.db().raw(
-      `insert into ${tableName} (amount, reference_metadata_id, crypto_wallet, valid, description, client_ip, client_agent) values (:amount, :reference_metadata_id, :crypto_wallet, :valid, :description, :client_ip, :client_agent);`,
+      `insert into ${tableName} (amount, reference_metadata_id, crypto_wallet, valid, description, client_ip, client_agent, due_date, chain_id) values (:amount, :reference_metadata_id, :crypto_wallet, :valid, :description, :client_ip, :client_agent, :due_date, :chain_id);`,
       param,
     );
   }

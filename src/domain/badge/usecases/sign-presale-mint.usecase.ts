@@ -129,6 +129,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
       dueDate: dueDateInUTCEpoch,
       switchChainsDate: verifyResult.switchChainsDate,
       onHold: verifyResult.onHold,
+      chainId: verifyResult.chainId,
     };
 
     return result;

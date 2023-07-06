@@ -58,6 +58,8 @@ describe('SignPreSaleMintUseCase', () => {
       nonce: 'nonce',
       dueDate: Math.floor(dueDate.getTime() / 1000),
       onHold: false,
+      chainId: 80001,
+      switchChainsDate: undefined,
     });
   });
 });

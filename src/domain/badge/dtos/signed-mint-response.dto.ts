@@ -8,4 +8,5 @@ export interface SignedMintResponseDto {
   amount: number;
   switchChainsDate: Date;
   onHold: boolean;
+  chainId: number;
 }

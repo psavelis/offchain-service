@@ -22,7 +22,14 @@ describe('FetchableBadgeEventRpcAdapter', () => {
           Mint: jest.fn(),
         },
       }),
+      polygonBadges: jest.fn().mockReturnValue({
+        queryFilter: jest.fn().mockResolvedValue([]),
+        filters: {
+          Mint: jest.fn(),
+        },
+      }),
     };
+
     const adapter = FetchableBadgeEventJsonRpcAdapter.getInstance(
       provider as any,
     );

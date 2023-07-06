@@ -93,7 +93,7 @@ export class BadgeController {
         referenceMetadataId,
       );
 
-      return sig;
+      return sig || {};
     } catch (error) {
       console.log(
         `getSignature ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message} | b64: ${base64CryptoWallet} referenceMetadataId: ${referenceMetadataId}`,

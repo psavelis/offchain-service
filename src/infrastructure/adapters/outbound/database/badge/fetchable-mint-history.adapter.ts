@@ -47,6 +47,7 @@ export class FetchableMintHistoryDbAdapter implements FetchableMintHistoryPort {
       .from(tableName)
       .where('crypto_wallet', cryptoWallet)
       .andWhere('reference_metadata_id', referenceMetadataId)
+      .whereNotNull('due_date')
       .orderBy('due_date', 'desc')
       .limit(1);
 

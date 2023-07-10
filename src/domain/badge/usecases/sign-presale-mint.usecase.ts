@@ -24,7 +24,7 @@ const typeHash = {
 const amount = 1;
 const incremental = 1;
 
-const signatureExpiration = 60 * 60 * 1000; // 1h
+const signatureExpiration = 15 * 60 * 1000; // 15min
 export class SignPreSaleMintUseCase implements SignMintInteractor {
   constructor(
     readonly settings: Settings,
@@ -55,6 +55,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
         amount,
         description: 'Not verified',
         valid: verifyResult.isVerified,
+        dueDate: null,
         chainId: chain.id,
         clientIp,
         clientAgent,
@@ -88,7 +89,7 @@ export class SignPreSaleMintUseCase implements SignMintInteractor {
     });
 
     if (!verifyResult.isVerified) {
-      await this.execute({
+      return this.execute({
         cryptoWallet,
         referenceMetadataId,
         chainId: chain.id,

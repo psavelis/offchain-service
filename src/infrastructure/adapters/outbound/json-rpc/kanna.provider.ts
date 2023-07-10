@@ -15,7 +15,9 @@ export interface IKannaProtocolProvider {
   sale(): Promise<KannaPreSale>;
   legacyPreSale(): Promise<KannaPreSale>;
   polygonSale(): Promise<KannaPreSale>;
+
   badges(): Promise<KannaBadges>;
+  polygonBadges(): Promise<KannaBadges>;
 
   token(): Promise<ERC20>;
   tokenPolygon(): Promise<ERC20>;
@@ -28,6 +30,7 @@ export class KannaProvider implements IKannaProtocolProvider {
   static ethereumSaleInstanceAsManager: KannaPreSale;
   static ethereumLegacyPreSaleInstanceAsManager: KannaPreSale;
   static ethereumBadgeInstanceAsManager: KannaBadges;
+  static polygonBadgeInstanceAsManager: KannaBadges;
   static polygonSaleInstanceAsManager: KannaPreSale;
   static instance: IKannaProtocolProvider;
   static ethereumRpcProvider: JsonRpcProvider;
@@ -61,6 +64,16 @@ export class KannaProvider implements IKannaProtocolProvider {
         KannaProvider.polygonRpcProvider,
       );
 
+      const ethereumBadgeManagerWallet = new ethers.Wallet(
+        settings.blockchain.ethereum.badgesMinterSignerKey,
+        KannaProvider.ethereumRpcProvider,
+      );
+
+      const polygonBadgeManagerWallet = new ethers.Wallet(
+        settings.blockchain.polygon.badgesMinterSignerKey,
+        KannaProvider.polygonRpcProvider,
+      );
+
       KannaProvider.ethereumSaleInstanceAsManager =
         KannaPreSale__factory.connect(
           settings.blockchain.ethereum.contracts.saleAddress,
@@ -76,7 +89,13 @@ export class KannaProvider implements IKannaProtocolProvider {
       KannaProvider.ethereumBadgeInstanceAsManager =
         KannaBadges__factory.connect(
           settings.blockchain.ethereum.contracts.badgeAddress,
-          ethereumClaimManagerWallet, // TODO: criar BadgeManagerWallet
+          ethereumBadgeManagerWallet,
+        );
+
+      KannaProvider.polygonBadgeInstanceAsManager =
+        KannaBadges__factory.connect(
+          settings.blockchain.polygon.contracts.badgeAddress,
+          polygonBadgeManagerWallet,
         );
 
       KannaProvider.polygonSaleInstanceAsManager =
@@ -113,6 +132,10 @@ export class KannaProvider implements IKannaProtocolProvider {
 
   badges(): Promise<KannaBadges> {
     return Promise.resolve(KannaProvider.ethereumBadgeInstanceAsManager);
+  }
+
+  polygonBadges(): Promise<KannaBadges> {
+    return Promise.resolve(KannaProvider.polygonBadgeInstanceAsManager);
   }
 
   polygonSale(): Promise<KannaPreSale> {

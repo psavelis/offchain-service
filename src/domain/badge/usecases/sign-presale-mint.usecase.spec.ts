@@ -1,3 +1,4 @@
+import { NetworkType } from '../../common/enums/network-type.enum';
 import { SignPreSaleMintUseCase } from './sign-presale-mint.usecase';
 
 const settingsMock: any = {
@@ -10,10 +11,14 @@ const settingsMock: any = {
 
 describe('SignPreSaleMintUseCase', () => {
   it('should return a signed mint', async () => {
+    const dueDate = new Date();
     const verifyMintInteractorMock = {
       execute: jest.fn().mockResolvedValue({
         isVerified: true,
         amount: 1,
+        dueDate,
+        chainId: NetworkType.PolygonMumbai,
+        onHold: false,
       }),
     };
 
@@ -39,6 +44,7 @@ describe('SignPreSaleMintUseCase', () => {
     const result = await usecase.execute({
       cryptoWallet: '0x0',
       referenceMetadataId: settingsMock.badge.presale.referenceMetadataId,
+      chainId: NetworkType.PolygonMumbai,
       clientAgent: 'clientAgent',
       clientIp: 'clientIp',
     });
@@ -50,6 +56,10 @@ describe('SignPreSaleMintUseCase', () => {
       signature: 'signature',
       incremental: 1,
       nonce: 'nonce',
+      dueDate: Math.floor(dueDate.getTime() / 1000),
+      onHold: false,
+      chainId: 80001,
+      switchChainsDate: undefined,
     });
   });
 });

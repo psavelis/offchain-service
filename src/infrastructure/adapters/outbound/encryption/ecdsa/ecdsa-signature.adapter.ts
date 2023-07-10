@@ -50,9 +50,13 @@ export class ECDSASignatureAdapter implements SignaturePort {
         polygonProvider,
       ),
 
+      [SignerType.BadgesMinter]: new ethers.Wallet(
+        settings.blockchain.polygon.badgesMinterSignerKey,
+        polygonProvider,
+      ),
+
       // unavailable
       [SignerType.PreSaleClaimManager]: undefined,
-      [SignerType.BadgesMinter]: undefined,
     };
 
     this.signers = {

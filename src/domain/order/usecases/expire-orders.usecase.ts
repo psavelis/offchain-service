@@ -88,7 +88,7 @@ export class ExpireOrdersUseCase implements ExpireOrdersInteractor {
       await new Promise((resolve) => setTimeout(resolve, 1300)).then(() =>
         this.mailer
           .sendMail({
-            to: 'marketing@kannacoin.io',
+            to: this.settings.expiration.integromatAddress,
             subject: '[Dapp] Pedido não finalizado!',
             html: this.mailer.parserTemplate(orderExpiredTemplate, {
               endToEndId: order.getEndToEndId(),

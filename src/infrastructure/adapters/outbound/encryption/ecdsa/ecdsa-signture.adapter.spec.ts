@@ -13,6 +13,7 @@ const settingsMock = {
     },
     polygon: {
       claimSignerKey: ethers.Wallet.createRandom().privateKey,
+      badgesMinterSignerKey: ethers.Wallet.createRandom().privateKey,
     },
   },
 };

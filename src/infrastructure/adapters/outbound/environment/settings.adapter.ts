@@ -121,6 +121,9 @@ export class SettingsAdapter {
         username: this.envString('SMTP_USERNAME'),
         password: this.envString('SMTP_PASSWORD'),
       },
+      expiration: {
+        integromatAddress: this.envString('EXPIRATION_INTEGROMAT_ADDRESS'),
+      },
       cbc: {
         key: this.envString('CBC_KEY'),
       },

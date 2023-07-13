@@ -79,6 +79,9 @@ export interface Settings {
     username: string;
     password: string;
   };
+  expiration: {
+    integromatAddress: string;
+  };
   badge: {
     presale: {
       referenceMetadataId: number;

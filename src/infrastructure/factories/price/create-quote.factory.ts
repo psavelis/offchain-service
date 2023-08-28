@@ -16,6 +16,7 @@ import { PersistableQuoteDbAdapter } from '../../adapters/outbound/database/pric
 import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
 import { EthereumChainlinkProvider } from '../../adapters/outbound/json-rpc/ethereum-chainlink.provider';
 import { PolygonChainlinkProvider } from '../../adapters/outbound/json-rpc/polygon-chainlink.provider';
+import { MultichainChainlinkProvider } from '../../adapters/outbound/json-rpc/multichain-chainlink.provider';
 
 export class CreateQuoteFactory {
   static instance: CreateQuoteInteractor;
@@ -29,6 +30,9 @@ export class CreateQuoteFactory {
 
       const polygonChainlinkProvider =
         PolygonChainlinkProvider.getInstance(settings);
+
+      const multichainChainlinkProvider =
+        MultichainChainlinkProvider.getInstance(ethereumChainlinkProvider, polygonChainlinkProvider);
 
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
 
@@ -44,14 +48,14 @@ export class CreateQuoteFactory {
         FetchablePolygonGasPriceJsonRpcAdapter.getInstance(settings);
 
       const usdAdapter = FetchableUsdBasisJsonRpcAdapter.getInstance(
-        ethereumChainlinkProvider,
+        multichainChainlinkProvider,
       );
 
       // DEPRECATED HTTP QUOTE:
       // const usdAdapter = FetchableUsdBasisHttpAdapter.getInstance();
 
       const ethAdapter = FetchableEthBasisJsonRpcAdapter.getInstance(
-        ethereumChainlinkProvider,
+        multichainChainlinkProvider,
       );
 
       const maticAdapter = FetchableMaticBasisJsonRpcAdapter.getInstance(

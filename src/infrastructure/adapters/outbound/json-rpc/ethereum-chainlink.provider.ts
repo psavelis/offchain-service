@@ -5,7 +5,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { aggregatorV3InterfaceABI } from './abi/chainlink-aggregator-v3.abi';
 
 export interface IChainlinkProtocolProvider {
-  getFeed(name: string): Promise<Contract>;
+  getFeed(name: string): Contract;
 }
 
 export class EthereumChainlinkProvider implements IChainlinkProtocolProvider {
@@ -62,7 +62,7 @@ export class EthereumChainlinkProvider implements IChainlinkProtocolProvider {
     return EthereumChainlinkProvider.instance;
   }
 
-  getFeed(name: string): Promise<Contract> {
-    return Promise.resolve(EthereumChainlinkProvider.dataFeed[name]);
+  getFeed(name: string): Contract {
+    return EthereumChainlinkProvider.dataFeed[name];
   }
 }

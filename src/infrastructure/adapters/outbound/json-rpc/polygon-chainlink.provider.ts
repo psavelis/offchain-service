@@ -5,7 +5,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { aggregatorV3InterfaceABI } from './abi/chainlink-aggregator-v3.abi';
 
 export interface IChainlinkProtocolProvider {
-  getFeed(name: string): Promise<Contract>;
+  getFeed(name: string): Contract;
 }
 
 export class PolygonChainlinkProvider implements IChainlinkProtocolProvider {
@@ -32,6 +32,9 @@ export class PolygonChainlinkProvider implements IChainlinkProtocolProvider {
         ? '0x327e23a4855b6f663a28c5161541d69af8973302' //https://data.chain.link/polygon/mainnet/crypto-eth/matic-eth
         : '0x8106d642b15a27bfecfc71f2e94a21159dca2462'; // mumbai: AggregatorV3Mock.sol
 
+
+      const brlUsdAddress = '0xB90DA3ff54C3ED09115abf6FbA0Ff4645586af2c';
+
       PolygonChainlinkProvider.dataFeed = {
         //
         ['matic-usd']: new ethers.Contract(
@@ -44,6 +47,11 @@ export class PolygonChainlinkProvider implements IChainlinkProtocolProvider {
           aggregatorV3InterfaceABI,
           PolygonChainlinkProvider.rpcProvider,
         ),
+        ['brl-usd']: new ethers.Contract(
+          brlUsdAddress,
+          aggregatorV3InterfaceABI,
+          PolygonChainlinkProvider.rpcProvider,
+        )
       };
 
       PolygonChainlinkProvider.instance = new PolygonChainlinkProvider(
@@ -54,7 +62,7 @@ export class PolygonChainlinkProvider implements IChainlinkProtocolProvider {
     return PolygonChainlinkProvider.instance;
   }
 
-  getFeed(name: string): Promise<Contract> {
-    return Promise.resolve(PolygonChainlinkProvider.dataFeed[name]);
+  getFeed(name: string): Contract {
+    return PolygonChainlinkProvider.dataFeed[name];
   }
 }

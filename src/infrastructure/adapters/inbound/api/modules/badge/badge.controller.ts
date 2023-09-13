@@ -98,7 +98,7 @@ export class BadgeController {
       console.log(
         `getSignature ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message} | b64: ${base64CryptoWallet} referenceMetadataId: ${referenceMetadataId}`,
       );
-      throw new UnprocessableEntityException('Bad fetch-sign request');
+      throw new UnprocessableEntityException('bad fetch-sign request');
     }
   }
 
@@ -130,7 +130,7 @@ export class BadgeController {
         `signMint ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message}`,
       );
 
-      throw new UnprocessableEntityException('Bad sign request');
+      throw new UnprocessableEntityException('bad sign request');
     }
   }
 }

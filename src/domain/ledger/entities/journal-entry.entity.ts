@@ -61,9 +61,11 @@ const routing = {
   ['0xB005512d330501d93b12Aa4A8FF30bE8858769dE']: AccountGroup.Bridge,
   ['0xd26CD6ce2a1705C49610F951f232510532c6856D']: AccountGroup.Bridge,
   ['0xeFfdCB49C2D0EF813764B709Ca3c6fe71f230E3e']: AccountGroup.Bridge,
-
   ['0x438e4Be1D2cF3268Cf27B9eD57B5Aa7367046f2e']: AccountGroup.StockOptionPool,
   ['0x8BDcde25Ea2daEB27d71D6D022aAf6c6D6aE222f']: AccountGroup.StockOptionPool,
+  ['0x591558e092a283F823B859F30D176CFa8e930F6D']: AccountGroup.StockOptionPool,
+  ['0x127855d5B40883A519220c30644e3603896322D6']: AccountGroup.StockOptionPool,
+  ['0x618d2d508BF6B28b88EBf122eE1F1F7758192B33']: AccountGroup.StockOptionPool,
 };
 
 export class JournalEntry extends SequenceEntity<JournalEntryProps> {

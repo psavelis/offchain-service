@@ -96,7 +96,7 @@ export class OrderController {
           err.message
         } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,
       );
-      throw new UnprocessableEntityException('Bad order request');
+      throw new UnprocessableEntityException('order not processed');
     }
   }
 
@@ -118,7 +118,7 @@ export class OrderController {
       console.error(
         `getOrder ${OrderController.name} - ${err.message} - ${clientIp}@${clientAgent} - entry: ${id}`,
       );
-      throw new NotFoundException('Order not found');
+      throw new NotFoundException('order not found');
     }
   }
 

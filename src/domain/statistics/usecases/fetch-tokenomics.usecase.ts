@@ -149,12 +149,14 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
   }
 
   async getMarketCap(
-    { holders }: KnnSummaryDto,
+    { holders, stockOption }: KnnSummaryDto,
     lockedOrdersSummary: LockedOrdersSummaryDto,
   ) {
     const aggregate = await this.knnToCurrenciesInteractor.execute(
       this.toKNN(
-        holders.totalAmount + lockedOrdersSummary.lockedTokens.totalAmount,
+        holders.totalAmount +
+          lockedOrdersSummary.lockedTokens.totalAmount +
+          stockOption,
       ),
     );
 
@@ -181,10 +183,10 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     knnSummary: KnnSummaryDto,
     lockedOrdersSummary: LockedOrdersSummaryDto,
   ) {
-    const totalOrdersLocked = lockedOrdersSummary.lockedTokens.totalAmount;
-
     const aggregate = await this.knnToCurrenciesInteractor.execute(
-      this.toKNN(totalOrdersLocked),
+      this.toKNN(
+        lockedOrdersSummary.lockedTokens.totalAmount + knnSummary.stockOption,
+      ),
     );
 
     return this.parseAggregation(aggregate);

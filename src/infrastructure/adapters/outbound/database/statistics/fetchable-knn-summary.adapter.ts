@@ -32,9 +32,16 @@ export class FetchableKnnSummaryDbAdapter implements FetchableKnnSummaryPort {
       where iso_code = 'KNN'
       and account_group  = 'HL'`;
 
+    const stockOptionQuery = `select
+          count(*) as totalTransfers,
+          sum(amount) as totalAmount
+        from journal
+        where iso_code = 'KNN'
+        and account_group  = 'SP'`;
+
     const balanceQuery = `select
       sum(total) filter (where "group" not in ('CN', 'BG'))::int as totalSupply,
-      (sum(total) filter (where "group" not in ('TS', 'CN', 'BG')))::int as circulatingSupply
+      (sum(total) filter (where "group" not in ('TS', 'CN', 'BG', 'SP')))::int as circulatingSupply
     from balance`;
 
     const query = `select
@@ -42,7 +49,8 @@ export class FetchableKnnSummaryDbAdapter implements FetchableKnnSummaryPort {
       (select circulatingSupply from (${balanceQuery}) as balance) as circulating_supply,
       (select totalTransfers from (${journalQuery}) as journal) as total_transfers,
       (select holdersCount from (${journalQuery}) as journal) as holders_count,
-      (select totalAmount from (${journalQuery}) as journal) as total_amount`;
+      (select totalAmount from (${journalQuery}) as journal) as total_amount,
+      (select totalAmount from (${stockOptionQuery}) as journal) as stock_option`;
 
     return this.db()
       .raw(query)
@@ -54,12 +62,14 @@ export class FetchableKnnSummaryDbAdapter implements FetchableKnnSummaryPort {
             total_transfers,
             holders_count,
             total_amount,
+            stock_option,
           },
         ] = rows;
 
         return {
           totalSupply: Number(total_supply),
           circulatingSupply: Number(circulating_supply),
+          stockOption: Number(stock_option),
           holders: {
             totalTransfers: Number(total_transfers),
             count: Number(holders_count),

@@ -3,5 +3,6 @@ export interface LockedOrdersSummaryDto {
     totalAmount: number;
     preSale: number;
     sale: number;
+    stockOptionPool: number;
   };
 }

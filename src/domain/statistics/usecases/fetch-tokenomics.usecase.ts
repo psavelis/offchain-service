@@ -13,7 +13,7 @@ import { LayerType } from '../../common/enums/layer-type.enum';
 import { NetworkType } from '../../common/enums/network-type.enum';
 import { FetchTokenomicsInteractor } from '../interactors/fetch-tokenomics.interactor';
 
-const DEFAULT_CACHE_TIME = 1000 * 60 * 5; // 5min
+const DEFAULT_CACHE_TIME = 1000 * 60 * 2; // 2min
 const decimals = 8;
 
 const mintDate = new Date('2022-12-14T03:41:35.000Z');
@@ -55,6 +55,9 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
       this.getFullyDilutedMarketCap(knnSummary),
       this.getCirculatingSupplyMarketCap(knnSummary),
     ]);
+
+    lockedOrdersSummary.lockedTokens.totalAmount += knnSummary.stockOption;
+    lockedOrdersSummary.lockedTokens.stockOptionPool = knnSummary.stockOption;
 
     const tokenomics: TokenomicsDto = {
       mintDate,

@@ -83,6 +83,8 @@ export class OrderController {
     const clientIp = ip;
 
     try {
+      throw new UnprocessableEntityException('only orders on exchange');
+
       const res = await this.createOrder.execute({
         ...entry,
         clientAgent,

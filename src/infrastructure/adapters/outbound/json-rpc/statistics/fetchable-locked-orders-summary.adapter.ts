@@ -34,6 +34,7 @@ export class FetchableLockedOrdersSummaryRpcAdapter
         totalAmount: 0.0,
         preSale: 0.0,
         sale: 0.0,
+        stockOptionPool: 0.0,
       },
     };
 

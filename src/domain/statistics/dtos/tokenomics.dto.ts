@@ -12,6 +12,7 @@ export interface TokenomicsDto {
     totalAmount: number;
     preSale: number;
     sale: number;
+    stockOptionPool: number;
   };
   totalValueLocked: {
     BRL: number;

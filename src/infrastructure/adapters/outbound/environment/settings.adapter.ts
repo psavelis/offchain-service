@@ -132,6 +132,21 @@ export class SettingsAdapter {
           referenceMetadataId: 2,
         },
       },
+      cex: {
+        mb: {
+          host: this.envString('CEX_MB_HOST'),
+          login: this.envString('CEX_MB_LOGIN'),
+          password: this.envString('CEX_MB_PASSWORD'),
+          endpoints: {
+            authorize: this.envString('CEX_MB_AUTHORIZE'),
+            ticker: this.envString('CEX_MB_TICKER'),
+            tradingOrders: this.envString('CEX_MB_TRADING_ORDERS'),
+            accounts: this.envString('CEX_MB_ACCOUNTS'),
+            balances: this.envString('CEX_MB_BALANCES'),
+            statement: this.envString('CEX_MB_STATEMENT'),
+          },
+        },
+      },
     };
   }
 }

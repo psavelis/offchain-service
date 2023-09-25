@@ -87,4 +87,19 @@ export interface Settings {
       referenceMetadataId: number;
     };
   };
+  cex: {
+    mb: {
+      host: string;
+      login: string;
+      password: string;
+      endpoints: {
+        authorize: string;
+        ticker: string;
+        tradingOrders: string;
+        accounts: string;
+        balances: string;
+        statement: string;
+      };
+    };
+  };
 }

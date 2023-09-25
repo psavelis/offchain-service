@@ -49,8 +49,12 @@ export class Chain {
       (environment === 'development' || environment === 'test') &&
       this.isTestnet;
 
-    if (!isProductionToMainnet && !isDevelopmentToTestnet) {
-      const errorMessage = `Worng network targeting (NODE_ENV: ${environment} to ChainID: ${
+    if (
+      !isProductionToMainnet &&
+      !isDevelopmentToTestnet &&
+      process.env.ALLOW_DEBUG_PROD !== 'true'
+    ) {
+      const errorMessage = `Wrong network targeting (NODE_ENV: ${environment} to ChainID: ${
         NetworkType[this.chainId]
       })`;
 

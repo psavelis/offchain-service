@@ -7,12 +7,17 @@ import { KannaPreSale } from '../protocol/contracts';
 const ETH_QUOTATION_DECIMALS = 18;
 const CHAINLINK_USD_QUOTATION_DECIMALS = 8;
 const CACHE_TTL_MS = 1_000 * 900;
-
 export class FetchableKnnBasisJsonRpcAdapter implements FetchableKnnBasisPort {
   static instance: FetchableKnnBasisPort;
   static cachedBasis: KnnQuoteBasis | null;
 
   private constructor(readonly provider: IKannaProtocolProvider) {
+    throw new Error(
+      `Deprecated: use ${
+        require('../../http/price/fetchable-knn-basis-mb.adapter').name
+      }`,
+    );
+
     FetchableKnnBasisJsonRpcAdapter.cachedBasis = null;
   }
 

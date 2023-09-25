@@ -177,7 +177,8 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
 
   private validateCurrentChain(request: CreateOrderDto) {
     const allowedChains =
-      process.env.NODE_ENV === 'production'
+      process.env.NODE_ENV === 'production' ||
+      process.env.ALLOW_DEBUG_PROD === 'true'
         ? [NetworkType.Ethereum, NetworkType.Polygon]
         : [NetworkType.EthereumSepolia, NetworkType.PolygonMumbai];
 

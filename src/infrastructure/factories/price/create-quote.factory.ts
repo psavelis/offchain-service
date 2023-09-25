@@ -5,18 +5,15 @@ import { FixedPointCalculusAdapter } from '../../adapters/outbound/bignumbers/ca
 import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
 import { FetchableEthBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-eth-basis.adapter';
 import { FetchableMaticBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-matic-basis.adapter';
-// DEPRECATED HTTP QUOTE:
-// import { FetchableUsdBasisHttpAdapter } from '../../adapters/outbound/http/price/fetchable-usd-basis.adapter';
 import { FetchableUsdBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-usd-basis.adapter';
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
 import { FetchableEthereumGasPriceJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-ethereum-gas-price.adapter';
 import { FetchablePolygonGasPriceJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-polygon-gas-price.adapter';
-import { FetchableKnnBasisJsonRpcAdapter } from '../../adapters/outbound/json-rpc/price/fetchable-knn-basis.adapter';
+import { FetchableKnnBasisMBHttpAdapter } from '../../adapters/outbound/http/price/fetchable-knn-basis-mb.adapter';
 import { PersistableQuoteDbAdapter } from '../../adapters/outbound/database/price/persistable-quote.adapter';
 import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
 import { EthereumChainlinkProvider } from '../../adapters/outbound/json-rpc/ethereum-chainlink.provider';
 import { PolygonChainlinkProvider } from '../../adapters/outbound/json-rpc/polygon-chainlink.provider';
-import { MultichainChainlinkProvider } from '../../adapters/outbound/json-rpc/multichain-chainlink.provider';
+import { ChainlinkFeedProvider } from '../../adapters/outbound/json-rpc/chainlink-feed.provider';
 
 export class CreateQuoteFactory {
   static instance: CreateQuoteInteractor;
@@ -24,22 +21,20 @@ export class CreateQuoteFactory {
   static getInstance(): CreateQuoteInteractor {
     if (!this.instance) {
       const settings: Settings = SettingsAdapter.getInstance().getSettings();
-      const kannaProvider = KannaProvider.getInstance(settings);
       const ethereumChainlinkProvider =
         EthereumChainlinkProvider.getInstance(settings);
 
       const polygonChainlinkProvider =
         PolygonChainlinkProvider.getInstance(settings);
 
-      const multichainChainlinkProvider =
-        MultichainChainlinkProvider.getInstance(ethereumChainlinkProvider, polygonChainlinkProvider);
+      const multichainChainlinkProvider = ChainlinkFeedProvider.getInstance(
+        ethereumChainlinkProvider,
+        polygonChainlinkProvider,
+      );
 
       const knexPostgresDb = KnexPostgresDatabase.getInstance(settings);
 
       const calculusAdapter = FixedPointCalculusAdapter.getInstance();
-
-      const knnAdapter =
-        FetchableKnnBasisJsonRpcAdapter.getInstance(kannaProvider);
 
       const ethereumGasAdapter =
         FetchableEthereumGasPriceJsonRpcAdapter.getInstance(settings);
@@ -51,9 +46,6 @@ export class CreateQuoteFactory {
         multichainChainlinkProvider,
       );
 
-      // DEPRECATED HTTP QUOTE:
-      // const usdAdapter = FetchableUsdBasisHttpAdapter.getInstance();
-
       const ethAdapter = FetchableEthBasisJsonRpcAdapter.getInstance(
         multichainChainlinkProvider,
       );
@@ -64,6 +56,12 @@ export class CreateQuoteFactory {
 
       const saveQuoteAdapter =
         PersistableQuoteDbAdapter.getInstance(knexPostgresDb);
+
+      const knnAdapter = FetchableKnnBasisMBHttpAdapter.getInstance(
+        usdAdapter,
+        ethAdapter,
+        settings,
+      );
 
       this.instance = new CreateQuoteUseCase(
         settings,

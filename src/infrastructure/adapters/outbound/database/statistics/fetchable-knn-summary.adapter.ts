@@ -24,13 +24,21 @@ export class FetchableKnnSummaryDbAdapter implements FetchableKnnSummaryPort {
   }
 
   fetch(): Promise<KnnSummaryDto> {
-    const journalQuery = `select
-        count(*) as totalTransfers,
-        count(distinct account) as holdersCount,
-        sum(amount) as totalAmount
-      from journal
-      where iso_code = 'KNN'
-      and account_group  = 'HL'`;
+    const journalQuery = `SELECT
+          COUNT(*) AS totalTransfers,
+          COUNT(DISTINCT j.account) AS holdersCount,
+          SUM(j.amount) AS totalAmount
+      FROM journal j
+      WHERE iso_code = 'KNN'
+          AND account_group = 'HL'
+          AND j.account IN (
+              SELECT account
+              FROM journal
+              WHERE iso_code = 'KNN'
+                  AND account_group = 'HL'
+              GROUP BY account
+              HAVING SUM(amount) > 0
+          )`;
 
     const stockOptionQuery = `select
           count(*) as totalTransfers,

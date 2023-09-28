@@ -7,6 +7,7 @@ import { MailerPort } from '../../common/ports/mailer.port';
 import { LoggablePort } from '../../common/ports/loggable.port';
 import { formatDecimals } from '../../common/util';
 import purchaseConfirmationTemplate from '../../order/mails/purchase-confirmation.template';
+import { Chain } from 'src/domain/common/entities/chain.entity';
 
 const DEFAULT_KNN_DECIMALS = 8;
 
@@ -67,7 +68,9 @@ export class SendOrderReceiptUseCase implements SendOrderReceiptInteractor {
       },
     );
 
-    const url = `https://etherscan.io/tx/${order.getLockTransactionHash()}`;
+    const chain = new Chain(order.getSettledChainId()!);
+
+    const url = chain.getBlockExplorerUrl(order.getLockTransactionHash()!);
 
     this.mailer
       .sendMail({

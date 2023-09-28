@@ -25,6 +25,18 @@ export interface TradingOrder {
   updated_at: number;
 }
 
+export interface Ticker {
+  pair: string;
+  high: string;
+  low: string;
+  vol: string;
+  last: string;
+  buy: string;
+  sell: string;
+  open: string;
+  date: number;
+}
+
 const KNOWN_KNNBRL_FLOOR = 1;
 const KNOWN_KNNBRL_CEILING = 9;
 const CACHE_TTL_MS = 30 * 1e3;
@@ -82,32 +94,29 @@ export class FetchableKnnBasisMBHttpAdapter implements FetchableKnnBasisPort {
     }
 
     const endpoint = new URL(
-      this.settings.cex.mb.endpoints.tradingOrders,
+      this.settings.cex.mb.endpoints.ticker,
       this.settings.cex.mb.host,
     ).toString();
 
-    const tradingOrders: TradingOrderResponse =
-      await FetchableKnnBasisMBHttpAdapter.cexClient.get<TradingOrderResponse>(
-        endpoint,
-      );
+    const tickers: Ticker[] =
+      await FetchableKnnBasisMBHttpAdapter.cexClient.get<Ticker[]>(endpoint);
 
-    if (!tradingOrders?.items?.length) {
-      throw new Error('No trading orders returned from MB');
-    }
+    const filtered = tickers.filter((item) => item.pair === 'KNN-BRL');
 
-    const lastTradingOrder: TradingOrder = tradingOrders.items
-      .filter(
-        (order) =>
-          order.instrument === 'KNN-BRL' &&
-          order.side === 'sell' &&
-          order.status === 'filled',
-      )
-      .sort((a, b) => b.created_at - a.created_at)[0];
+    const ceiling = Math.max(
+      ...filtered.map((item) =>
+        Math.max(
+          parseFloat(item.last),
+          parseFloat(item.buy),
+          parseFloat(item.sell),
+        ),
+      ),
+    );
 
-    FetchableKnnBasisMBHttpAdapter.validateTradingOrder(lastTradingOrder);
+    FetchableKnnBasisMBHttpAdapter.validateCeiling(ceiling);
 
     const priceInBrl1e18: BigNumber = this.get1e18UnassignedNumber(
-      lastTradingOrder.limitPrice,
+      Number(ceiling),
     );
 
     const brlQuotation: CurrencyAmount<'BRL'> = {
@@ -176,15 +185,15 @@ export class FetchableKnnBasisMBHttpAdapter implements FetchableKnnBasisPort {
     return totalWei.abs();
   }
 
-  static validateTradingOrder({ limitPrice }: TradingOrder): void {
-    if (limitPrice < KNOWN_KNNBRL_FLOOR) {
-      const msg = `LimitPrice: ${limitPrice} is LOWER than KNOWN_KNNBRL_FLOOR: ${KNOWN_KNNBRL_FLOOR}`;
+  static validateCeiling(ceiling: number): void {
+    if (ceiling < KNOWN_KNNBRL_FLOOR) {
+      const msg = `Ceiling: ${ceiling} is LOWER than KNOWN_KNNBRL_FLOOR: ${KNOWN_KNNBRL_FLOOR}`;
 
       throw new Error(msg);
     }
 
-    if (limitPrice > KNOWN_KNNBRL_CEILING) {
-      const msg = `LimitPrice: ${limitPrice} is HIGHER than KNOWN_KNNBRL_CEILING: ${KNOWN_KNNBRL_CEILING}`;
+    if (ceiling > KNOWN_KNNBRL_CEILING) {
+      const msg = `Ceiling: ${ceiling} is HIGHER than KNOWN_KNNBRL_CEILING: ${KNOWN_KNNBRL_CEILING}`;
 
       throw new Error(msg);
     }

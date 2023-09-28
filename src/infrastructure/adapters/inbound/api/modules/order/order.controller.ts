@@ -118,7 +118,7 @@ export class OrderController {
       return res;
     } catch (err) {
       console.error(
-        `getOrder ${OrderController.name} - ${err.message} - ${clientIp}@${clientAgent} - entry: ${id}`,
+        `getOrder ${OrderController.name} - ${err.message} - ${err.stack} - ${clientIp}@${clientAgent} - entry: ${id}`,
       );
       throw new NotFoundException('order not found');
     }

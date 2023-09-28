@@ -278,7 +278,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
             `[signing] delegate-claim failed for OrderId=${order.getId()}`,
             {
               ...entry,
-              emailAddres: hideEmailPartially(entry.emailAddress),
+              emailAddress: hideEmailPartially(entry.emailAddress),
             },
           );
 
@@ -298,7 +298,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
             `[estimate] delegate-claim failed for OrderId=${order.getId()}`,
             {
               ...entry,
-              emailAddres: hideEmailPartially(entry.emailAddress),
+              emailAddress: hideEmailPartially(entry.emailAddress),
             },
           );
 
@@ -322,7 +322,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     this.logger.warning(
       `[sec-warning] Attempt failure: ${JSON.stringify({
         ...entry,
-        emailAddres: hideEmailPartially(entry.emailAddress),
+        emailAddress: hideEmailPartially(entry.emailAddress),
       })}`,
     );
 
@@ -345,7 +345,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
           Object.keys(banlistByIP).length
         }) due to ${IP_BAN_THRESHOLD} failed attempts. ${JSON.stringify({
           ...entry,
-          emailAddres: hideEmailPartially(entry.emailAddress),
+          emailAddress: hideEmailPartially(entry.emailAddress),
         })}`,
       );
     }

@@ -32,7 +32,7 @@ export class StatisticsController {
       const clientIp = ip;
 
       console.error(
-        `tokenomics ${StatisticsController.name} - ${err.message} - ${clientIp}@${clientAgent}`,
+        `tokenomics ${StatisticsController.name} - ${err.message} - ${err.stack} - ${clientIp}@${clientAgent}`,
       );
       throw new UnprocessableEntityException('Bad stats request');
     }
@@ -58,7 +58,7 @@ export class StatisticsController {
       const clientIp = ip;
 
       console.error(
-        `coinmarketcap ${StatisticsController.name} - ${err.message} - ${clientIp}@${clientAgent}`,
+        `coinmarketcap ${StatisticsController.name} - ${err.message} - ${err.stack} - ${clientIp}@${clientAgent}`,
       );
       throw new UnprocessableEntityException('Bad stats request');
     }

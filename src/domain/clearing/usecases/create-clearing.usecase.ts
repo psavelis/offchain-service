@@ -60,23 +60,25 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       statement = await this.fetchableStatementPort.fetch(statementParameter);
       failing = false;
     } catch (err) {
-      const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
-
-      const msg = err?.message;
-
       if (failing) {
-        this.logger.error(err, remarks, statementParameter);
+        this.logger.warning(
+          '[Reconciliation] Banking NOT responding! Retrying...',
+        );
       }
 
       failing = true;
 
+      console.error(JSON.stringify(err));
+
       if (
-        msg?.includes('ETIMEDOUT') ||
-        msg?.includes('ECONNRE') ||
-        msg?.includes('Unexpected end of JSON input')
+        err.message.includes('ETIMEDOUT') ||
+        err.message.includes('ECONNRE') ||
+        err.message.includes(/Unexpected/i)
       ) {
         throw err;
       }
+
+      const remarks = `statement unavailable: ${err} (${JSON.stringify(err)})`;
 
       await this.persistableClearingPort.create(
         new Clearing({

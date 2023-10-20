@@ -39,7 +39,11 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
         return;
       }
     } catch (err) {
-      this.logger.error(err, `[journal-fetch][events] ${err.message}`);
+      this.logger.warning(
+        '[Journal Ledger] Alchemy API failed to respond. Retrying...',
+      );
+
+      console.error(JSON.stringify(err));
 
       return;
     }
@@ -47,21 +51,27 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
     try {
       journalEntries.sort(JournalEntry.compare);
     } catch (err) {
-      this.logger.error(err, `[journal-sort][events] ${err.message}`);
+      this.logger.error(err, `[Journal Ledger] Sort: ${err.message}`);
 
       return;
     }
 
     try {
-      const counter = await this.syncBalances(journalEntries);
+      const creditAndDebitCount = await this.syncBalances(journalEntries);
 
-      if (counter) {
+      if (creditAndDebitCount) {
+        const totalTransactions = creditAndDebitCount / 2;
+
         this.logger.info(
-          `[ledger-sync] ${counter} journal entries were processed to balance cache.`,
+          `[Journal Ledger] ${totalTransactions} new transfers captured from blockchain`,
         );
       }
     } catch (err) {
-      this.logger.error(err, `[ledger-sync][balances] ${err.message}`);
+      this.logger.warning(
+        '[Balances] Alchemy API failed to respond. Retrying...',
+      );
+
+      console.error(JSON.stringify(err));
 
       return;
     }

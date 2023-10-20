@@ -5,8 +5,9 @@ import { FetchablePurchasePort } from '../ports/fetchable-purchase.port';
 import { PersistablePurchasePort } from '../ports/persistable-purchase.port';
 import { LoggablePort } from '../../common/ports/loggable.port';
 
-let failing = false;
 export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
+  disconnected: Date | null = null;
+
   constructor(
     readonly logger: LoggablePort,
     readonly fetchablePurchasePort: FetchablePurchasePort,
@@ -26,7 +27,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
         );
 
       if (!purchases?.length) {
-        failing = false;
+        this.disconnected = null;
         return;
       }
 
@@ -42,13 +43,30 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
         return;
       }
 
-      failing = false;
-    } catch (err) {
-      if (failing) {
-        this.logger.error(err, '[import-purchases][aborted]');
+      if (this.disconnected) {
+        const downtime = new Date().getTime() - this.disconnected.getTime();
+        const format =
+          downtime > 1000 ? `${downtime / 1000}s` : `${downtime}ms`;
+
+        this.logger.info(`Alchemy API back up. (downtime: ${format})`);
       }
 
-      failing = true;
+      this.disconnected = null;
+    } catch (err) {
+      if (this.disconnected) {
+        const datept = new Intl.DateTimeFormat('en-US', {
+          dateStyle: 'medium',
+          timeStyle: 'long',
+        }).format(new Date(this.disconnected.getTime() - 1000 * 60 * 60 * 3));
+
+        this.logger.warning(
+          `No response from Alchemy API... (since: ${datept} GMT-3)`,
+        );
+
+        return;
+      }
+
+      this.disconnected = new Date();
     }
   }
 

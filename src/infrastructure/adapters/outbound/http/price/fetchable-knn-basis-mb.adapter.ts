@@ -93,37 +93,7 @@ export class FetchableKnnBasisMBHttpAdapter implements FetchableKnnBasisPort {
       return cached;
     }
 
-    const endpoint = new URL(
-      this.settings.cex.mb.endpoints.ticker,
-      this.settings.cex.mb.host,
-    ).toString();
-
-    const tickers: Ticker[] =
-      await FetchableKnnBasisMBHttpAdapter.cexClient.get<Ticker[]>(endpoint);
-
-    const filtered = tickers.filter((item) => item.pair === 'KNN-BRL');
-
-    const ceiling = Math.max(
-      ...filtered.map((item) =>
-        Math.max(
-          parseFloat(item.last),
-          parseFloat(item.buy),
-          parseFloat(item.sell),
-        ),
-      ),
-    );
-
-    FetchableKnnBasisMBHttpAdapter.validateCeiling(ceiling);
-
-    const priceInBrl1e18: BigNumber = this.get1e18UnassignedNumber(
-      Number(ceiling),
-    );
-
-    const brlQuotation: CurrencyAmount<'BRL'> = {
-      unassignedNumber: priceInBrl1e18.toString(),
-      decimals: DEFAULT_ETH_DECIMALS,
-      isoCode: 'BRL',
-    };
+    const { priceInBrl1e18, brlQuotation } = await this.getPriceWithFallback();
 
     const [usdQuoteBasis, ethQuoteBasis] = await Promise.all([
       this.fetchableUsdBasisPort.fetch(),
@@ -169,6 +139,64 @@ export class FetchableKnnBasisMBHttpAdapter implements FetchableKnnBasisPort {
     };
 
     return FetchableKnnBasisMBHttpAdapter.cachedBasis;
+  }
+
+  private async getPriceWithFallback(): Promise<{
+    priceInBrl1e18: BigNumber;
+    brlQuotation: CurrencyAmount<'BRL'>;
+  }> {
+    try {
+      return await this.getPrice();
+    } catch (err) {
+      console.error(`getPriceWithFallback: ${err?.message} @ ${err?.stack}`);
+
+      return {
+        priceInBrl1e18: BigNumber.from(
+          this.settings.cex.mb.fallback.knnBrlFallbackUint256,
+        ),
+        brlQuotation: {
+          unassignedNumber: this.settings.cex.mb.fallback.knnBrlFallbackUint256,
+          decimals: DEFAULT_ETH_DECIMALS,
+          isoCode: 'BRL',
+        },
+      };
+    }
+  }
+
+  private async getPrice() {
+    const endpoint = new URL(
+      this.settings.cex.mb.endpoints.ticker,
+      this.settings.cex.mb.host,
+    ).toString();
+
+    const tickers: Ticker[] =
+      await FetchableKnnBasisMBHttpAdapter.cexClient.get<Ticker[]>(endpoint);
+
+    const filtered = tickers.filter((item) => item.pair === 'KNN-BRL');
+
+    const ceiling = Math.max(
+      ...filtered.map((item) =>
+        Math.max(
+          parseFloat(item.last),
+          parseFloat(item.buy),
+          parseFloat(item.sell),
+        ),
+      ),
+    );
+
+    FetchableKnnBasisMBHttpAdapter.validateCeiling(ceiling);
+
+    const priceInBrl1e18: BigNumber = this.get1e18UnassignedNumber(
+      Number(ceiling),
+    );
+
+    const brlQuotation: CurrencyAmount<'BRL'> = {
+      unassignedNumber: priceInBrl1e18.toString(),
+      decimals: DEFAULT_ETH_DECIMALS,
+      isoCode: 'BRL',
+    };
+
+    return { priceInBrl1e18, brlQuotation };
   }
 
   private get1e18UnassignedNumber(value: number | string): BigNumber {

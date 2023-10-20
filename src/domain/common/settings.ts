@@ -92,6 +92,9 @@ export interface Settings {
       host: string;
       login: string;
       password: string;
+      fallback: {
+        knnBrlFallbackUint256: string;
+      };
       endpoints: {
         authorize: string;
         ticker: string;

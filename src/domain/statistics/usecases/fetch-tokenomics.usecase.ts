@@ -39,7 +39,7 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     }
 
     const [price, knnSummary, lockedOrdersSummary] = await Promise.all([
-      this.getPrice(),
+      this.getPrice().catch(() => null),
       this.fetchKnnSummaryPort.fetch(),
       this.fetchLockedOrdersSumaryPort.fetch(),
     ]);
@@ -50,10 +50,12 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
       fullyDilutedMarketCap,
       circulatingSupplyMarketCap,
     ] = await Promise.all([
-      this.getMarketCap(knnSummary, lockedOrdersSummary),
-      this.getTotalValueLocked(knnSummary, lockedOrdersSummary),
-      this.getFullyDilutedMarketCap(knnSummary),
-      this.getCirculatingSupplyMarketCap(knnSummary),
+      this.getMarketCap(knnSummary, lockedOrdersSummary).catch(() => null),
+      this.getTotalValueLocked(knnSummary, lockedOrdersSummary).catch(
+        () => null,
+      ),
+      this.getFullyDilutedMarketCap(knnSummary).catch(() => null),
+      this.getCirculatingSupplyMarketCap(knnSummary).catch(() => null),
     ]);
 
     lockedOrdersSummary.lockedTokens.totalAmount += knnSummary.stockOption;

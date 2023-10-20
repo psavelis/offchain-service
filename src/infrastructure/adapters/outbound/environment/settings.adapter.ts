@@ -137,6 +137,11 @@ export class SettingsAdapter {
           host: this.envString('CEX_MB_HOST'),
           login: this.envString('CEX_MB_LOGIN'),
           password: this.envString('CEX_MB_PASSWORD'),
+          fallback: {
+            knnBrlFallbackUint256: this.envString(
+              'CEX_MB_KNN_BRL_FALLBACK_UINT256',
+            ),
+          },
           endpoints: {
             authorize: this.envString('CEX_MB_AUTHORIZE'),
             ticker: this.envString('CEX_MB_TICKER'),

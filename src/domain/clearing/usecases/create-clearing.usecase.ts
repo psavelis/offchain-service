@@ -58,6 +58,11 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
 
     try {
       statement = await this.fetchableStatementPort.fetch(statementParameter);
+
+      if (failing) {
+        this.logger.info('[Reconciliation] Banking reconnected!');
+      }
+
       failing = false;
     } catch (err) {
       if (failing) {

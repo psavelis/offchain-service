@@ -43,8 +43,9 @@ export interface Settings {
     ethereum: {
       providerEndpoint: string;
       claimManagerKey: string;
-      legacyClaimSignerKey: string;
-      currentClaimSignerKey: string;
+      legacyPreSaleClaimSignerKey: string;
+      fixedSaleClaimsSignerKey: string;
+      dynamicSaleClaimsSignerKey: string;
       badgesMinterSignerKey: string;
       contracts: {
         gnosisSafeAddress: any;
@@ -52,6 +53,7 @@ export interface Settings {
         saleAddress: string;
         legacyPreSaleAddress: string;
         badgeAddress: string;
+        dynamicSaleAddress: string;
       };
       network: string;
       providerApiKey: string;
@@ -61,11 +63,13 @@ export interface Settings {
       providerEndpoint: string;
       claimManagerKey: string;
       claimSignerKey: string;
+      dynamicSaleClaimsSignerKey: string;
       contracts: {
         badgeAddress: string;
         gnosisSafeAddress: string;
         fxTokenAddress: string;
         saleAddress: string;
+        dynamicSaleAddress: string;
       };
       network: string;
       providerApiKey: string;

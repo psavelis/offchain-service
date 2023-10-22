@@ -8,6 +8,8 @@ import { SendOrderReceiptFactory } from '../../../../../factories/order/send-ord
 import { OrderController } from './order.controller';
 import { ExpireOrders } from '../../../../../../domain/order/interactors/expire-orders.interactor';
 import { ExpireOrdersFactory } from '../../../../../factories/order/expire-orders.factory';
+import { CreateSignedDelegateOrder } from '../../../../../../domain/order/interactors/create-signed-delegate-order.interactor';
+import { CreateSignedDelegateOrderFactory } from '../../../../../factories/order/create-signed-delegate-order.factory';
 
 @Module({
   controllers: [OrderController],
@@ -30,6 +32,10 @@ import { ExpireOrdersFactory } from '../../../../../factories/order/expire-order
     {
       provide: ExpireOrders,
       useFactory: ExpireOrdersFactory.getInstance,
+    },
+    {
+      provide: CreateSignedDelegateOrder,
+      useFactory: CreateSignedDelegateOrderFactory.getInstance,
     },
   ],
 })

@@ -85,9 +85,6 @@ export class CreateSignedDelegateOrderUseCase {
     };
 
     this.validateResult(createQuoteWithWallet, delegateOrder);
-    // TODO: NTH persistir dados sem a assinatura e sem nonce aleatorio
-    // TODO: NTH colocar validações adicionais de proporcionalidade e verificação de perda de precisão
-    // TODO: MUSTS colocar validações de valores minimos e máximos (VERIFICAR PRECO MINIMO!!! ATUALMENTE O FALLBACK S´O ENTRA EM ERRO)
 
     return delegateOrder;
   }

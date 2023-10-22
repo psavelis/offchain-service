@@ -7,13 +7,15 @@ import { SignerType } from '../../../../../domain/common/enums/signer-type.enum'
 const settingsMock = {
   blockchain: {
     ethereum: {
-      legacyClaimSignerKey: ethers.Wallet.createRandom().privateKey,
-      currentClaimSignerKey: ethers.Wallet.createRandom().privateKey,
+      legacyPreSaleClaimSignerKey: ethers.Wallet.createRandom().privateKey,
+      fixedSaleClaimsSignerKey: ethers.Wallet.createRandom().privateKey,
       badgesMinterSignerKey: ethers.Wallet.createRandom().privateKey,
+      dynamicSaleClaimsSignerKey: ethers.Wallet.createRandom().privateKey,
     },
     polygon: {
       claimSignerKey: ethers.Wallet.createRandom().privateKey,
       badgesMinterSignerKey: ethers.Wallet.createRandom().privateKey,
+      dynamicSaleClaimsSignerKey: ethers.Wallet.createRandom().privateKey,
     },
   },
 };

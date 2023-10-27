@@ -52,9 +52,16 @@ export class CreateSignedDelegateOrderUseCase {
     const { dueDate, incrementalNonce }: NonceAndExpirationDto =
       await this.getNonceAndExpiration(createQuoteWithWallet, chain);
 
+    const chainIsoCode = chain.layer === LayerType.L1 ? 'ETH' : 'MATIC';
+
     const payload: SignaturePayload = this.getSignaturePayload(
       chain,
       createQuoteWithWallet,
+      price,
+      incrementalNonce,
+      dueDate,
+      quote.total[chainIsoCode].unassignedNumber,
+      quote.total.KNN.unassignedNumber,
     );
 
     const { signature, nonce } = await this.signaturePort.sign(
@@ -151,12 +158,14 @@ export class CreateSignedDelegateOrderUseCase {
         );
       }
 
+      const chainIsoCode = chain.layer === LayerType.L1 ? 'ETH' : 'MATIC';
+
       const estimatePayload: EstimateDelegateOrderDto = {
         recipient: createQuoteWithWallet.cryptoWallet,
         knnPriceInUSD: price.USD.unassignedNumber,
         incrementalNonce,
         dueDate,
-        amountInETH: quote.total.ETH.unassignedNumber,
+        amountInETH: quote.total[chainIsoCode].unassignedNumber,
         amountInKNN: quote.total.KNN.unassignedNumber,
         nonce,
         signature,
@@ -244,12 +253,33 @@ export class CreateSignedDelegateOrderUseCase {
   private getSignaturePayload(
     chain: Chain,
     createQuoteWithWallet: CreateQuoteDto & { cryptoWallet: string },
+    price: QuotationAggregate,
+    incrementalNonce: string,
+    dueDate: string,
+    amountInETH: string,
+    amountInKNN: string,
   ): SignaturePayload {
     const typeHash = chain.layer === LayerType.L1 ? buyTypeHash : buyTypeHashL2;
 
     return {
-      types: ['bytes32', 'address', 'uint16', 'uint256', 'uint256'],
-      values: [typeHash, createQuoteWithWallet.cryptoWallet],
+      types: [
+        'bytes32',
+        'address',
+        'uint256',
+        'uint16',
+        'uint256',
+        'uint256',
+        'uint256',
+      ],
+      values: [
+        this.signaturePort.hash(typeHash),
+        createQuoteWithWallet.cryptoWallet,
+        price.USD.unassignedNumber,
+        incrementalNonce,
+        dueDate,
+        amountInETH,
+        amountInKNN,
+      ],
     };
   }
 

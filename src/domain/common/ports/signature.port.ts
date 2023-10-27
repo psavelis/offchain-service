@@ -3,7 +3,7 @@ import { SignerType } from '../enums/signer-type.enum';
 
 export interface SignaturePayload {
   types: Array<string>;
-  values: Array<string>;
+  values: Array<any>;
 }
 
 export interface SignatureResult {

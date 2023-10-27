@@ -25,9 +25,9 @@ import {
 } from '../../order/dtos/order-dictionary.dto';
 
 const MAX_CACHED_KEYS = 2000;
-let failing = false;
 
 export class CreateClearingUseCase implements CreateClearingInteractor {
+  disconnected: Date | null = null;
   private cache: Record<ProviderPaymentId, boolean>;
 
   constructor(
@@ -59,19 +59,25 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     try {
       statement = await this.fetchableStatementPort.fetch(statementParameter);
 
-      if (failing) {
-        this.logger.info('[Reconciliation] Banking reconnected!');
-      }
+      if (this.disconnected) {
+        const downtime = new Date().getTime() - this.disconnected.getTime();
+        const format =
+          downtime > 1000 ? `${downtime / 1000}s` : `${downtime}ms`;
 
-      failing = false;
-    } catch (err) {
-      if (failing) {
-        this.logger.warning(
-          '[Reconciliation] Banking NOT responding! Retrying...',
+        this.logger.info(
+          `[Reconciliation] Banking API back up. (downtime: ${format})`,
         );
       }
 
-      failing = true;
+      this.disconnected = null;
+    } catch (err) {
+      if (!this.disconnected) {
+        this.logger.warning(
+          '[Reconciliation] Banking NOT responding! Retrying...',
+        );
+
+        this.disconnected = new Date();
+      }
 
       console.error(JSON.stringify(err));
 

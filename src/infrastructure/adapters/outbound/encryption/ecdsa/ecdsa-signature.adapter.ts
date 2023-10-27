@@ -29,17 +29,22 @@ export class ECDSASignatureAdapter implements SignaturePort {
 
     const layer1Signers = {
       [SignerType.PreSaleClaimManager]: new ethers.Wallet(
-        settings.blockchain.ethereum.legacyClaimSignerKey,
+        settings.blockchain.ethereum.legacyPreSaleClaimSignerKey,
         ethereumProvider,
       ),
 
       [SignerType.SaleClaimManager]: new ethers.Wallet(
-        settings.blockchain.ethereum.currentClaimSignerKey,
+        settings.blockchain.ethereum.fixedSaleClaimsSignerKey,
         ethereumProvider,
       ),
 
       [SignerType.BadgesMinter]: new ethers.Wallet(
         settings.blockchain.ethereum.badgesMinterSignerKey,
+        ethereumProvider,
+      ),
+
+      [SignerType.DynamicSaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.ethereum.dynamicSaleClaimsSignerKey,
         ethereumProvider,
       ),
     };
@@ -57,6 +62,11 @@ export class ECDSASignatureAdapter implements SignaturePort {
 
       // unavailable
       [SignerType.PreSaleClaimManager]: undefined,
+
+      [SignerType.DynamicSaleClaimManager]: new ethers.Wallet(
+        settings.blockchain.polygon.dynamicSaleClaimsSignerKey,
+        polygonProvider,
+      ),
     };
 
     this.signers = {

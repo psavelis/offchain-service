@@ -7,7 +7,7 @@ import { ClaimSupplyDto } from '../../../../../domain/supply/dtos/claim-supply.d
 import { OnChainReceipt } from '../../../../../domain/supply/dtos/onchain-receipt.dto';
 import { ClaimSupplyPort } from '../../../../../domain/supply/ports/claim-supply.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol/contracts';
+import { KannaDynamicPriceSale, KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
 import { Settings } from 'src/domain/common/settings';
 import { Chain } from 'src/domain/common/entities/chain.entity';
@@ -32,17 +32,17 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
     return ClaimSupplyRpcAdapter.instance;
   }
 
-  public toggleNetworkContract(chain: Chain): Promise<KannaPreSale> {
+  public toggleNetworkContract(chain: Chain): Promise<KannaDynamicPriceSale> {
     if (this.settings.blockchain.current.layer === LayerType.L1) {
-      return this.provider.sale();
+      return this.provider.dynamicSale();
     }
 
     if (this.settings.blockchain.current.layer === LayerType.L2) {
       if (chain.layer === LayerType.L1) {
-        return this.provider.sale();
+        return this.provider.dynamicSale();
       }
 
-      return this.provider.polygonSale();
+      return this.provider.dynamicPolygonSale();
     }
 
     const message = `invalid chain: ${JSON.stringify(
@@ -61,7 +61,9 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const contract: KannaPreSale = await this.toggleNetworkContract(chain);
+    const contract: KannaDynamicPriceSale = await this.toggleNetworkContract(
+      chain,
+    );
 
     const { gasPrice } = await contract.provider.getFeeData();
 
@@ -86,7 +88,9 @@ export class ClaimSupplyRpcAdapter implements ClaimSupplyPort {
     chain,
   }: ClaimSupplyDto): Promise<void> {
     this.validate(nonce, amount);
-    const contract: KannaPreSale = await this.toggleNetworkContract(chain);
+    const contract: KannaDynamicPriceSale = await this.toggleNetworkContract(
+      chain,
+    );
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));

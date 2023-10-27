@@ -29,6 +29,11 @@ import {
 } from '../../../../../../domain/order/interactors/create-order.interactor';
 
 import {
+  CreateSignedDelegateOrder,
+  CreateSignedDelegateOrderInteractor,
+} from '../../../../../../domain/order/interactors/create-signed-delegate-order.interactor';
+
+import {
   FetchOrder,
   FetchOrderInteractor,
 } from '../../../../../../domain/order/interactors/fetch-order.interactor';
@@ -42,6 +47,8 @@ import {
   ExpireOrdersInteractor,
 } from 'src/domain/order/interactors/expire-orders.interactor';
 import { CronJob } from 'cron';
+import { CreateQuoteDto } from 'src/domain/price/dtos/create-quote.dto';
+import { CreateQuoteWithWallet } from 'src/domain/order/dtos/create-quote-with-wallet.dto';
 
 let expirationRunning = false;
 @Controller('order')
@@ -55,6 +62,8 @@ export class OrderController {
     readonly sendOrderReceipt: SendOrderReceiptInteractor,
     @Inject(ExpireOrders)
     readonly expireOrders: ExpireOrdersInteractor,
+    @Inject(CreateSignedDelegateOrder)
+    readonly createSignedDelegateOrder: CreateSignedDelegateOrderInteractor,
   ) {
     const job = new CronJob('0 */15 * * * *', () => {
       if (expirationRunning) {
@@ -121,6 +130,35 @@ export class OrderController {
         `getOrder ${OrderController.name} - ${err.message} - ${err.stack} - ${clientIp}@${clientAgent} - entry: ${id}`,
       );
       throw new NotFoundException('order not found');
+    }
+  }
+
+  @Post('estimate')
+  @Throttle(10, 60)
+  async postDelegateOrder(
+    @Body() entry: CreateQuoteWithWallet,
+    @Req() req,
+    @Ip() ip,
+  ) {
+    const clientAgent = req?.headers['user-agent'];
+    const clientIp = ip;
+
+    try {
+      const res = await this.createSignedDelegateOrder.execute({
+        ...entry,
+        forceReload: false,
+        clientAgent,
+        clientIp,
+      });
+
+      return res;
+    } catch (err) {
+      console.error(
+        `postDelegateOrder ${OrderController.name} - ${
+          err.message
+        } - ${clientIp}@${clientAgent} - entry: ${JSON.stringify(entry)}`,
+      );
+      throw new UnprocessableEntityException('delegate order not processed');
     }
   }
 

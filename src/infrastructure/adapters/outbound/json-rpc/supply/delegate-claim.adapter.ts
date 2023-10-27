@@ -8,7 +8,7 @@ import { LoggablePort } from '../../../../../domain/common/ports/loggable.port';
 import { ClaimLockedSupplyDto } from '../../../../../domain/supply/dtos/claim-locked-supply.dto';
 import { DelegateClaimPort } from '../../../../../domain/supply/ports/delegate-claim.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol/contracts';
+import { KannaDynamicPriceSale, KannaPreSale } from '../protocol/contracts';
 import { Settings } from '../../../../../domain/common/settings';
 import { SignerType } from '../../../../../domain/common/enums/signer-type.enum';
 import { Chain } from '../../../../../domain/common/entities/chain.entity';
@@ -22,7 +22,13 @@ const claimTypeLayer2 =
   'Claim(address recipient,uint256 amountInKNN,uint256 ref,uint256 nonce,uint256 chainId)';
 
 export class DelegateClaimRpcAdapter implements DelegateClaimPort {
-  static instance: DelegateClaimPort;
+  static instance: DelegateClaimRpcAdapter;
+  private contractHashMap: Record<
+    LayerType,
+    Record<string, Promise<KannaPreSale | KannaDynamicPriceSale>>
+  >;
+
+  private signerHashMap: Record<LayerType, Record<string, SignerType>>;
 
   private constructor(
     readonly provider: IKannaProtocolProvider,
@@ -44,6 +50,39 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
         signaturePort,
         logger,
       );
+
+      DelegateClaimRpcAdapter.instance.contractHashMap = {
+        [LayerType.L1]: {
+          [settings.blockchain.ethereum.contracts.legacyPreSaleAddress]:
+            provider.legacyPreSale(),
+          [settings.blockchain.ethereum.contracts.saleAddress]: provider.sale(),
+          [settings.blockchain.ethereum.contracts.dynamicSaleAddress]:
+            provider.dynamicSale(),
+        },
+        [LayerType.L2]: {
+          [settings.blockchain.polygon.contracts.saleAddress]:
+            provider.polygonSale(),
+          [settings.blockchain.polygon.contracts.dynamicSaleAddress]:
+            provider.dynamicPolygonSale(),
+        },
+      };
+
+      DelegateClaimRpcAdapter.instance.signerHashMap = {
+        [LayerType.L1]: {
+          [settings.blockchain.ethereum.contracts.legacyPreSaleAddress]:
+            SignerType.PreSaleClaimManager,
+          [settings.blockchain.ethereum.contracts.saleAddress]:
+            SignerType.SaleClaimManager,
+          [settings.blockchain.ethereum.contracts.dynamicSaleAddress]:
+            SignerType.DynamicSaleClaimManager,
+        },
+        [LayerType.L2]: {
+          [settings.blockchain.polygon.contracts.saleAddress]:
+            SignerType.SaleClaimManager,
+          [settings.blockchain.polygon.contracts.dynamicSaleAddress]:
+            SignerType.DynamicSaleClaimManager,
+        },
+      };
     }
 
     return DelegateClaimRpcAdapter.instance;
@@ -93,13 +132,17 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
       ],
     };
 
-    const isLegacy = this.isLegacy(order, chain);
+    const signer = this.signerHashMap[chain.layer][order.getContractAddress()];
 
-    const signature = await this.signaturePort.sign(
-      payload,
-      isLegacy ? SignerType.PreSaleClaimManager : SignerType.SaleClaimManager,
-      chain,
-    );
+    if (!signer) {
+      const message = `No signer found for ContractAddress: ${order.getContractAddress()} on Layer: ${
+        LayerType[chain.layer]
+      }`;
+
+      throw new Error(message);
+    }
+
+    const signature = await this.signaturePort.sign(payload, signer, chain);
 
     this.logger.info(
       `Signature: ${order.getEndToEndId()} has been signed on ${
@@ -112,15 +155,11 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
     return signature;
   }
 
-  isLegacy(order: Order, chain: Chain) {
-    if (chain.layer !== LayerType.L1) {
-      return false;
-    }
-
-    const preSaleContract =
-      this.settings.blockchain.ethereum.contracts.legacyPreSaleAddress;
-
-    return order.getContractAddress() === preSaleContract;
+  public toggleNetworkContract(
+    order: Order,
+    chain: Chain,
+  ): Promise<KannaPreSale | KannaDynamicPriceSale> {
+    return this.contractHashMap[chain.layer][order.getContractAddress()];
   }
 
   async estimateClaimLocked(
@@ -130,11 +169,8 @@ export class DelegateClaimRpcAdapter implements DelegateClaimPort {
   ): Promise<void> {
     const chain = new Chain(order.getSettledChainId());
 
-    const saleContract: KannaPreSale = this.isLegacy(order, chain)
-      ? await this.provider.legacyPreSale()
-      : chain.layer === LayerType.L2
-      ? await this.provider.polygonSale()
-      : await this.provider.sale();
+    const saleContract: KannaPreSale | KannaDynamicPriceSale =
+      await this.toggleNetworkContract(order, chain);
 
     const paymentSequence = String(order.getPaymentSequence());
 

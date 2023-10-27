@@ -66,8 +66,11 @@ export class SettingsAdapter {
         ethereum: {
           providerEndpoint: this.envString('RPC_PROVIDER_ENDPOINT'),
           claimManagerKey: this.envString('CLAIM_MANAGER_KEY'),
-          legacyClaimSignerKey: this.envString('CLAIM_SIGNER_KEY'),
-          currentClaimSignerKey: this.envString('SALE_CLAIM_SIGNER_KEY'),
+          legacyPreSaleClaimSignerKey: this.envString('CLAIM_SIGNER_KEY'),
+          fixedSaleClaimsSignerKey: this.envString('SALE_CLAIM_SIGNER_KEY'),
+          dynamicSaleClaimsSignerKey: this.envString(
+            'DYNAMIC_SALE_CLAIM_SIGNER_KEY',
+          ),
           badgesMinterSignerKey: this.envString('BADGES_MINTER_SIGNER_KEY'),
           providerApiKey: this.envString('RPC_PROVIDER_API_KEY'),
           network: this.envString('RPC_NETWORK'),
@@ -77,12 +80,16 @@ export class SettingsAdapter {
             saleAddress: this.envString('SALE_CONTRACT_ADDRESS'),
             badgeAddress: this.envString('BADGE_CONTRACT_ADDRESS'),
             gnosisSafeAddress: this.envString('GNOSIS_SAFE_ADDRESS'),
+            dynamicSaleAddress: this.envString('DYNAMIC_SALE_CONTRACT_ADDRESS'),
           },
         },
         polygon: {
           providerEndpoint: this.envString('POLYGON_RPC_PROVIDER_ENDPOINT'),
           claimManagerKey: this.envString('POLYGON_CLAIM_MANAGER_KEY'),
           claimSignerKey: this.envString('POLYGON_SALE_CLAIM_SIGNER_KEY'),
+          dynamicSaleClaimsSignerKey: this.envString(
+            'POLYGON_DYNAMIC_SALE_CLAIM_SIGNER_KEY',
+          ),
           providerApiKey: this.envString('POLYGON_RPC_PROVIDER_API_KEY'),
           badgesMinterSignerKey: this.envString(
             'POLYGON_BADGES_MINTER_SIGNER_KEY',
@@ -93,6 +100,9 @@ export class SettingsAdapter {
             fxTokenAddress: this.envString('POLYGON_ERC20_CONTRACT_ADDRESS'),
             saleAddress: this.envString('POLYGON_SALE_CONTRACT_ADDRESS'),
             gnosisSafeAddress: this.envString('POLYGON_GNOSIS_SAFE_ADDRESS'),
+            dynamicSaleAddress: this.envString(
+              'POLYGON_DYNAMIC_SALE_CONTRACT_ADDRESS',
+            ),
           },
         },
       },

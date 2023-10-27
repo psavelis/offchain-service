@@ -37,8 +37,8 @@ export interface Ticker {
   date: number;
 }
 
-const KNOWN_KNNBRL_FLOOR = 1;
-const KNOWN_KNNBRL_CEILING = 9;
+const KNOWN_KNNBRL_FLOOR = 1.1;
+const KNOWN_KNNBRL_CEILING = 9.1;
 const CACHE_TTL_MS = 30 * 1e3;
 const DEFAULT_ETH_DECIMALS = 18;
 

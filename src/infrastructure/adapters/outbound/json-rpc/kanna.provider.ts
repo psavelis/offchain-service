@@ -1,8 +1,13 @@
 import { ethers, Signer } from 'ethers';
-import { KannaPreSale, KannaBadges } from './protocol/contracts';
+import {
+  KannaPreSale,
+  KannaBadges,
+  KannaDynamicPriceSale,
+} from './protocol/contracts';
 import {
   KannaPreSale__factory,
   KannaBadges__factory,
+  KannaDynamicPriceSale__factory,
 } from './protocol/factories/contracts';
 
 import { Settings } from '../../../../domain/common/settings';
@@ -12,6 +17,9 @@ import { ERC20 } from './protocol/@openzeppelin/contracts/token/ERC20/ERC20';
 import { ERC20__factory } from './protocol/factories/@openzeppelin/contracts/token/ERC20';
 
 export interface IKannaProtocolProvider {
+  dynamicSale(): Promise<KannaDynamicPriceSale>;
+  dynamicPolygonSale(): Promise<KannaDynamicPriceSale>;
+
   sale(): Promise<KannaPreSale>;
   legacyPreSale(): Promise<KannaPreSale>;
   polygonSale(): Promise<KannaPreSale>;
@@ -32,6 +40,8 @@ export class KannaProvider implements IKannaProtocolProvider {
   static ethereumBadgeInstanceAsManager: KannaBadges;
   static polygonBadgeInstanceAsManager: KannaBadges;
   static polygonSaleInstanceAsManager: KannaPreSale;
+  static ethereumDynamicSaleInstanceAsManager: KannaDynamicPriceSale;
+  static polygonDynamicSaleInstanceAsManager: KannaDynamicPriceSale;
   static instance: IKannaProtocolProvider;
   static ethereumRpcProvider: JsonRpcProvider;
   static polygonRpcProvider: JsonRpcProvider;
@@ -71,6 +81,16 @@ export class KannaProvider implements IKannaProtocolProvider {
 
       const polygonBadgeManagerWallet = new ethers.Wallet(
         settings.blockchain.polygon.badgesMinterSignerKey,
+        KannaProvider.polygonRpcProvider,
+      );
+
+      const ethereumDynamicSaleClaimManagerWallet = new ethers.Wallet(
+        settings.blockchain.ethereum.dynamicSaleClaimsSignerKey,
+        KannaProvider.ethereumRpcProvider,
+      );
+
+      const polygonDynamicSaleClaimManagerWallet = new ethers.Wallet(
+        settings.blockchain.polygon.dynamicSaleClaimsSignerKey,
         KannaProvider.polygonRpcProvider,
       );
 
@@ -114,6 +134,18 @@ export class KannaProvider implements IKannaProtocolProvider {
         polygonClaimManagerWallet,
       );
 
+      KannaProvider.ethereumDynamicSaleInstanceAsManager =
+        KannaDynamicPriceSale__factory.connect(
+          settings.blockchain.ethereum.contracts.dynamicSaleAddress,
+          ethereumDynamicSaleClaimManagerWallet,
+        );
+
+      KannaProvider.polygonDynamicSaleInstanceAsManager =
+        KannaDynamicPriceSale__factory.connect(
+          settings.blockchain.polygon.contracts.dynamicSaleAddress,
+          polygonDynamicSaleClaimManagerWallet,
+        );
+
       KannaProvider.instance = new KannaProvider(settings);
     }
 
@@ -128,6 +160,14 @@ export class KannaProvider implements IKannaProtocolProvider {
     return Promise.resolve(
       KannaProvider.ethereumLegacyPreSaleInstanceAsManager,
     );
+  }
+
+  dynamicSale(): Promise<KannaDynamicPriceSale> {
+    return Promise.resolve(KannaProvider.ethereumDynamicSaleInstanceAsManager);
+  }
+
+  dynamicPolygonSale(): Promise<KannaDynamicPriceSale> {
+    return Promise.resolve(KannaProvider.polygonDynamicSaleInstanceAsManager);
   }
 
   badges(): Promise<KannaBadges> {

@@ -163,7 +163,10 @@ export class FetchableKnnBasisMBHttpAdapter implements FetchableKnnBasisPort {
     }
   }
 
-  private async getPrice() {
+  private async getPrice(): Promise<{
+    priceInBrl1e18: BigNumber;
+    brlQuotation: CurrencyAmount<'BRL'>;
+  }> {
     const endpoint = new URL(
       this.settings.cex.mb.endpoints.ticker,
       this.settings.cex.mb.host,
@@ -195,6 +198,21 @@ export class FetchableKnnBasisMBHttpAdapter implements FetchableKnnBasisPort {
       decimals: DEFAULT_ETH_DECIMALS,
       isoCode: 'BRL',
     };
+
+    const fallbackPrice = BigNumber.from(
+      this.settings.cex.mb.fallback.knnBrlFallbackUint256,
+    );
+
+    if (fallbackPrice.gt(priceInBrl1e18)) {
+      return {
+        priceInBrl1e18: fallbackPrice,
+        brlQuotation: {
+          unassignedNumber: this.settings.cex.mb.fallback.knnBrlFallbackUint256,
+          decimals: DEFAULT_ETH_DECIMALS,
+          isoCode: 'BRL',
+        },
+      };
+    }
 
     return { priceInBrl1e18, brlQuotation };
   }

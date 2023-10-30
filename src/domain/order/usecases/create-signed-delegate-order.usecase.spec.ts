@@ -11,17 +11,41 @@ jest.mock('../../price/interactors/knn-to-currencies.interactor');
 jest.mock('../ports/estimate-delegate-order.port');
 jest.mock('../ports/fetchable-nonce-and-expiration.port');
 
+const amount = {
+  ETH: {
+    isoCode: IsoCodeType.ETH,
+    unassignedNumber: '1000000000000000000',
+    decimals: 18,
+  },
+  KNN: {
+    isoCode: IsoCodeType.KNN,
+    unassignedNumber: '1000000000000000000',
+    decimals: 18,
+  },
+  USD: {
+    isoCode: IsoCodeType.USD,
+    unassignedNumber: '1000000000000000000',
+    decimals: 18,
+  },
+  BRL: {
+    isoCode: IsoCodeType.BRL,
+    unassignedNumber: '1000000000000000000',
+    decimals: 18,
+  },
+  MATIC: {
+    isoCode: IsoCodeType.MATIC,
+    unassignedNumber: '1000000000000000000',
+    decimals: 18,
+  },
+};
+
 describe('CreateSignedDelegateOrderUseCase', () => {
   let useCase: CreateSignedDelegateOrderUseCase;
   const mockFetchableNonceAndExpiration = { fetch: jest.fn() };
-  const mockSignaturePort = { sign: jest.fn() } as any;
+  const mockSignaturePort = { sign: jest.fn(), hash: jest.fn() } as any;
   const mockLogger = { error: jest.fn() } as any;
   const mockKnnToCurrenciesInteractor = {
-    execute: jest.fn().mockImplementation(() => {
-      return {
-        execute: jest.fn(),
-      };
-    }),
+    execute: jest.fn().mockResolvedValue(amount),
   } as any;
   const mockEstimateDelegateOrder = { execute: jest.fn() };
 
@@ -78,32 +102,6 @@ describe('CreateSignedDelegateOrderUseCase', () => {
 
 const mockCreateQuoteInteractor = {
   execute: jest.fn().mockResolvedValue({
-    total: {
-      ETH: {
-        isoCode: IsoCodeType.ETH,
-        unassignedNumber: '1000000000000000000',
-        decimals: 18,
-      },
-      KNN: {
-        isoCode: IsoCodeType.KNN,
-        unassignedNumber: '1000000000000000000',
-        decimals: 18,
-      },
-      USD: {
-        isoCode: IsoCodeType.USD,
-        unassignedNumber: '1000000000000000000',
-        decimals: 18,
-      },
-      BRL: {
-        isoCode: IsoCodeType.BRL,
-        unassignedNumber: '1000000000000000000',
-        decimals: 18,
-      },
-      MATIC: {
-        isoCode: IsoCodeType.MATIC,
-        unassignedNumber: '1000000000000000000',
-        decimals: 18,
-      },
-    },
+    total: amount,
   }),
 } as any;

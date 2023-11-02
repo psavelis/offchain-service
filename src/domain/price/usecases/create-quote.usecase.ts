@@ -95,7 +95,9 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   }: CreateQuoteDto): void => {
     const { unassignedNumber, isoCode, decimals } = amount;
     if (!onlyDigits.test(unassignedNumber)) {
-      throw new Error('Invalid amount');
+      throw new Error(
+        `Invalid amount: ${unassignedNumber} (${JSON.stringify(amount)})`,
+      );
     }
 
     if (!onlyCurrencies.test(isoCode)) {

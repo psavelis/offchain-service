@@ -105,7 +105,7 @@ export class ProcessStatementTransactionUseCase
 
         const refreshed = await this.createQuoteInteractor.execute({
           amount: {
-            unassignedNumber: expectedAmount,
+            unassignedNumber: expectedAmount.replace(/\D/g, ''),
             decimals: 2,
             isoCode: 'BRL',
           },

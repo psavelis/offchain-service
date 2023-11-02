@@ -83,12 +83,14 @@ export class JournalEntry extends SequenceEntity<JournalEntryProps> {
         [LayerType.L1]: {
           [ethereum.contracts.legacyPreSaleAddress]: AccountGroup.Sale,
           [ethereum.contracts.saleAddress]: AccountGroup.Sale,
+          [ethereum.contracts.dynamicSaleAddress]: AccountGroup.Sale,
           [ethereum.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
           ...routing,
           [nullAddress]: AccountGroup.Chain,
         },
         [LayerType.L2]: {
           [polygon.contracts.saleAddress]: AccountGroup.Sale,
+          [polygon.contracts.dynamicSaleAddress]: AccountGroup.Sale,
           [polygon.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
           ...routing,
           [nullAddress]: AccountGroup.Chain,

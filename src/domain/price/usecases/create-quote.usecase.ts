@@ -147,7 +147,10 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       ),
     );
 
-    if (truncated < DEFAULT_ORDER_MINIMUM_TOTAL) {
+    if (
+      truncated < DEFAULT_ORDER_MINIMUM_TOTAL &&
+      !(truncated >= 4.19 && truncated <= 4.21)
+    ) {
       throw new Error('amount below minimum total');
     }
   }

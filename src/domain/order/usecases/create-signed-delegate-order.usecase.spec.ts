@@ -84,14 +84,14 @@ describe('CreateSignedDelegateOrderUseCase', () => {
       nonce: 'mockNonce',
     });
 
-    mockEstimateDelegateOrder.execute.mockResolvedValueOnce('mockGasEstimate');
+    mockEstimateDelegateOrder.execute.mockResolvedValueOnce('101130');
 
     const result = await useCase.execute(mockInput);
 
     expect(result).toBeDefined();
     expect(result.signature).toBe('mockSignature');
     expect(result.nonce).toBe('mockNonce');
-    expect(result.gasEstimate).toBe('mockGasEstimate');
+    expect(result.gasEstimate).toBe('101130');
     expect(result.total.ETH.unassignedNumber).toBe(
       mockInput.amount.unassignedNumber,
     );

@@ -94,15 +94,21 @@ export class FetchableOnChainPurchaseEventRpcAdapter
   }
 
   private async getLayer1OnlyEvents(fromEthereumBlock: number) {
-    const [sale, preSale] = await Promise.all([
+    const [sale, preSale, dynamicSale] = await Promise.all([
       this.provider.sale(),
       this.provider.legacyPreSale(),
+      this.provider.dynamicSale(),
     ]);
 
-    const [saleEvents, preSaleEvents]: PurchaseEvent[][] = await Promise.all([
-      sale.queryFilter(sale.filters.Purchase(), fromEthereumBlock),
-      preSale.queryFilter(preSale.filters.Purchase(), fromEthereumBlock),
-    ]);
+    const [saleEvents, preSaleEvents, dynamicSaleEvents]: PurchaseEvent[][] =
+      await Promise.all([
+        sale.queryFilter(sale.filters.Purchase(), fromEthereumBlock),
+        preSale.queryFilter(preSale.filters.Purchase(), fromEthereumBlock),
+        dynamicSale.queryFilter(
+          dynamicSale.filters.Purchase(),
+          fromEthereumBlock,
+        ),
+      ]);
 
     if (this.settings.blockchain.current.layer !== LayerType.L1) {
       throw new Error(
@@ -115,6 +121,7 @@ export class FetchableOnChainPurchaseEventRpcAdapter
     const rawEvents = [
       saleEvents.map((event) => ({ ...event, chainId })),
       preSaleEvents.map((event) => ({ ...event, chainId })),
+      dynamicSaleEvents.map((event) => ({ ...event, chainId })),
     ].flat();
 
     return rawEvents;
@@ -124,21 +131,34 @@ export class FetchableOnChainPurchaseEventRpcAdapter
     fromEthereumBlock: number,
     fromPolygonBlock: number,
   ) {
-    const [polygonSale, sale, preSale] = await Promise.all([
-      this.provider.polygonSale(),
-      this.provider.sale(),
-      this.provider.legacyPreSale(),
-    ]);
-
-    const [polygonSaleEvents, saleEvents, preSaleEvents]: PurchaseEvent[][] =
+    const [polygonSale, sale, preSale, dynamicSale, polygonDynamicSale] =
       await Promise.all([
-        polygonSale.queryFilter(
-          polygonSale.filters.Purchase(),
-          fromPolygonBlock,
-        ),
-        sale.queryFilter(sale.filters.Purchase(), fromEthereumBlock),
-        preSale.queryFilter(preSale.filters.Purchase(), fromEthereumBlock),
+        this.provider.polygonSale(),
+        this.provider.sale(),
+        this.provider.legacyPreSale(),
+        this.provider.dynamicSale(),
+        this.provider.dynamicPolygonSale(),
       ]);
+
+    const [
+      polygonSaleEvents,
+      saleEvents,
+      preSaleEvents,
+      dynamicSaleEvents,
+      polygonDynamicSaleEvents,
+    ]: PurchaseEvent[][] = await Promise.all([
+      polygonSale.queryFilter(polygonSale.filters.Purchase(), fromPolygonBlock),
+      sale.queryFilter(sale.filters.Purchase(), fromEthereumBlock),
+      preSale.queryFilter(preSale.filters.Purchase(), fromEthereumBlock),
+      dynamicSale.queryFilter(
+        dynamicSale.filters.Purchase(),
+        fromEthereumBlock,
+      ),
+      polygonDynamicSale.queryFilter(
+        polygonDynamicSale.filters.Purchase(),
+        fromPolygonBlock,
+      ),
+    ]);
 
     const isProduction = process.env.NODE_ENV === 'production';
 
@@ -154,6 +174,14 @@ export class FetchableOnChainPurchaseEventRpcAdapter
       polygonSaleEvents.map((event) => ({ ...event, chainId: polygonChainId })),
       saleEvents.map((event) => ({ ...event, chainId: ethereumChainId })),
       preSaleEvents.map((event) => ({ ...event, chainId: ethereumChainId })),
+      dynamicSaleEvents.map((event) => ({
+        ...event,
+        chainId: ethereumChainId,
+      })),
+      polygonDynamicSaleEvents.map((event) => ({
+        ...event,
+        chainId: polygonChainId,
+      })),
     ].flat();
 
     return rawEvents;

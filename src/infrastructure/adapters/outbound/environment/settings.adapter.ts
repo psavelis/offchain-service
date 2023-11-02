@@ -71,6 +71,9 @@ export class SettingsAdapter {
           dynamicSaleClaimsSignerKey: this.envString(
             'DYNAMIC_SALE_CLAIM_SIGNER_KEY',
           ),
+          dynamicSaleClaimsManagerKey: this.envString(
+            'DYNAMIC_SALE_CLAIM_MANAGER_KEY',
+          ),
           badgesMinterSignerKey: this.envString('BADGES_MINTER_SIGNER_KEY'),
           providerApiKey: this.envString('RPC_PROVIDER_API_KEY'),
           network: this.envString('RPC_NETWORK'),
@@ -89,6 +92,9 @@ export class SettingsAdapter {
           claimSignerKey: this.envString('POLYGON_SALE_CLAIM_SIGNER_KEY'),
           dynamicSaleClaimsSignerKey: this.envString(
             'POLYGON_DYNAMIC_SALE_CLAIM_SIGNER_KEY',
+          ),
+          dynamicSaleClaimsManagerKey: this.envString(
+            'POLYGON_DYNAMIC_SALE_CLAIM_MANAGER_KEY',
           ),
           providerApiKey: this.envString('POLYGON_RPC_PROVIDER_API_KEY'),
           badgesMinterSignerKey: this.envString(

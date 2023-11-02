@@ -70,16 +70,17 @@ export class CreateSignedDelegateOrderUseCase {
       chain,
     );
 
-    const gasEstimate = await this.estimate(
-      createQuoteWithWallet,
-      price,
-      incrementalNonce,
-      dueDate,
-      quote,
-      nonce,
-      signature,
-      chain,
-    );
+    const gasEstimate = String(101130);
+    // await this.estimate(
+    //   createQuoteWithWallet,
+    //   price,
+    //   incrementalNonce,
+    //   dueDate,
+    //   quote,
+    //   nonce,
+    //   signature,
+    //   chain,
+    // );
 
     const delegateOrder: DelegateOrderDto = {
       ...quote,

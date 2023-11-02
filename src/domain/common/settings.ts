@@ -46,6 +46,7 @@ export interface Settings {
       legacyPreSaleClaimSignerKey: string;
       fixedSaleClaimsSignerKey: string;
       dynamicSaleClaimsSignerKey: string;
+      dynamicSaleClaimsManagerKey: string;
       badgesMinterSignerKey: string;
       contracts: {
         gnosisSafeAddress: any;
@@ -64,6 +65,7 @@ export interface Settings {
       claimManagerKey: string;
       claimSignerKey: string;
       dynamicSaleClaimsSignerKey: string;
+      dynamicSaleClaimsManagerKey: string;
       contracts: {
         badgeAddress: string;
         gnosisSafeAddress: string;

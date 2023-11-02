@@ -85,12 +85,12 @@ export class KannaProvider implements IKannaProtocolProvider {
       );
 
       const ethereumDynamicSaleClaimManagerWallet = new ethers.Wallet(
-        settings.blockchain.ethereum.dynamicSaleClaimsSignerKey,
+        settings.blockchain.ethereum.dynamicSaleClaimsManagerKey,
         KannaProvider.ethereumRpcProvider,
       );
 
       const polygonDynamicSaleClaimManagerWallet = new ethers.Wallet(
-        settings.blockchain.polygon.dynamicSaleClaimsSignerKey,
+        settings.blockchain.polygon.dynamicSaleClaimsManagerKey,
         KannaProvider.polygonRpcProvider,
       );
 

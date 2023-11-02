@@ -7,7 +7,7 @@ import { LockSupplyDto } from '../../../../../domain/supply/dtos/lock-supply.dto
 import { OnChainReceipt } from '../../../../../domain/supply/dtos/onchain-receipt.dto';
 import { LockSupplyPort } from '../../../../../domain/supply/ports/lock-supply.port';
 import { IKannaProtocolProvider } from '../kanna.provider';
-import { KannaPreSale } from '../protocol/contracts';
+import { KannaDynamicPriceSale, KannaPreSale } from '../protocol/contracts';
 import parseOnChainReceipt from './receipt.parser';
 import { Settings } from '../../../../../domain/common/settings';
 import { LayerType } from '../../../../../domain/common/enums/layer-type.enum';
@@ -32,17 +32,17 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     return LockSupplyRpcAdapter.instance;
   }
 
-  public toggleNetworkContract(chain: Chain): Promise<KannaPreSale> {
+  public toggleNetworkContract(chain: Chain): Promise<KannaDynamicPriceSale> {
     if (this.settings.blockchain.current.layer === LayerType.L1) {
-      return this.provider.sale();
+      return this.provider.dynamicSale();
     }
 
     if (this.settings.blockchain.current.layer === LayerType.L2) {
       if (chain.layer === LayerType.L1) {
-        return this.provider.sale();
+        return this.provider.dynamicSale();
       }
 
-      return this.provider.polygonSale();
+      return this.provider.dynamicPolygonSale();
     }
 
     const message = `invalid chain: ${JSON.stringify(
@@ -56,9 +56,8 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));
 
-    const currentContract: KannaPreSale = await this.toggleNetworkContract(
-      chain,
-    );
+    const currentContract: KannaDynamicPriceSale =
+      await this.toggleNetworkContract(chain);
 
     const { gasPrice } = await currentContract.provider.getFeeData();
 
@@ -78,9 +77,8 @@ export class LockSupplyRpcAdapter implements LockSupplyPort {
   async verify({ nonce, amount, chain }: LockSupplyDto): Promise<void> {
     this.validate(nonce, amount);
 
-    const currentContract: KannaPreSale = await this.toggleNetworkContract(
-      chain,
-    );
+    const currentContract: KannaDynamicPriceSale =
+      await this.toggleNetworkContract(chain);
 
     const uint256Amount = BigNumber.from(amount.unassignedNumber);
     const uint256Nonce = BigNumber.from(String(nonce));

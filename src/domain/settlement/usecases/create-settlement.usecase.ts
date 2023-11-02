@@ -32,7 +32,7 @@ export class CreateSettlementUseCase implements CreateSettlementInteractor {
         console.error(
           `[error] settlement of #${sequence} FAILED (${orderWithPayment.order.getId()}) stack: ${
             err.stack
-          }, msg: ${err.message}`,
+          }, msg: ${err.message} ${JSON.stringify(orderWithPayment)}`,
         );
       }
     }

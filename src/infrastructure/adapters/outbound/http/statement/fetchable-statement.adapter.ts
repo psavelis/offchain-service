@@ -292,6 +292,12 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
         ),
       );
     } catch (err) {
+      console.error(
+        `[statement-adapter] parse error: ${target}-${offset} @ page ${pageNumber} (${JSON.stringify(
+          { statement, msg: err.message, stack: err.stack },
+        )})`,
+      );
+
       this.logger.error(
         err,
         `[statement-adapter] parse error: ${target}-${offset} @ page ${pageNumber} (${JSON.stringify(

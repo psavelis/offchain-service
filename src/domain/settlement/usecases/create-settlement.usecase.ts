@@ -30,8 +30,9 @@ export class CreateSettlementUseCase implements CreateSettlementInteractor {
         await this.processOrderSettlementInteractor.execute(orderWithPayment);
       } catch (err) {
         console.error(
-          err,
-          `[error] settlement of #${sequence} FAILED (${orderWithPayment.order.getId()})`,
+          `[error] settlement of #${sequence} FAILED (${orderWithPayment.order.getId()}) stack: ${
+            err.stack
+          }, msg: ${err.message}`,
         );
       }
     }

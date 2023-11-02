@@ -71,6 +71,13 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
 
       this.disconnected = null;
     } catch (err) {
+      console.error(
+        `[Reconciliation] ${JSON.stringify({
+          msg: err.message,
+          stack: err.stack,
+        })}`,
+      );
+
       if (!this.disconnected) {
         this.logger.warning(
           '[Reconciliation] Banking NOT responding! Retrying...',
@@ -181,11 +188,21 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
           })
           .filter(isValid);
 
+        console.log(
+          `processStatement::endIds => Total: ${endIds?.length}, Last ${
+            endIds?.length ? endIds[endIds.length - 1] : 'N/A'
+          }`,
+        );
+
         const orders: Record<EndToEndId, Order> =
           await this.fetchOrderBatchInteractor.fetchMany(endIds);
 
         const processPromises: Array<Promise<void>> =
           currentStatement.transactions.map((transaction: Transaction) => {
+            console.log(
+              `toProcess::transaction => ${JSON.stringify(transaction)}`,
+            );
+
             return this.processStatementTransaction(
               transaction,
               clearing,

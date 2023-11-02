@@ -192,15 +192,6 @@ export class ProcessStatementTransactionUseCase
         } @ ${err.stack}`,
       );
 
-      this.logger.debug(
-        `skipping ${
-          transaction.providerPaymentId
-        }: order ${matchingOrder.getId()} already processed`,
-        {
-          err,
-        },
-      );
-
       return undefined;
     }
   }

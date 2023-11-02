@@ -58,6 +58,11 @@ export class ProcessStatementTransactionUseCase
           );
         }
 
+        console.log(
+          `processStmtTx::matchingOrder.hasPayments: ${JSON.stringify(
+            matchingOrder,
+          )}`,
+        );
         return undefined;
       }
 
@@ -86,6 +91,12 @@ export class ProcessStatementTransactionUseCase
       }
 
       if (matchingOrder.isExpired()) {
+        console.log(
+          `processStmtTx::matchingOrder.isExpired: ${JSON.stringify(
+            matchingOrder,
+          )}`,
+        );
+
         matchingOrder.setStatus(OrderStatus.Expired);
 
         await this.orderTransitionInteractor.execute(matchingOrder, {

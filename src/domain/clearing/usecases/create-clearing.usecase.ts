@@ -188,11 +188,13 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
           })
           .filter(isValid);
 
-        console.log(
-          `processStatement::endIds => Total: ${endIds?.length}, Last ${
-            endIds?.length ? endIds[endIds.length - 1] : 'N/A'
-          }`,
-        );
+        if (endIds?.length) {
+          console.log(
+            `processStatement::endIds => Total: ${endIds.length}, Last ${
+              endIds[endIds.length - 1]
+            }`,
+          );
+        }
 
         const orders: Record<EndToEndId, Order> =
           await this.fetchOrderBatchInteractor.fetchMany(endIds);

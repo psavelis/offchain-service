@@ -98,7 +98,7 @@ export class ProcessStatementTransactionUseCase
             decimals: 2,
             isoCode: 'BRL',
           },
-          chainId: this.settings.blockchain.current.id,
+          chainId: matchingOrder.getDesiredChainId(),
           transactionType:
             matchingOrder.getIdentifierType() === 'EA' ? 'LockSupply' : 'Claim',
         });
@@ -173,6 +173,14 @@ export class ProcessStatementTransactionUseCase
         order: matchingOrder,
       };
     } catch (err) {
+      console.warn(
+        `skipping ${
+          transaction.providerPaymentId
+        }: order ${matchingOrder.getId()} already processed => ${
+          err.message
+        } @ ${err.stack}`,
+      );
+
       this.logger.debug(
         `skipping ${
           transaction.providerPaymentId

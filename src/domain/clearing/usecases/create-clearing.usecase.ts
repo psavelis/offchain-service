@@ -253,6 +253,9 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     const { endToEndId, providerPaymentId, value, effectiveDate } = transaction;
 
     if (this.cache[providerPaymentId]) {
+      console.log(
+        `processStatementTransaction => ${providerPaymentId} already cached`,
+      );
       return;
     }
 
@@ -270,6 +273,10 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       }
 
       this.cache[providerPaymentId] = true;
+
+      console.log(
+        `processStatementTransaction => ${providerPaymentId} added to cache`,
+      );
       return;
     }
 
@@ -285,9 +292,8 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
     if (result) {
       processedPayments[providerPaymentId] = result;
 
-      this.logger.debug(
-        `Confirmed: #${result.payment.getSequence()} (ProviderID: ${providerPaymentId}) => OrderID: ${order.getId()})`,
-      );
+      const msg = `Confirmed: #${result.payment.getSequence()} (ProviderID: ${providerPaymentId}) => OrderID: ${order.getId()})`;
+      console.log(msg);
 
       return;
     }

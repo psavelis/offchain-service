@@ -31,7 +31,9 @@ export default class DiscordLogger implements LoggablePort {
         },
         json: params,
       })
-      .catch((err) => console.error(err));
+      .catch(() =>
+        console.log(`Msg: ${msg} Params: ${JSON.stringify(params ?? {})}`),
+      );
   }
 
   public info(msg: string, params?: any): void {
@@ -47,7 +49,9 @@ export default class DiscordLogger implements LoggablePort {
         },
         json: params,
       })
-      .catch((e) => console.log(e));
+      .catch(() =>
+        console.info(`Msg: ${msg} Params: ${JSON.stringify(params ?? {})}`),
+      );
   }
 
   public warning(msg: string, params?: any): void {
@@ -63,7 +67,9 @@ export default class DiscordLogger implements LoggablePort {
         },
         json: params,
       })
-      .catch((err) => console.error(err));
+      .catch(() =>
+        console.warn(`Msg: ${msg} Params: ${JSON.stringify(params ?? {})}`),
+      );
   }
 
   public error(error: Error, msg: string, params?: any): void {
@@ -80,7 +86,13 @@ export default class DiscordLogger implements LoggablePort {
         error,
         json: params,
       })
-      .catch((err) => console.error(err));
+      .catch(() =>
+        console.error(
+          `Msg: ${error.message} @ Stack: ${
+            error.stack
+          } Params: ${JSON.stringify(params ?? {})}`,
+        ),
+      );
   }
 
   static truncate(string = '') {

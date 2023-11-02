@@ -210,9 +210,16 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
     const lastOffset = last?.getOffset();
     const currentDate = new Date();
 
-    const adjustedTarget =
-      (lastOffset ? Date.parse(lastOffset) : currentDate.getTime()) -
-      DEFAULT_START_OFFSET_MS;
+    const oneMonthAgo = new Date(currentDate);
+    oneMonthAgo.setMonth(currentDate.getMonth() - 1);
+
+    let adjustedTarget = lastOffset
+      ? Date.parse(lastOffset)
+      : currentDate.getTime() - DEFAULT_START_OFFSET_MS;
+
+    if (adjustedTarget < oneMonthAgo.getTime()) {
+      adjustedTarget = oneMonthAgo.getTime();
+    }
 
     const target = convertToProviderDateOffset(adjustedTarget);
     const offset = convertToProviderDateOffset(

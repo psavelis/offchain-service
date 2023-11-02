@@ -15,6 +15,7 @@ import { LoggablePort } from '../../common/ports/loggable.port';
 
 export class SyncLedgerUseCase implements SyncLedgerInteractor {
   private cbcKey: string;
+  private disconnected: Date | null = null;
 
   constructor(
     readonly settings: Settings,
@@ -35,17 +36,31 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
     try {
       journalEntries = await this.fetchJournalEvents();
 
+      if (this.disconnected) {
+        const downtime = new Date().getTime() - this.disconnected.getTime();
+        const format =
+          downtime > 1000 ? `${downtime / 1000}s` : `${downtime}ms`;
+
+        this.logger.info(`Alchemy API back up. (downtime: ${format})`);
+      }
+
+      this.disconnected = null;
+
       if (!journalEntries?.length) {
         return;
       }
     } catch (err) {
-      this.logger.warning(
-        '[Journal Ledger] Alchemy API failed to respond. Retrying...',
-      );
+      if (!this.disconnected) {
+        this.logger.warning(
+          '[Journal Ledger] Alchemy API failed to respond. Retrying...',
+        );
 
-      console.error(JSON.stringify(err));
+        this.disconnected = new Date();
 
-      return;
+        console.error(JSON.stringify(err));
+
+        return;
+      }
     }
 
     try {
@@ -59,21 +74,35 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
     try {
       const creditAndDebitCount = await this.syncBalances(journalEntries);
 
+      if (this.disconnected) {
+        const downtime = new Date().getTime() - this.disconnected.getTime();
+        const format =
+          downtime > 1000 ? `${downtime / 1000}s` : `${downtime}ms`;
+
+        this.logger.info(`Alchemy API back up. (downtime: ${format})`);
+      }
+
+      this.disconnected = null;
+
       if (creditAndDebitCount) {
         const totalTransactions = creditAndDebitCount / 2;
 
         this.logger.info(
-          `[Journal Ledger] ${totalTransactions} new transfers captured from blockchain`,
+          `[Balances] ${totalTransactions} new transfers captured from blockchain`,
         );
       }
     } catch (err) {
-      this.logger.warning(
-        '[Balances] Alchemy API failed to respond. Retrying...',
-      );
+      if (!this.disconnected) {
+        this.logger.warning(
+          '[Balances] Alchemy API failed to respond. Retrying...',
+        );
 
-      console.error(JSON.stringify(err));
+        this.disconnected = new Date();
 
-      return;
+        console.error(JSON.stringify(err));
+
+        return;
+      }
     }
   }
 

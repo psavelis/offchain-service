@@ -221,6 +221,10 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
       ? Date.parse(lastOffset)
       : currentDate.getTime() - DEFAULT_START_OFFSET_MS;
 
+    adjustedTarget = new Date(
+      adjustedTarget - 1000 * 60 * 60 * 24 * 3,
+    ).getTime();
+
     if (adjustedTarget < oneMonthAgo.getTime()) {
       adjustedTarget = oneMonthAgo.getTime();
     }
@@ -322,4 +326,4 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 }
 
 const convertToProviderDateOffset = (millis: number): string =>
-  new Date(millis - 1000 * 60 * 60 * 24 * 3).toISOString().split('T')[0];
+  new Date(millis).toISOString().split('T')[0];

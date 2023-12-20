@@ -142,7 +142,7 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
       clientKey,
     } = this.settings.statementProvider;
 
-    const path = `${basePath}?pagina=${pageOffset}&tamanhoPagina=${STREAM_SIZE}&dataInicio=${target}&dataFim=${dateOffset}&tipoOperacao=${operationType}&tipoTransacao=${transactionType}`;
+    const path = `${basePath}??pagina=${pageOffset}&tamanhoPagina=${STREAM_SIZE}&dataInicio=${target}&dataFim=${dateOffset}&tipoOperacao=${operationType}&tipoTransacao=${transactionType}`;
 
     const options = {
       method: 'GET',
@@ -179,6 +179,10 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 
           try {
             const statement = JSON.parse(body.toString());
+
+            console.log(
+              `[statement-oauth] GET ${path} | Response => Content-Length: ${body?.length}`,
+            );
 
             return resolve(statement);
           } catch (err) {

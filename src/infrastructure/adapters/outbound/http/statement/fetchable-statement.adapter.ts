@@ -322,4 +322,4 @@ export class FetchableStatementHttpAdapter implements FetchableStatementPort {
 }
 
 const convertToProviderDateOffset = (millis: number): string =>
-  new Date(millis).toISOString().split('T')[0];
+  new Date(millis - 1000 * 60 * 60 * 24 * 3).toISOString().split('T')[0];

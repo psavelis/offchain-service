@@ -83,10 +83,12 @@ export class FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase {
     );
 
     const eligible =
-      !FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase.cachedInitializedEvent ||
+      (!FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase.cachedInitializedEvent &&
+        stakeEvents.length) ||
       stakedBeforeInitialized;
 
-    if (!eligible) {
+    if (!eligible && !stakeEvents.length) {
+      // todo: temporario, precisa definir data de corte
       return;
     }
 

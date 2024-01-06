@@ -84,6 +84,7 @@ export class SettingsAdapter {
             badgeAddress: this.envString('BADGE_CONTRACT_ADDRESS'),
             gnosisSafeAddress: this.envString('GNOSIS_SAFE_ADDRESS'),
             dynamicSaleAddress: this.envString('DYNAMIC_SALE_CONTRACT_ADDRESS'),
+            auditPoolAddress: this.envString('AUDIT_POOL_CONTRACT_ADDRESS'),
           },
         },
         polygon: {
@@ -108,6 +109,9 @@ export class SettingsAdapter {
             gnosisSafeAddress: this.envString('POLYGON_GNOSIS_SAFE_ADDRESS'),
             dynamicSaleAddress: this.envString(
               'POLYGON_DYNAMIC_SALE_CONTRACT_ADDRESS',
+            ),
+            auditPoolAddress: this.envString(
+              'POLYGON_AUDIT_POOL_CONTRACT_ADDRESS',
             ),
           },
         },
@@ -146,6 +150,14 @@ export class SettingsAdapter {
       badge: {
         presale: {
           referenceMetadataId: 2,
+        },
+        impactfulCultivation: {
+          auditPoolEarlyValidator: {
+            referenceMetadataId: 3,
+          },
+          auditPool: {
+            referenceMetadataId: 4,
+          },
         },
       },
       cex: {

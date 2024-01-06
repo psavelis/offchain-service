@@ -1,35 +1,35 @@
 import { Module, Scope } from '@nestjs/common';
-import { VerifyPreSaleMintFactory } from '../../../../../factories/badge/verify-presale-mint.factory';
-import { SignPreSaleMintFactory } from '../../../../../factories/badge/sign-presale-mint.factory';
 import { BadgeController } from './badge.controller';
 import { VerifyMint } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { SignMint } from '../../../../../../domain/badge/interactors/sign-mint.interactor';
 import { FetchBadgeSignature } from '../../../../../../domain/badge/interactors/fetch-badge-signature.interactor';
-import { FetchBadgeEligibility } from '../../../../../../domain/badge/interactors/fetch-badge-eligibility.interactor';
-import { FetchPreSaleSignatureFactory } from '../../../../../factories/badge/fetch-presale-signature.factory';
-import { FetchPreSaleBadgeEligibilityFactory } from '../../../../../factories/badge/fetch-presale-badge-eligibility.factory';
+import { FetchAggregatedBadgeEligibility } from '../../../../../../domain/badge/interactors/fetch-aggregated-badge-eligibility.interactor';
+import { FetchAggregatedBadgeEligibilityFactory } from '../../../../../factories/badge/aggregators/fetch-aggregated-badge-eligibility.factory';
+import { VerifyAggregatedBadgeMintFactory } from '../../../../../factories/badge/aggregators/verify-aggregated-badge-mint.factory';
+import { SignAggregatedMintFactory } from '../../../../../factories/badge/aggregators/sign-aggregated-mint.factory';
+import { FetchAggregatedSignatureFactory } from '../../../../../factories/badge/aggregators/fetch-aggregated-signature.factory';
 
 @Module({
   controllers: [BadgeController],
   providers: [
     {
       provide: VerifyMint,
-      useFactory: VerifyPreSaleMintFactory.getInstance,
+      useFactory: VerifyAggregatedBadgeMintFactory.getInstance,
       scope: Scope.DEFAULT,
     },
     {
       provide: SignMint,
-      useFactory: SignPreSaleMintFactory.getInstance,
+      useFactory: SignAggregatedMintFactory.getInstance,
       scope: Scope.DEFAULT,
     },
     {
       provide: FetchBadgeSignature,
-      useFactory: FetchPreSaleSignatureFactory.getInstance,
+      useFactory: FetchAggregatedSignatureFactory.getInstance,
       scope: Scope.DEFAULT,
     },
     {
-      provide: FetchBadgeEligibility,
-      useFactory: FetchPreSaleBadgeEligibilityFactory.getInstance,
+      provide: FetchAggregatedBadgeEligibility,
+      useFactory: FetchAggregatedBadgeEligibilityFactory.getInstance,
       scope: Scope.DEFAULT,
     },
   ],

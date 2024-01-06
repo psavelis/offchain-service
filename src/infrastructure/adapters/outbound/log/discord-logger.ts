@@ -88,14 +88,14 @@ export default class DiscordLogger implements LoggablePort {
       })
       .catch(() =>
         console.error(
-          `Msg: ${error.message} @ Stack: ${
-            error.stack
-          } Params: ${JSON.stringify(params ?? {})}`,
+          `Msg: ${JSON.stringify(error.message)} @ Stack: ${JSON.stringify(
+            error.stack,
+          )} Params: ${JSON.stringify(params ?? {})}`,
         ),
       );
   }
 
   static truncate(string = '') {
-    return string.substring(0, MAX_DISCORD_MESSAGE_LENGTH);
+    return string.substring(0, MAX_DISCORD_MESSAGE_LENGTH - 512);
   }
 }

@@ -21,6 +21,8 @@ describe('LockSupplyRpcAdapter', () => {
     const provider = {
       sale: jest.fn(),
       polygonSale: jest.fn(),
+      dynamicPolygonSale: jest.fn(),
+      dynamicSale: jest.fn(),
     } as any;
 
     const adapter = LockSupplyRpcAdapter.getInstance(
@@ -30,6 +32,6 @@ describe('LockSupplyRpcAdapter', () => {
 
     await adapter.toggleNetworkContract(new Chain(NetworkType.Polygon));
 
-    expect(provider.polygonSale).toBeCalled();
+    expect(provider.dynamicPolygonSale).toBeCalled();
   });
 });

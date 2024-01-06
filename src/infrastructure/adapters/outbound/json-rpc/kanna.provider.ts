@@ -3,11 +3,13 @@ import {
   KannaPreSale,
   KannaBadges,
   KannaDynamicPriceSale,
+  KannaAuditStakePool,
 } from './protocol/contracts';
 import {
   KannaPreSale__factory,
   KannaBadges__factory,
   KannaDynamicPriceSale__factory,
+  KannaAuditStakePool__factory,
 } from './protocol/factories/contracts';
 
 import { Settings } from '../../../../domain/common/settings';
@@ -30,6 +32,9 @@ export interface IKannaProtocolProvider {
   token(): Promise<ERC20>;
   tokenPolygon(): Promise<ERC20>;
 
+  auditPool(): Promise<KannaAuditStakePool>;
+  polygonAuditPool(): Promise<KannaAuditStakePool>;
+
   getDefaultRpcProvider(): JsonRpcProvider;
 }
 
@@ -47,6 +52,8 @@ export class KannaProvider implements IKannaProtocolProvider {
   static polygonRpcProvider: JsonRpcProvider;
   static ethereumTokenInstanceAsManager: ERC20;
   static polygonTokenInstanceAsManager: ERC20;
+  static ethereumAuditPoolInstanceAsManager: KannaAuditStakePool;
+  static polygonAuditPoolInstanceAsManager: KannaAuditStakePool;
 
   private constructor(readonly settings: Settings) {}
 
@@ -146,6 +153,18 @@ export class KannaProvider implements IKannaProtocolProvider {
           polygonDynamicSaleClaimManagerWallet,
         );
 
+      KannaProvider.ethereumAuditPoolInstanceAsManager =
+        KannaAuditStakePool__factory.connect(
+          settings.blockchain.ethereum.contracts.auditPoolAddress,
+          ethereumClaimManagerWallet,
+        );
+
+      KannaProvider.polygonAuditPoolInstanceAsManager =
+        KannaAuditStakePool__factory.connect(
+          settings.blockchain.polygon.contracts.auditPoolAddress,
+          polygonClaimManagerWallet,
+        );
+
       KannaProvider.instance = new KannaProvider(settings);
     }
 
@@ -188,5 +207,13 @@ export class KannaProvider implements IKannaProtocolProvider {
 
   tokenPolygon(): Promise<ERC20> {
     return Promise.resolve(KannaProvider.polygonTokenInstanceAsManager);
+  }
+
+  auditPool(): Promise<KannaAuditStakePool> {
+    return Promise.resolve(KannaProvider.ethereumAuditPoolInstanceAsManager);
+  }
+
+  polygonAuditPool(): Promise<KannaAuditStakePool> {
+    return Promise.resolve(KannaProvider.polygonAuditPoolInstanceAsManager);
   }
 }

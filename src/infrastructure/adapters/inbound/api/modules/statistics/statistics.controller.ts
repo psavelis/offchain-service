@@ -21,7 +21,7 @@ export class StatisticsController {
   ) {}
 
   @Get('token')
-  @Throttle(10, 60)
+  @Throttle(35, 60)
   async fetchTokenomicsAction(@Req() req, @Ip() ip) {
     try {
       const res = await this.fetchTokenomics.execute();
@@ -39,7 +39,7 @@ export class StatisticsController {
   }
 
   @Get('coinmarketcap')
-  @Throttle(10, 60)
+  @Throttle(35, 60)
   async fetchCoinMarketCap(@Req() req, @Ip() ip, @Query('q') query: string) {
     try {
       const res = await this.fetchTokenomics.execute();

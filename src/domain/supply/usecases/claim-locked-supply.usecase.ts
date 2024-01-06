@@ -278,6 +278,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
             `[signing] delegate-claim failed for OrderId=${order.getId()}`,
             {
               ...entry,
+              code: undefined,
               emailAddress: hideEmailPartially(entry.emailAddress),
             },
           );

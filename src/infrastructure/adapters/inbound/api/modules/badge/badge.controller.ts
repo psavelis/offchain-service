@@ -16,30 +16,25 @@ import {
   SignMint,
   SignMintInteractor,
 } from '../../../../../../domain/badge/interactors/sign-mint.interactor';
-import { VerifyMint } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
-import { VerifyMintInteractor } from '../../../../../../domain/badge/interactors/verify-mint-request.interactor';
 import { SignMintRequestDto } from '../../../../../../domain/badge/dtos/sign-mint-request.dto';
-import { Chain } from 'src/domain/common/entities/chain.entity';
 import {
   FetchBadgeSignature,
   FetchBadgeSignatureInteractor,
 } from 'src/domain/badge/interactors/fetch-badge-signature.interactor';
 import {
-  FetchBadgeEligibility,
-  FetchBadgeEligibilityInteractor,
-} from 'src/domain/badge/interactors/fetch-badge-eligibility.interactor';
+  FetchAggregatedBadgeEligibility,
+  FetchAggregatedBadgeEligibilityInteractor,
+} from 'src/domain/badge/interactors/fetch-aggregated-badge-eligibility.interactor';
 
 @Controller('badge')
 export class BadgeController {
   constructor(
-    @Inject(VerifyMint)
-    readonly verifyPreSaleMint: VerifyMintInteractor, // TODO: será substituído pela factory, por enquanto chamando direto um Usecase Interactor específico
     @Inject(SignMint)
     readonly signPreSaleMint: SignMintInteractor,
     @Inject(FetchBadgeSignature)
     readonly fetchBadgeSignature: FetchBadgeSignatureInteractor,
-    @Inject(FetchBadgeEligibility)
-    readonly fetchBadgeEligibility: FetchBadgeEligibilityInteractor,
+    @Inject(FetchAggregatedBadgeEligibility)
+    readonly fetchAggregatedBadgeEligibility: FetchAggregatedBadgeEligibilityInteractor,
   ) {}
 
   @Get('')
@@ -57,9 +52,11 @@ export class BadgeController {
         'utf8',
       );
 
-      const badge = await this.fetchBadgeEligibility.execute(cryptoWallet);
+      const badges = await this.fetchAggregatedBadgeEligibility.executeAll(
+        cryptoWallet,
+      );
 
-      return [badge].filter((b) => b);
+      return badges;
     } catch (error) {
       console.log(
         `getBadges ${BadgeController.name}, [${ip}@${clientAgent}], ${error.message} | b64:${base64CryptoWallet}`,
@@ -74,6 +71,8 @@ export class BadgeController {
     @Query('CW') base64CryptoWallet: string,
     @Param('referenceMetadataId', new ParseIntPipe())
     referenceMetadataId: number,
+    @Param('chainId')
+    chainId: any,
     @Req()
     req,
     @Ip() ip,
@@ -88,9 +87,10 @@ export class BadgeController {
 
       const sig = await this.fetchBadgeSignature.execute(
         cryptoWallet,
+        referenceMetadataId,
         ip,
         clientAgent,
-        referenceMetadataId,
+        chainId ? parseInt(chainId) : undefined,
       );
 
       return sig || {};

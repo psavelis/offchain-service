@@ -32,12 +32,22 @@ export declare namespace KannaBadges {
     id: PromiseOrValue<BigNumberish>;
     transferable: PromiseOrValue<boolean>;
     accumulative: PromiseOrValue<boolean>;
+    creator: PromiseOrValue<string>;
+    royaltyPercent: PromiseOrValue<BigNumberish>;
   };
 
-  export type TokenStructOutput = [BigNumber, boolean, boolean] & {
-    id: BigNumber;
+  export type TokenStructOutput = [
+    number,
+    boolean,
+    boolean,
+    string,
+    BigNumber
+  ] & {
+    id: number;
     transferable: boolean;
     accumulative: boolean;
+    creator: string;
+    royaltyPercent: BigNumber;
   };
 
   export type TokenBalanceStruct = {
@@ -53,77 +63,115 @@ export declare namespace KannaBadges {
 
 export interface KannaBadgesInterface extends utils.Interface {
   functions: {
+    "CREATOR_EARNINGS_BASIS_POINT()": FunctionFragment;
     "DEFAULT_ADMIN_ROLE()": FunctionFragment;
+    "MANAGER_ROLE()": FunctionFragment;
     "MINTER_ROLE()": FunctionFragment;
+    "addManager(address)": FunctionFragment;
     "addMinter(address)": FunctionFragment;
     "balanceOf(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
     "balanceOfBatch(address[],uint256[])": FunctionFragment;
-    "batchMint(uint256,address[])": FunctionFragment;
+    "batchMint(uint16,address[])": FunctionFragment;
+    "disableBridge(uint16)": FunctionFragment;
+    "enableBridge(uint16)": FunctionFragment;
+    "exists(uint256)": FunctionFragment;
     "getRoleAdmin(bytes32)": FunctionFragment;
     "grantRole(bytes32,address)": FunctionFragment;
     "hasRole(bytes32,address)": FunctionFragment;
+    "holders(uint16)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
-    "mint(address,uint256,uint256)": FunctionFragment;
-    "mint(address,uint256)": FunctionFragment;
-    "mint(address,uint256,uint256,bytes,uint256,uint256)": FunctionFragment;
+    "isBridgeEnabled(uint16)": FunctionFragment;
+    "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)": FunctionFragment;
+    "mint(address,uint16)": FunctionFragment;
+    "mint(address,uint16,uint256)": FunctionFragment;
     "owner()": FunctionFragment;
-    "register(uint256,bool,bool)": FunctionFragment;
+    "register(address)": FunctionFragment;
+    "register(bool,bool,address,uint256)": FunctionFragment;
+    "removeManager(address)": FunctionFragment;
     "removeMinter(address)": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "renounceRole(bytes32,address)": FunctionFragment;
     "revokeRole(bytes32,address)": FunctionFragment;
+    "royaltyInfo(uint256,uint256)": FunctionFragment;
     "safeBatchTransferFrom(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "safeTransferFrom(address,address,uint256,uint256,bytes)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
     "setURI(string)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "tokenIds(uint256)": FunctionFragment;
-    "tokens(uint256)": FunctionFragment;
+    "tokens()": FunctionFragment;
+    "tokensMap(uint16)": FunctionFragment;
+    "totalSupply(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
+    "transferToChain(uint16,uint16,uint256)": FunctionFragment;
     "uri(uint256)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "CREATOR_EARNINGS_BASIS_POINT"
       | "DEFAULT_ADMIN_ROLE"
+      | "MANAGER_ROLE"
       | "MINTER_ROLE"
+      | "addManager"
       | "addMinter"
       | "balanceOf(address,uint256)"
       | "balanceOf(address)"
       | "balanceOfBatch"
       | "batchMint"
+      | "disableBridge"
+      | "enableBridge"
+      | "exists"
       | "getRoleAdmin"
       | "grantRole"
       | "hasRole"
+      | "holders"
       | "isApprovedForAll"
-      | "mint(address,uint256,uint256)"
-      | "mint(address,uint256)"
-      | "mint(address,uint256,uint256,bytes,uint256,uint256)"
+      | "isBridgeEnabled"
+      | "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)"
+      | "mint(address,uint16)"
+      | "mint(address,uint16,uint256)"
       | "owner"
-      | "register"
+      | "register(address)"
+      | "register(bool,bool,address,uint256)"
+      | "removeManager"
       | "removeMinter"
       | "renounceOwnership"
       | "renounceRole"
       | "revokeRole"
+      | "royaltyInfo"
       | "safeBatchTransferFrom"
       | "safeTransferFrom"
       | "setApprovalForAll"
       | "setURI"
       | "supportsInterface"
-      | "tokenIds"
       | "tokens"
+      | "tokensMap"
+      | "totalSupply"
       | "transferOwnership"
+      | "transferToChain"
       | "uri"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "CREATOR_EARNINGS_BASIS_POINT",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "DEFAULT_ADMIN_ROLE",
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "MANAGER_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "MINTER_ROLE",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "addManager",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "addMinter",
@@ -146,6 +194,18 @@ export interface KannaBadgesInterface extends utils.Interface {
     values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>[]]
   ): string;
   encodeFunctionData(
+    functionFragment: "disableBridge",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "enableBridge",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "exists",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getRoleAdmin",
     values: [PromiseOrValue<BytesLike>]
   ): string;
@@ -158,40 +218,58 @@ export interface KannaBadgesInterface extends utils.Interface {
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "holders",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [PromiseOrValue<string>, PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "mint(address,uint256,uint256)",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    functionFragment: "isBridgeEnabled",
+    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
-    functionFragment: "mint(address,uint256)",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "mint(address,uint256,uint256,bytes,uint256,uint256)",
+    functionFragment: "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)",
     values: [
       PromiseOrValue<string>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mint(address,uint16)",
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "mint(address,uint16,uint256)",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
       PromiseOrValue<BigNumberish>
     ]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "register",
+    functionFragment: "register(address)",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "register(bool,bool,address,uint256)",
     values: [
-      PromiseOrValue<BigNumberish>,
       PromiseOrValue<boolean>,
-      PromiseOrValue<boolean>
+      PromiseOrValue<boolean>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeManager",
+    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
     functionFragment: "removeMinter",
@@ -208,6 +286,10 @@ export interface KannaBadgesInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "revokeRole",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "royaltyInfo",
+    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "safeBatchTransferFrom",
@@ -241,12 +323,13 @@ export interface KannaBadgesInterface extends utils.Interface {
     functionFragment: "supportsInterface",
     values: [PromiseOrValue<BytesLike>]
   ): string;
+  encodeFunctionData(functionFragment: "tokens", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "tokenIds",
+    functionFragment: "tokensMap",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
-    functionFragment: "tokens",
+    functionFragment: "totalSupply",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -254,18 +337,35 @@ export interface KannaBadgesInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
+    functionFragment: "transferToChain",
+    values: [
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>
+    ]
+  ): string;
+  encodeFunctionData(
     functionFragment: "uri",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
 
   decodeFunctionResult(
+    functionFragment: "CREATOR_EARNINGS_BASIS_POINT",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "DEFAULT_ADMIN_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MANAGER_ROLE",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "MINTER_ROLE",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "addManager", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "addMinter", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "balanceOf(address,uint256)",
@@ -281,29 +381,54 @@ export interface KannaBadgesInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "batchMint", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "disableBridge",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "enableBridge",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "exists", data: BytesLike): Result;
+  decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "holders", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "mint(address,uint256,uint256)",
+    functionFragment: "isBridgeEnabled",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "mint(address,uint256)",
+    functionFragment: "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "mint(address,uint256,uint256,bytes,uint256,uint256)",
+    functionFragment: "mint(address,uint16)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "mint(address,uint16,uint256)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "register", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "register(address)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "register(bool,bool,address,uint256)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeManager",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "removeMinter",
     data: BytesLike
@@ -317,6 +442,10 @@ export interface KannaBadgesInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "revokeRole", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "royaltyInfo",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "safeBatchTransferFrom",
     data: BytesLike
@@ -334,28 +463,38 @@ export interface KannaBadgesInterface extends utils.Interface {
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "tokenIds", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "tokens", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "tokensMap", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "totalSupply",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferToChain",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "uri", data: BytesLike): Result;
 
   events: {
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "Mint(address,uint256,uint256,uint256)": EventFragment;
+    "BridgeTransfer(address,uint16,uint256,uint16)": EventFragment;
+    "Mint(address,uint16,uint256,uint16)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "RoleAdminChanged(bytes32,bytes32,bytes32)": EventFragment;
     "RoleGranted(bytes32,address,address)": EventFragment;
     "RoleRevoked(bytes32,address,address)": EventFragment;
-    "TokenRegistered(uint256,bool,bool)": EventFragment;
+    "TokenRegistered(uint16,bool,bool,address,uint256)": EventFragment;
     "TransferBatch(address,address,address,uint256[],uint256[])": EventFragment;
     "TransferSingle(address,address,address,uint256,uint256)": EventFragment;
     "URI(string,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "ApprovalForAll"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "BridgeTransfer"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "RoleAdminChanged"): EventFragment;
@@ -379,14 +518,27 @@ export type ApprovalForAllEvent = TypedEvent<
 
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
 
+export interface BridgeTransferEventObject {
+  account: string;
+  id: number;
+  amount: BigNumber;
+  chainId: number;
+}
+export type BridgeTransferEvent = TypedEvent<
+  [string, number, BigNumber, number],
+  BridgeTransferEventObject
+>;
+
+export type BridgeTransferEventFilter = TypedEventFilter<BridgeTransferEvent>;
+
 export interface MintEventObject {
   to: string;
-  id: BigNumber;
+  id: number;
   amount: BigNumber;
-  nonce: BigNumber;
+  nonce: number;
 }
 export type MintEvent = TypedEvent<
-  [string, BigNumber, BigNumber, BigNumber],
+  [string, number, BigNumber, number],
   MintEventObject
 >;
 
@@ -442,12 +594,14 @@ export type RoleRevokedEvent = TypedEvent<
 export type RoleRevokedEventFilter = TypedEventFilter<RoleRevokedEvent>;
 
 export interface TokenRegisteredEventObject {
-  id: BigNumber;
+  id: number;
   transferable: boolean;
   accumulative: boolean;
+  creator: string;
+  royaltyPercent: BigNumber;
 }
 export type TokenRegisteredEvent = TypedEvent<
-  [BigNumber, boolean, boolean],
+  [number, boolean, boolean, string, BigNumber],
   TokenRegisteredEventObject
 >;
 
@@ -516,9 +670,20 @@ export interface KannaBadges extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    CREATOR_EARNINGS_BASIS_POINT(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<[string]>;
 
+    MANAGER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
     MINTER_ROLE(overrides?: CallOverrides): Promise<[string]>;
+
+    addManager(
+      newManager: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
 
     addMinter(
       newMinter: PromiseOrValue<string>,
@@ -548,6 +713,21 @@ export interface KannaBadges extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    disableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    enableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    exists(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -565,41 +745,63 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
+    holders(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    "mint(address,uint256,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    isBridgeEnabled(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
 
-    "mint(address,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "mint(address,uint256,uint256,bytes,uint256,uint256)"(
+    "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)"(
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
       amount: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
-      nonce: PromiseOrValue<BigNumberish>,
       incremental: PromiseOrValue<BigNumberish>,
+      dueDate: PromiseOrValue<BigNumberish>,
+      nonce: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "mint(address,uint16)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "mint(address,uint16,uint256)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
-    register(
-      id: PromiseOrValue<BigNumberish>,
+    "register(address)"(
+      checkerAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "register(bool,bool,address,uint256)"(
       transferable: PromiseOrValue<boolean>,
       accumulative: PromiseOrValue<boolean>,
+      creator: PromiseOrValue<string>,
+      royaltyPercent: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    removeManager(
+      manager: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -623,6 +825,14 @@ export interface KannaBadges extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    royaltyInfo(
+      tokenId: PromiseOrValue<BigNumberish>,
+      salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+    >;
 
     safeBatchTransferFrom(
       from: PromiseOrValue<string>,
@@ -658,24 +868,37 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    tokenIds(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     tokens(
+      overrides?: CallOverrides
+    ): Promise<[KannaBadges.TokenStructOutput[]]>;
+
+    tokensMap(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, boolean, boolean] & {
-        id: BigNumber;
+      [number, boolean, boolean, string, BigNumber] & {
+        id: number;
         transferable: boolean;
         accumulative: boolean;
+        creator: string;
+        royaltyPercent: BigNumber;
       }
     >;
 
+    totalSupply(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    transferToChain(
+      id: PromiseOrValue<BigNumberish>,
+      chainId: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -685,9 +908,18 @@ export interface KannaBadges extends BaseContract {
     ): Promise<[string]>;
   };
 
+  CREATOR_EARNINGS_BASIS_POINT(overrides?: CallOverrides): Promise<BigNumber>;
+
   DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+  MANAGER_ROLE(overrides?: CallOverrides): Promise<string>;
+
   MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+  addManager(
+    newManager: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   addMinter(
     newMinter: PromiseOrValue<string>,
@@ -717,6 +949,21 @@ export interface KannaBadges extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  disableBridge(
+    chainId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  enableBridge(
+    chainId: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  exists(
+    id: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   getRoleAdmin(
     role: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
@@ -734,41 +981,63 @@ export interface KannaBadges extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
+  holders(
+    id: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   isApprovedForAll(
     account: PromiseOrValue<string>,
     operator: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  "mint(address,uint256,uint256)"(
-    to: PromiseOrValue<string>,
-    id: PromiseOrValue<BigNumberish>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  isBridgeEnabled(
+    chainId: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
-  "mint(address,uint256)"(
-    to: PromiseOrValue<string>,
-    id: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "mint(address,uint256,uint256,bytes,uint256,uint256)"(
+  "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)"(
     to: PromiseOrValue<string>,
     id: PromiseOrValue<BigNumberish>,
     amount: PromiseOrValue<BigNumberish>,
     signature: PromiseOrValue<BytesLike>,
-    nonce: PromiseOrValue<BigNumberish>,
     incremental: PromiseOrValue<BigNumberish>,
+    dueDate: PromiseOrValue<BigNumberish>,
+    nonce: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "mint(address,uint16)"(
+    to: PromiseOrValue<string>,
+    id: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "mint(address,uint16,uint256)"(
+    to: PromiseOrValue<string>,
+    id: PromiseOrValue<BigNumberish>,
+    amount: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
-  register(
-    id: PromiseOrValue<BigNumberish>,
+  "register(address)"(
+    checkerAddress: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "register(bool,bool,address,uint256)"(
     transferable: PromiseOrValue<boolean>,
     accumulative: PromiseOrValue<boolean>,
+    creator: PromiseOrValue<string>,
+    royaltyPercent: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeManager(
+    manager: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -792,6 +1061,14 @@ export interface KannaBadges extends BaseContract {
     account: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  royaltyInfo(
+    tokenId: PromiseOrValue<BigNumberish>,
+    salePrice: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+  >;
 
   safeBatchTransferFrom(
     from: PromiseOrValue<string>,
@@ -827,24 +1104,35 @@ export interface KannaBadges extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  tokenIds(
-    arg0: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  tokens(overrides?: CallOverrides): Promise<KannaBadges.TokenStructOutput[]>;
 
-  tokens(
+  tokensMap(
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<
-    [BigNumber, boolean, boolean] & {
-      id: BigNumber;
+    [number, boolean, boolean, string, BigNumber] & {
+      id: number;
       transferable: boolean;
       accumulative: boolean;
+      creator: string;
+      royaltyPercent: BigNumber;
     }
   >;
 
+  totalSupply(
+    id: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<BigNumber>;
+
   transferOwnership(
     newOwner: PromiseOrValue<string>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  transferToChain(
+    id: PromiseOrValue<BigNumberish>,
+    chainId: PromiseOrValue<BigNumberish>,
+    amount: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -854,9 +1142,18 @@ export interface KannaBadges extends BaseContract {
   ): Promise<string>;
 
   callStatic: {
+    CREATOR_EARNINGS_BASIS_POINT(overrides?: CallOverrides): Promise<BigNumber>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<string>;
 
+    MANAGER_ROLE(overrides?: CallOverrides): Promise<string>;
+
     MINTER_ROLE(overrides?: CallOverrides): Promise<string>;
+
+    addManager(
+      newManager: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     addMinter(
       newMinter: PromiseOrValue<string>,
@@ -886,6 +1183,21 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    disableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    enableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    exists(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -903,41 +1215,63 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
+    holders(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    "mint(address,uint256,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
+    isBridgeEnabled(
+      chainId: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
 
-    "mint(address,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "mint(address,uint256,uint256,bytes,uint256,uint256)"(
+    "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)"(
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
       amount: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
-      nonce: PromiseOrValue<BigNumberish>,
       incremental: PromiseOrValue<BigNumberish>,
+      dueDate: PromiseOrValue<BigNumberish>,
+      nonce: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "mint(address,uint16)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "mint(address,uint16,uint256)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
-    register(
-      id: PromiseOrValue<BigNumberish>,
+    "register(address)"(
+      checkerAddress: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "register(bool,bool,address,uint256)"(
       transferable: PromiseOrValue<boolean>,
       accumulative: PromiseOrValue<boolean>,
+      creator: PromiseOrValue<string>,
+      royaltyPercent: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeManager(
+      manager: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -959,6 +1293,14 @@ export interface KannaBadges extends BaseContract {
       account: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    royaltyInfo(
+      tokenId: PromiseOrValue<BigNumberish>,
+      salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, BigNumber] & { receiver: string; royaltyAmount: BigNumber }
+    >;
 
     safeBatchTransferFrom(
       from: PromiseOrValue<string>,
@@ -994,24 +1336,35 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    tokenIds(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    tokens(overrides?: CallOverrides): Promise<KannaBadges.TokenStructOutput[]>;
 
-    tokens(
+    tokensMap(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<
-      [BigNumber, boolean, boolean] & {
-        id: BigNumber;
+      [number, boolean, boolean, string, BigNumber] & {
+        id: number;
         transferable: boolean;
         accumulative: boolean;
+        creator: string;
+        royaltyPercent: BigNumber;
       }
     >;
 
+    totalSupply(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    transferToChain(
+      id: PromiseOrValue<BigNumberish>,
+      chainId: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1033,7 +1386,20 @@ export interface KannaBadges extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "Mint(address,uint256,uint256,uint256)"(
+    "BridgeTransfer(address,uint16,uint256,uint16)"(
+      account?: PromiseOrValue<string> | null,
+      id?: PromiseOrValue<BigNumberish> | null,
+      amount?: null,
+      chainId?: null
+    ): BridgeTransferEventFilter;
+    BridgeTransfer(
+      account?: PromiseOrValue<string> | null,
+      id?: PromiseOrValue<BigNumberish> | null,
+      amount?: null,
+      chainId?: null
+    ): BridgeTransferEventFilter;
+
+    "Mint(address,uint16,uint256,uint16)"(
       to?: PromiseOrValue<string> | null,
       id?: PromiseOrValue<BigNumberish> | null,
       amount?: null,
@@ -1088,15 +1454,19 @@ export interface KannaBadges extends BaseContract {
       sender?: PromiseOrValue<string> | null
     ): RoleRevokedEventFilter;
 
-    "TokenRegistered(uint256,bool,bool)"(
+    "TokenRegistered(uint16,bool,bool,address,uint256)"(
       id?: PromiseOrValue<BigNumberish> | null,
       transferable?: null,
-      accumulative?: null
+      accumulative?: null,
+      creator?: null,
+      royaltyPercent?: null
     ): TokenRegisteredEventFilter;
     TokenRegistered(
       id?: PromiseOrValue<BigNumberish> | null,
       transferable?: null,
-      accumulative?: null
+      accumulative?: null,
+      creator?: null,
+      royaltyPercent?: null
     ): TokenRegisteredEventFilter;
 
     "TransferBatch(address,address,address,uint256[],uint256[])"(
@@ -1137,9 +1507,18 @@ export interface KannaBadges extends BaseContract {
   };
 
   estimateGas: {
+    CREATOR_EARNINGS_BASIS_POINT(overrides?: CallOverrides): Promise<BigNumber>;
+
     DEFAULT_ADMIN_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
 
+    MANAGER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
     MINTER_ROLE(overrides?: CallOverrides): Promise<BigNumber>;
+
+    addManager(
+      newManager: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
 
     addMinter(
       newMinter: PromiseOrValue<string>,
@@ -1169,6 +1548,21 @@ export interface KannaBadges extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    disableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    enableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    exists(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1186,41 +1580,63 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    holders(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "mint(address,uint256,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    isBridgeEnabled(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    "mint(address,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "mint(address,uint256,uint256,bytes,uint256,uint256)"(
+    "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)"(
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
       amount: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
-      nonce: PromiseOrValue<BigNumberish>,
       incremental: PromiseOrValue<BigNumberish>,
+      dueDate: PromiseOrValue<BigNumberish>,
+      nonce: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "mint(address,uint16)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "mint(address,uint16,uint256)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    register(
-      id: PromiseOrValue<BigNumberish>,
+    "register(address)"(
+      checkerAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "register(bool,bool,address,uint256)"(
       transferable: PromiseOrValue<boolean>,
       accumulative: PromiseOrValue<boolean>,
+      creator: PromiseOrValue<string>,
+      royaltyPercent: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeManager(
+      manager: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1243,6 +1659,12 @@ export interface KannaBadges extends BaseContract {
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    royaltyInfo(
+      tokenId: PromiseOrValue<BigNumberish>,
+      salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     safeBatchTransferFrom(
@@ -1279,18 +1701,27 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    tokenIds(
+    tokens(overrides?: CallOverrides): Promise<BigNumber>;
+
+    tokensMap(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    tokens(
-      arg0: PromiseOrValue<BigNumberish>,
+    totalSupply(
+      id: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    transferToChain(
+      id: PromiseOrValue<BigNumberish>,
+      chainId: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1301,11 +1732,22 @@ export interface KannaBadges extends BaseContract {
   };
 
   populateTransaction: {
+    CREATOR_EARNINGS_BASIS_POINT(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     DEFAULT_ADMIN_ROLE(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    MANAGER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     MINTER_ROLE(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    addManager(
+      newManager: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     addMinter(
       newMinter: PromiseOrValue<string>,
@@ -1335,6 +1777,21 @@ export interface KannaBadges extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
+    disableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    enableBridge(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    exists(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getRoleAdmin(
       role: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
@@ -1352,41 +1809,63 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    holders(
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     isApprovedForAll(
       account: PromiseOrValue<string>,
       operator: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "mint(address,uint256,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    isBridgeEnabled(
+      chainId: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    "mint(address,uint256)"(
-      to: PromiseOrValue<string>,
-      id: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "mint(address,uint256,uint256,bytes,uint256,uint256)"(
+    "mint(address,uint16,uint256,bytes,uint16,uint256,uint256)"(
       to: PromiseOrValue<string>,
       id: PromiseOrValue<BigNumberish>,
       amount: PromiseOrValue<BigNumberish>,
       signature: PromiseOrValue<BytesLike>,
-      nonce: PromiseOrValue<BigNumberish>,
       incremental: PromiseOrValue<BigNumberish>,
+      dueDate: PromiseOrValue<BigNumberish>,
+      nonce: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "mint(address,uint16)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "mint(address,uint16,uint256)"(
+      to: PromiseOrValue<string>,
+      id: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    register(
-      id: PromiseOrValue<BigNumberish>,
+    "register(address)"(
+      checkerAddress: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "register(bool,bool,address,uint256)"(
       transferable: PromiseOrValue<boolean>,
       accumulative: PromiseOrValue<boolean>,
+      creator: PromiseOrValue<string>,
+      royaltyPercent: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeManager(
+      manager: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1409,6 +1888,12 @@ export interface KannaBadges extends BaseContract {
       role: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    royaltyInfo(
+      tokenId: PromiseOrValue<BigNumberish>,
+      salePrice: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     safeBatchTransferFrom(
@@ -1445,18 +1930,27 @@ export interface KannaBadges extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    tokenIds(
+    tokens(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    tokensMap(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    tokens(
-      arg0: PromiseOrValue<BigNumberish>,
+    totalSupply(
+      id: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     transferOwnership(
       newOwner: PromiseOrValue<string>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferToChain(
+      id: PromiseOrValue<BigNumberish>,
+      chainId: PromiseOrValue<BigNumberish>,
+      amount: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

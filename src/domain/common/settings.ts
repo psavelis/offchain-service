@@ -55,6 +55,7 @@ export interface Settings {
         legacyPreSaleAddress: string;
         badgeAddress: string;
         dynamicSaleAddress: string;
+        auditPoolAddress: string;
       };
       network: string;
       providerApiKey: string;
@@ -72,6 +73,7 @@ export interface Settings {
         fxTokenAddress: string;
         saleAddress: string;
         dynamicSaleAddress: string;
+        auditPoolAddress: string;
       };
       network: string;
       providerApiKey: string;
@@ -91,6 +93,14 @@ export interface Settings {
   badge: {
     presale: {
       referenceMetadataId: number;
+    };
+    impactfulCultivation: {
+      auditPoolEarlyValidator: {
+        referenceMetadataId: number;
+      };
+      auditPool: {
+        referenceMetadataId: number;
+      };
     };
   };
   cex: {

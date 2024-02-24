@@ -1,23 +1,23 @@
-import { CreateOrderDto } from '../dtos/create-order.dto';
-import { Order, OrderStatus, PaymentOption } from '../entities/order.entity';
-import { CreateOrderInteractor } from '../interactors/create-order.interactor';
-import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
-import { PersistableOrderPort } from '../ports/persistable-order.port';
-import { EncryptionPort } from '../../common/ports/encryption.port';
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
+import { type EncryptionPort } from '../../common/ports/encryption.port';
+import { type CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { type CreateOrderDto } from '../dtos/create-order.dto';
+import { Order, OrderStatus, PaymentOption } from '../entities/order.entity';
+import { type CreateOrderInteractor } from '../interactors/create-order.interactor';
+import { type PersistableOrderPort } from '../ports/persistable-order.port';
 
-import {
-  CurrencyAmount,
-  CurrencyIsoCode,
-} from '../../price/value-objects/currency-amount.value-object';
-import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
-import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
-import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
-import { Settings } from '../../common/settings';
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
+import { type LoggablePort } from '../../../domain/common/ports/loggable.port';
+import { Chain } from '../../common/entities/chain.entity';
 import { LayerType } from '../../common/enums/layer-type.enum';
 import { NetworkType } from '../../common/enums/network-type.enum';
-import { Chain } from '../../common/entities/chain.entity';
+import { type Settings } from '../../common/settings';
+import { cryptoWalletRegEx, formatDecimals } from '../../common/util';
+import { type CurrencyAmount } from '../../price/value-objects/currency-amount.value-object';
+import { type BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
+import {
+  type GeneratePixPort,
+  type StaticPix,
+} from '../ports/generate-pix.port';
 
 const DEFAULT_ORDER_MINIMUM_TOTAL = Number(process.env.MINIMUM_PRICE) || 60;
 
@@ -214,9 +214,7 @@ export class CreateBrazilianPixOrderUseCase implements CreateOrderInteractor {
     }
   }
 
-  private static validateMinimumAmount(
-    amount: CurrencyAmount<CurrencyIsoCode>,
-  ) {
+  private static validateMinimumAmount(amount: CurrencyAmount) {
     const truncated = Number(
       formatDecimals(
         amount.unassignedNumber,

@@ -1,5 +1,5 @@
-import { Quote } from '../entities/quote.entity';
+import {type Quote} from '../entities/quote.entity';
 
-export interface PersistableQuotePort {
-  save(quote: Quote): Promise<Quote>;
-}
+export type PersistableQuotePort = {
+	save(quote: Quote): Promise<Quote>;
+};

@@ -1,21 +1,21 @@
-import { ExpireOrdersInteractor } from '../interactors/expire-orders.interactor';
-import { CreateOrderTransitionInteractor } from '../interactors/create-order-status-transition.interactor';
-import { FetchableOrderPort } from '../ports/fetchable-order.port';
-import { MailerPort } from '../../common/ports/mailer.port';
-import { OrderStatus } from '../entities/order.entity';
-import { Settings } from '../../common/settings';
-import { EncryptionPort } from '../../common/ports/encryption.port';
+import {type ExpireOrdersInteractor} from '../interactors/expire-orders.interactor';
+import {type CreateOrderTransitionInteractor} from '../interactors/create-order-status-transition.interactor';
+import {type FetchableOrderPort} from '../ports/fetchable-order.port';
+import {type MailerPort} from '../../common/ports/mailer.port';
+import {OrderStatus} from '../entities/order.entity';
+import {type Settings} from '../../common/settings';
+import {type EncryptionPort} from '../../common/ports/encryption.port';
 import orderExpiredTemplate from '../../order/mails/order-expired.template';
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { formatDecimals } from '../../common/util';
+import {NetworkType} from '../../common/enums/network-type.enum';
+import {formatDecimals} from '../../common/util';
 
 export class ExpireOrdersUseCase implements ExpireOrdersInteractor {
   constructor(
-    readonly settings: Settings,
-    readonly mailer: MailerPort,
-    readonly encryptionPort: EncryptionPort,
-    readonly createTransition: CreateOrderTransitionInteractor,
-    readonly fetchableOrderPort: FetchableOrderPort,
+		readonly settings: Settings,
+		readonly mailer: MailerPort,
+		readonly encryptionPort: EncryptionPort,
+		readonly createTransition: CreateOrderTransitionInteractor,
+		readonly fetchableOrderPort: FetchableOrderPort,
   ) {}
 
   async execute(): Promise<void> {
@@ -85,7 +85,7 @@ export class ExpireOrdersUseCase implements ExpireOrdersInteractor {
         },
       );
 
-      await new Promise((resolve) => setTimeout(resolve, 1300)).then(() =>
+      await new Promise((resolve) => setTimeout(resolve, 1300)).then(async () =>
         this.mailer
           .sendMail({
             to: this.settings.expiration.integromatAddress,
@@ -102,7 +102,9 @@ export class ExpireOrdersUseCase implements ExpireOrdersInteractor {
               clientAgent: order.getClientAgent(),
             }),
           })
-          .catch((e) => console.log(e)),
+          .catch((e) => {
+            console.log(e); 
+          }),
       );
     }
   }

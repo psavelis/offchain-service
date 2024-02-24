@@ -1,6 +1,6 @@
-import { Order } from '../entities/order.entity';
-import { TransitionInfo } from '../dtos/transition-info.dto';
+import {type Order} from '../entities/order.entity';
+import {type TransitionInfo} from '../dtos/transition-info.dto';
 
-export interface PersistableOrderStatusTransitionPort {
-  create(order: Order, info: TransitionInfo): Promise<void>;
-}
+export type PersistableOrderStatusTransitionPort = {
+	create(order: Order, info: TransitionInfo): Promise<void>;
+};

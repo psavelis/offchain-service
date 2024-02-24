@@ -1,5 +1,5 @@
-import { Payment } from '../entities/payment.entity';
+import {type Payment} from '../entities/payment.entity';
 
-export interface CreatePaymentInteractor {
-  execute(entity: Payment): Promise<Payment>;
-}
+export type CreatePaymentInteractor = {
+	execute(entity: Payment): Promise<Payment>;
+};

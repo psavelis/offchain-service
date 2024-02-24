@@ -1,7 +1,7 @@
-import { Order } from '../../order/entities/order.entity';
-import { OnChainUserReceipt } from './onchain-user-receipt.dto';
+import {type Order} from '../../order/entities/order.entity';
+import {type OnChainUserReceipt} from './onchain-user-receipt.dto';
 
-export interface OnchainDelegateClaimEvent {
-  userReceipt: OnChainUserReceipt;
-  order: Order;
-}
+export type OnchainDelegateClaimEvent = {
+	userReceipt: OnChainUserReceipt;
+	order: Order;
+};

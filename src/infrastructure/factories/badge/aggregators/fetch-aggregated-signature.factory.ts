@@ -1,6 +1,6 @@
-import { FetchAggregatedSignatureUseCase } from '../../../../domain/badge/usecases/fetch-aggregated-signature.usecase';
-import { VerifyAggregatedBadgeMintFactory } from './verify-aggregated-badge-mint.factory';
-import { SignAggregatedMintFactory } from './sign-aggregated-mint.factory';
+import {FetchAggregatedSignatureUseCase} from '../../../../domain/badge/usecases/fetch-aggregated-signature.usecase';
+import {VerifyAggregatedBadgeMintFactory} from './verify-aggregated-badge-mint.factory';
+import {SignAggregatedMintFactory} from './sign-aggregated-mint.factory';
 export class FetchAggregatedSignatureFactory {
   static instance: FetchAggregatedSignatureUseCase;
 

@@ -1,6 +1,6 @@
-import { OrderWithPayment } from '../../order/dtos/order-with-payment.dto';
-import { OrderWithReceipt } from '../dtos/order-with-receipt.dto';
+import {type OrderWithPayment} from '../../order/dtos/order-with-payment.dto';
+import {type OrderWithReceipt} from '../dtos/order-with-receipt.dto';
 
-export interface DispatchSupplyInteractor {
-  execute(order: OrderWithPayment): Promise<OrderWithReceipt>;
-}
+export type DispatchSupplyInteractor = {
+	execute(order: OrderWithPayment): Promise<OrderWithReceipt>;
+};

@@ -1,11 +1,11 @@
 import { LayerType } from '../../common/enums/layer-type.enum';
-import { CalculusPort } from '../../price/ports/calculus.port';
+import { type CalculusPort } from '../../price/ports/calculus.port';
 import { Balance } from '../entities/balance.entity';
 import {
   AccountGroup,
-  JournalEntry,
   JournalEntryType,
   JournalMovementType,
+  type JournalEntry,
 } from '../entities/journal-entry.entity';
 
 export type Account = string;
@@ -28,7 +28,7 @@ export class BalanceBuilder {
     }
   }
 
-  public addJournalEntry(journalEntry: JournalEntry): BalanceBuilder {
+  public addJournalEntry(journalEntry: JournalEntry): this {
     this.balances[journalEntry.account] =
       this.balances[journalEntry.account] ||
       new Balance({

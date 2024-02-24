@@ -1,5 +1,5 @@
-import { MintHistory } from '../entities/mint-history.entity';
+import {type MintHistory} from '../entities/mint-history.entity';
 
-export interface PersistableMintHistoryPort {
-  create(mintHistory: MintHistory): Promise<void>;
-}
+export type PersistableMintHistoryPort = {
+	create(mintHistory: MintHistory): Promise<void>;
+};

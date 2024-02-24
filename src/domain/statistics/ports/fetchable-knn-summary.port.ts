@@ -1,5 +1,5 @@
-import { KnnSummaryDto } from '../dtos/knn-summary.dto';
+import {type KnnSummaryDto} from '../dtos/knn-summary.dto';
 
-export interface FetchableKnnSummaryPort {
-  fetch(): Promise<KnnSummaryDto>;
-}
+export type FetchableKnnSummaryPort = {
+	fetch(): Promise<KnnSummaryDto>;
+};

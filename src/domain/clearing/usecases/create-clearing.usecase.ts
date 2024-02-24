@@ -1,33 +1,33 @@
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type Order } from '../../order/entities/order.entity';
+import { type FetchOrderBatchInteractor } from '../../order/interactors/fetch-order-batch.interactor';
 import { Clearing, ClearingStatus } from '../entities/clearing.entity';
-import { Order } from '../../order/entities/order.entity';
-import { Statement } from '../value-objects/statement.value-object';
-import { Transaction } from '../value-objects/transaction.value-object';
-import { CreateClearingInteractor } from '../interactors/create-clearing.interactor';
-import { FetchOrderBatchInteractor } from '../../order/interactors/fetch-order-batch.interactor';
-import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
-import { FetchableClearingPort } from '../ports/fetchable-clearing.port';
-import { PersistableClearingPort } from '../ports/persistable-clearing.port';
+import { type CreateClearingInteractor } from '../interactors/create-clearing.interactor';
+import { type ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
+import { type FetchableClearingPort } from '../ports/fetchable-clearing.port';
+import { type PersistableClearingPort } from '../ports/persistable-clearing.port';
+import { type Statement } from '../value-objects/statement.value-object';
+import { type Transaction } from '../value-objects/transaction.value-object';
 
 import {
-  FetchableStatementPort,
-  StatementParameter,
+  type FetchableStatementPort,
+  type StatementParameter,
 } from '../ports/fetchable-statement.port';
 
 import {
-  ConfirmationRecord,
-  ProviderPaymentId,
+  type ConfirmationRecord,
+  type ProviderPaymentId,
 } from '../dtos/confirmation-record.dto';
 
 import {
-  EndToEndId,
-  OrderDictionary,
+  type EndToEndId,
+  type OrderDictionary,
 } from '../../order/dtos/order-dictionary.dto';
 
 const MAX_CACHED_KEYS = 2000;
 
 export class CreateClearingUseCase implements CreateClearingInteractor {
-  disconnected: Date | null = null;
+  disconnected: Date | undefined = null;
   private cache: Record<ProviderPaymentId, boolean>;
 
   constructor(
@@ -79,14 +79,12 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
       );
 
       if (!this.disconnected) {
-        this.logger.warning(
+        this.logger.warn(
           '[Reconciliation] Banking NOT responding! Retrying...',
         );
 
         this.disconnected = new Date();
       }
-
-      console.error(JSON.stringify(err));
 
       if (
         err.message.includes('ETIMEDOUT') ||
@@ -200,18 +198,20 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
           await this.fetchOrderBatchInteractor.fetchMany(endIds);
 
         const processPromises: Array<Promise<void>> =
-          currentStatement.transactions.map((transaction: Transaction) => {
-            console.log(
-              `toProcess::transaction => ${JSON.stringify(transaction)}`,
-            );
+          currentStatement.transactions.map(
+            async (transaction: Transaction) => {
+              console.log(
+                `toProcess::transaction => ${JSON.stringify(transaction)}`,
+              );
 
-            return this.processStatementTransaction(
-              transaction,
-              clearing,
-              orders,
-              processedPayments,
-            );
-          });
+              return this.processStatementTransaction(
+                transaction,
+                clearing,
+                orders,
+                processedPayments,
+              );
+            },
+          );
 
         await Promise.all(processPromises); // TODO: melhoria: chunk split,?
 
@@ -263,7 +263,7 @@ export class CreateClearingUseCase implements CreateClearingInteractor {
 
     if (!order) {
       if (endToEndId) {
-        this.logger.warning(
+        this.logger.warn(
           `NotFound: Unknown endToEndId '${endToEndId}' (${value} @ ${effectiveDate})`,
           {
             hash: clearing.getHash(),

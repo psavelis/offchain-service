@@ -1,17 +1,17 @@
-import { IsoCodeType } from '../../common/enums/iso-codes.enum';
-import { Settings } from '../../common/settings';
-import { formatDecimals } from '../../common/util';
-import { KnnToCurrenciesInteractor } from '../../price/interactors/knn-to-currencies.interactor';
-import { KnnSummaryDto } from '../dtos/knn-summary.dto';
-import { LockedOrdersSummaryDto } from '../dtos/locked-orders-summary.dto';
-import { TokenomicsDto } from '../dtos/tokenomics.dto';
-import { FetchableKnnSummaryPort } from '../ports/fetchable-knn-summary.port';
-import { FetchableLockedOrdersSummaryPort } from '../ports/fetchable-locked-orders-summary.port';
-import { CurrencyAmount } from '../../price/value-objects/currency-amount.value-object';
-import { QuotationAggregate } from '../../price/value-objects/quotation-aggregate.value-object';
-import { LayerType } from '../../common/enums/layer-type.enum';
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { FetchTokenomicsInteractor } from '../interactors/fetch-tokenomics.interactor';
+import {IsoCodeType} from '../../common/enums/iso-codes.enum';
+import {type Settings} from '../../common/settings';
+import {formatDecimals} from '../../common/util';
+import {type KnnToCurrenciesInteractor} from '../../price/interactors/knn-to-currencies.interactor';
+import {type KnnSummaryDto} from '../dtos/knn-summary.dto';
+import {type LockedOrdersSummaryDto} from '../dtos/locked-orders-summary.dto';
+import {type TokenomicsDto} from '../dtos/tokenomics.dto';
+import {type FetchableKnnSummaryPort} from '../ports/fetchable-knn-summary.port';
+import {type FetchableLockedOrdersSummaryPort} from '../ports/fetchable-locked-orders-summary.port';
+import {type CurrencyAmount} from '../../price/value-objects/currency-amount.value-object';
+import {type QuotationAggregate} from '../../price/value-objects/quotation-aggregate.value-object';
+import {LayerType} from '../../common/enums/layer-type.enum';
+import {NetworkType} from '../../common/enums/network-type.enum';
+import {type FetchTokenomicsInteractor} from '../interactors/fetch-tokenomics.interactor';
 
 const DEFAULT_CACHE_TIME = 1000 * 60 * 2; // 2min
 const decimals = 8;
@@ -22,15 +22,15 @@ const totalSupply = 10_000_000;
 
 export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
   static cache: {
-    due: Date;
-    data: TokenomicsDto;
-  };
+		due: Date;
+		data: TokenomicsDto;
+	};
 
   constructor(
-    readonly settings: Settings,
-    readonly fetchKnnSummaryPort: FetchableKnnSummaryPort,
-    readonly fetchLockedOrdersSumaryPort: FetchableLockedOrdersSummaryPort,
-    readonly knnToCurrenciesInteractor: KnnToCurrenciesInteractor,
+		readonly settings: Settings,
+		readonly fetchKnnSummaryPort: FetchableKnnSummaryPort,
+		readonly fetchLockedOrdersSumaryPort: FetchableLockedOrdersSummaryPort,
+		readonly knnToCurrenciesInteractor: KnnToCurrenciesInteractor,
   ) {}
 
   async execute(): Promise<TokenomicsDto> {
@@ -85,17 +85,17 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
   }
 
   private getContracts(): Record<
-    string,
-    {
-      token: string;
-      treasury: string;
-      sale: string;
-      presale?: string | undefined;
-      yieldPool?: string | undefined;
-      carbonPool?: string | undefined;
-      stockOptionPool?: string | undefined;
-    }
-  > {
+	string,
+	{
+		token: string;
+		treasury: string;
+		sale: string;
+		presale?: string | undefined;
+		yieldPool?: string | undefined;
+		carbonPool?: string | undefined;
+		stockOptionPool?: string | undefined;
+	}
+	> {
     const isSingleLayer =
       this.settings.blockchain.current.layer === LayerType.L1;
 
@@ -122,10 +122,10 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     };
   }
 
-  private getNetworks(): {
-    chainId: number;
-    name: string;
-  }[] {
+  private getNetworks(): Array<{
+		chainId: number;
+		name: string;
+	}> {
     const isSingleLayer =
       this.settings.blockchain.current.layer === LayerType.L1;
 
@@ -139,22 +139,22 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     const networks = isSingleLayer
       ? [current]
       : [
-          {
-            name: NetworkType[
-              isProd ? NetworkType.Ethereum : NetworkType.EthereumSepolia
-            ],
-            chainId: isProd
-              ? NetworkType.Ethereum
-              : NetworkType.EthereumSepolia,
-          },
-          current,
-        ];
+        {
+          name: NetworkType[
+            isProd ? NetworkType.Ethereum : NetworkType.EthereumSepolia
+          ],
+          chainId: isProd
+            ? NetworkType.Ethereum
+            : NetworkType.EthereumSepolia,
+        },
+        current,
+      ];
 
     return networks;
   }
 
   async getMarketCap(
-    { holders, stockOption }: KnnSummaryDto,
+    {holders, stockOption}: KnnSummaryDto,
     lockedOrdersSummary: LockedOrdersSummaryDto,
   ) {
     const aggregate = await this.knnToCurrenciesInteractor.execute(
@@ -168,7 +168,7 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     return this.parseAggregation(aggregate);
   }
 
-  async getFullyDilutedMarketCap({ totalSupply }: KnnSummaryDto) {
+  async getFullyDilutedMarketCap({totalSupply}: KnnSummaryDto) {
     const aggregate = await this.knnToCurrenciesInteractor.execute(
       this.toKNN(totalSupply),
     );
@@ -176,7 +176,7 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     return this.parseAggregation(aggregate);
   }
 
-  async getCirculatingSupplyMarketCap({ circulatingSupply }: KnnSummaryDto) {
+  async getCirculatingSupplyMarketCap({circulatingSupply}: KnnSummaryDto) {
     const aggregate = await this.knnToCurrenciesInteractor.execute(
       this.toKNN(circulatingSupply),
     );
@@ -205,7 +205,7 @@ export class FetchTokenomicsUseCase implements FetchTokenomicsInteractor {
     return this.parseAggregation(aggregate);
   }
 
-  async parseAggregation({ USD, BRL, MATIC, ETH }: QuotationAggregate) {
+  async parseAggregation({USD, BRL, MATIC, ETH}: QuotationAggregate) {
     return {
       ETH: this.toNumber(ETH.unassignedNumber, ETH.decimals),
       USD: this.toNumber(USD.unassignedNumber, USD.decimals),

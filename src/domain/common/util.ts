@@ -1,4 +1,4 @@
-export type Nullable<T> = T | undefined | null;
+export type Nullable<T> = T | undefined;
 
 export const formatDecimals = (
   value: string,
@@ -41,14 +41,14 @@ export const unsafeMul = function (a, b) {
 export const hideEmailPartially = (emailAddress: string) => {
   return emailAddress.replace(/(.{3})(.*)(?=@)/, (gp1, gp2, gp3) => {
     for (let i = 0; i < gp3.length; i++) {
-      gp2 += '*';
+      gp2 += '****';
     }
 
     return gp2;
   });
 };
 
-export const cryptoWalletRegEx: RegExp = /^0x[a-fA-F0-9]{40}$/g;
-export const onlyDigits: RegExp = /^\d+$/;
-export const onlyCurrencies: RegExp = /^[A-Z]{3,5}$/;
+export const cryptoWalletRegEx = /^0x[a-fA-F0-9]{40}$/g;
+export const onlyDigits = /^\d+$/;
+export const onlyCurrencies = /^[A-Z]{3,5}$/;
 export const validateDecimals = (n: number) => n >= 0 && n <= 18;

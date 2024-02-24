@@ -1,6 +1,6 @@
-import { CurrencyAmount } from './currency-amount.value-object';
+import {type CurrencyAmount} from './currency-amount.value-object';
 
-export interface UsdQuoteBasis {
-  BRL: CurrencyAmount;
-  expiration: Date;
-}
+export type UsdQuoteBasis = {
+	BRL: CurrencyAmount;
+	expiration: Date;
+};

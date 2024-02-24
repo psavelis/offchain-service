@@ -1,24 +1,24 @@
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import { Settings } from '../../../domain/common/settings';
-import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import Logger from '../../adapters/outbound/log/logger';
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
-import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
-import { CreateOrderStatusTransitionUseCase } from '../../../domain/order/usecases/create-order-status-transition.usecase';
-import { PersistableOrderStatusTransitionDbAdapter } from '../../adapters/outbound/database/order/persistable-order-status-transition.adapter';
+import {type LoggablePort} from '../../../domain/common/ports/loggable.port';
+import {type Settings} from '../../../domain/common/settings';
+import {KnexPostgresDatabase} from '../../repositories/offchain/knex-postgres.db';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
+import Logger from '../../adapters/logging/logger';
+import {KannaProvider} from '../../repositories/onchain/kanna.provider';
+import {FetchableOrderDbAdapter} from '../../repositories/offchain/order/fetchable-order.adapter';
+import {CreateOrderStatusTransitionUseCase} from '../../../domain/order/usecases/create-order-status-transition.usecase';
+import {PersistableOrderStatusTransitionDbAdapter} from '../../repositories/offchain/order/persistable-order-status-transition.adapter';
 
-import { ImportReconciledClaimsInteractor } from '../../../domain/transaction/interactors/import-reconciled-claims.interactor';
-import { ImportReconciledClaimsUseCase } from '../../../domain/transaction/usecases/import-reconciled-claims.usecase';
-import { ReconcileDelegateSignatureClaimUseCase } from '../../../domain/supply/usecases/reconcile-delegate-signature-claim.usecase';
-import { FetchableDelegateClaimEventPort } from '../../../domain/supply/ports/fetchable-delegate-claim-event.port';
-import { FetchableDelegateClaimEventRpcAdapter } from '../../adapters/outbound/json-rpc/supply/fetchable-delegate-claim-event.adapter';
-import { FetchableOrderPort } from '../../../domain/order/ports/fetchable-order.port';
+import {type ImportReconciledClaimsInteractor} from '../../../domain/transaction/interactors/import-reconciled-claims.interactor';
+import {ImportReconciledClaimsUseCase} from '../../../domain/transaction/usecases/import-reconciled-claims.usecase';
+import {ReconcileDelegateSignatureClaimUseCase} from '../../../domain/supply/usecases/reconcile-delegate-signature-claim.usecase';
+import {type FetchableDelegateClaimEventPort} from '../../../domain/supply/ports/fetchable-delegate-claim-event.port';
+import {FetchableDelegateClaimEventRpcAdapter} from '../../repositories/onchain/supply/fetchable-delegate-claim-event.adapter';
+import {type FetchableOrderPort} from '../../../domain/order/ports/fetchable-order.port';
 
-import { PersistableClaimReceiptDbAdapter } from '../../adapters/outbound/database/transaction/persistable-claim-receipt.adapter';
+import {PersistableClaimReceiptDbAdapter} from '../../repositories/offchain/transaction/persistable-claim-receipt.adapter';
 
 const disabled = {
-  execute: () => Promise.resolve(),
+  execute: async () => Promise.resolve(),
 };
 
 export class ImportReconciledClaimsFactory {

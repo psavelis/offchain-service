@@ -1,24 +1,24 @@
 import {
-  CurrencyAmount,
-  CurrencyIsoCode,
+  type CurrencyAmount,
+  type CurrencyIsoCode,
 } from '../../price/value-objects/currency-amount.value-object';
-import { Entity, Props } from '../../common/entity';
-import { Convert } from '../../common/uuid';
-import { NetworkType } from '../../common/enums/network-type.enum';
+import {Entity, type Props} from '../../common/entity';
+import {Convert} from '../../common/uuid';
+import {type NetworkType} from '../../common/enums/network-type.enum';
 
 export enum PaymentOption {
-  BrazilianPix = 1,
+	BrazilianPix = 1,
 }
 
 export enum OrderStatus {
-  Requested = 1,
-  Confirmed = 2,
-  Locked = 3,
-  Challenged = 4,
-  Owned = 5,
-  Claimed = 6,
-  Expired = 7,
-  Canceled = 8,
+	Requested = 1,
+	Confirmed = 2,
+	Locked = 3,
+	Challenged = 4,
+	Owned = 5,
+	Claimed = 6,
+	Expired = 7,
+	Canceled = 8,
 }
 
 export type Email = 'EA';
@@ -41,26 +41,26 @@ const statusDictionary: Record<OrderStatus, string> = {
   [OrderStatus.Canceled]: 'Cancelado',
 };
 
-export interface OrderProps extends Props {
-  paymentOption: PaymentOption;
-  isoCode: CurrencyIsoCode;
-  total: number;
-  totalGas: number;
-  totalNet: number;
-  totalKnn: number;
-  amountOfTokens: CurrencyAmount;
-  userIdentifier: string;
-  identifierType: UserIdentifier;
-  desiredChainId: NetworkType;
+export type OrderProps = {
+	paymentOption: PaymentOption;
+	isoCode: CurrencyIsoCode;
+	total: number;
+	totalGas: number;
+	totalNet: number;
+	totalKnn: number;
+	amountOfTokens: CurrencyAmount;
+	userIdentifier: string;
+	identifierType: UserIdentifier;
+	desiredChainId: NetworkType;
 
-  parentId?: string;
-  clientIp?: string;
-  clientAgent?: string;
+	parentId?: string;
+	clientIp?: string;
+	clientAgent?: string;
 
-  endToEndId?: string;
-  status?: OrderStatus;
-  expiresAt?: Date;
-}
+	endToEndId?: string;
+	status?: OrderStatus;
+	expiresAt?: Date;
+} & Props;
 
 export class Order extends Entity<OrderProps> {
   private paymentCount?: number;
@@ -124,7 +124,7 @@ export class Order extends Entity<OrderProps> {
     this.props.userIdentifier = userIdentifier;
   }
 
-  public setPaymentCount(entries: number = 1) {
+  public setPaymentCount(entries = 1) {
     this.paymentCount = (this.paymentCount || 0) + entries;
   }
 

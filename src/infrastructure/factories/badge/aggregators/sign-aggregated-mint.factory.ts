@@ -1,15 +1,15 @@
-import { Settings } from '../../../../domain/common/settings';
+import {type Settings} from '../../../../domain/common/settings';
 
-import { SettingsAdapter } from '../../../adapters/outbound/environment/settings.adapter';
-import { KnexPostgresDatabase } from '../../../adapters/outbound/database/knex-postgres.db';
+import {SettingsAdapter} from '../../../adapters//config/settings.adapter';
+import {KnexPostgresDatabase} from '../../../repositories/offchain/knex-postgres.db';
 
-import { PersistableMintHistoryDbAdapter } from '../../../adapters/outbound/database/badge/persistable-mint-history.adapter';
-import { ECDSASignatureAdapter } from '../../../adapters/outbound/encryption/ecdsa/ecdsa-signature.adapter';
-import { SignaturePort } from '../../../../domain/common/ports/signature.port';
+import {PersistableMintHistoryDbAdapter} from '../../../repositories/offchain/badge/persistable-mint-history.adapter';
+import {ECDSASignatureAdapter} from '../../../adapters//crypto/ecdsa/ecdsa-signature.adapter';
+import {type SignaturePort} from '../../../../domain/common/ports/signature.port';
 
-import { SignAggregatedMintUseCase } from '../../../../domain/badge/usecases/sign-aggregated-mint.usecase';
+import {SignAggregatedMintUseCase} from '../../../../domain/badge/usecases/sign-aggregated-mint.usecase';
 
-import { VerifyAggregatedBadgeMintFactory } from './verify-aggregated-badge-mint.factory';
+import {VerifyAggregatedBadgeMintFactory} from './verify-aggregated-badge-mint.factory';
 
 export class SignAggregatedMintFactory {
   static instance: SignAggregatedMintUseCase;

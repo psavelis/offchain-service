@@ -1,22 +1,21 @@
-import { Settings } from '../../../common/settings';
-import { FetchBadgeEligibilityResponseDto } from '../../dtos/fetch-badge-eligibility-response.dto';
+import { type Settings } from '../../../common/settings';
 import { cryptoWalletRegEx } from '../../../common/util';
-import { FetchableBadgeEventPort } from '../../ports/fetchable-badge-event.port';
+import { AuditPoolEventType } from '../../../upstream-domains/impactful-cultivation/enums/audit-pool-event.enum';
 import { BadgeEventType } from '../../dtos/badge-event.dto';
-import { FetchableAuditPoolEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-event.port';
-import {
-  AuditPoolEvent,
-  AuditPoolEventType,
-} from '../../dtos/impactful-cultivation/auditpool-event.dto';
-import { FetchableAuditPoolStakesPort } from '../../ports/impactful-cultivation/fetchable-auditpool-stakes.port';
+import { type FetchBadgeEligibilityResponseDto } from '../../dtos/fetch-badge-eligibility-response.dto';
+import { type FetchableBadgeEventPort } from '../../ports/fetchable-badge-event.port';
+import { type FetchableAuditPoolRemoteEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-remote-event.port';
+import { type FetchableAuditPoolStakesPort } from '../../ports/impactful-cultivation/fetchable-auditpool-stakes.port';
+
+import { type AuditPoolRemoteEventDto } from '../../../upstream-domains/impactful-cultivation/dtos/audit-pool-remote-event.dto';
 
 export class FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase {
   static cachedAlreadyMinted: Record<string, boolean> = {};
-  static cachedInitializedEvent: AuditPoolEvent | undefined;
+  static cachedInitializedEvent: AuditPoolRemoteEventDto | undefined;
 
   constructor(
     readonly settings: Settings,
-    readonly fetchableAuditPoolEventPort: FetchableAuditPoolEventPort,
+    readonly fetchableAuditPoolEventPort: FetchableAuditPoolRemoteEventPort,
     readonly fetchableAuditPoolStakesPort: FetchableAuditPoolStakesPort,
     readonly fetchableBadgeEventPort: FetchableBadgeEventPort,
   ) {}
@@ -64,7 +63,7 @@ export class FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase {
       ),
     ]);
 
-    if (Boolean(badgeEvents.length)) {
+    if (badgeEvents.length) {
       FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase.cachedAlreadyMinted[
         cryptoWallet
       ] = true;
@@ -73,7 +72,7 @@ export class FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase {
     }
 
     const stakedBeforeInitialized = stakeEvents.some(
-      (event: AuditPoolEvent) =>
+      (event: AuditPoolRemoteEventDto) =>
         event.blockTimestamp &&
         FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase
           .cachedInitializedEvent?.blockTimestamp &&
@@ -89,6 +88,7 @@ export class FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase {
 
     if (!eligible && !stakeEvents.length) {
       // todo: temporario, precisa definir data de corte
+      // TODO: DEPRECAR
       return;
     }
 

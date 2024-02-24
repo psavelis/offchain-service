@@ -1,3 +1,3 @@
-export interface FetchableSupplyPort {
-  fetch(): Promise<string>;
-}
+export type FetchableSupplyPort = {
+	fetch(): Promise<string>;
+};

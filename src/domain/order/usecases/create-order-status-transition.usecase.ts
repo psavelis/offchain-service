@@ -1,16 +1,15 @@
-import { Order } from '../entities/order.entity';
-import { PersistableOrderStatusTransitionPort } from '../ports/persistable-order-status-transition.port';
-import { CreateOrderTransitionInteractor } from '../interactors/create-order-status-transition.interactor';
-import { TransitionInfo } from '../dtos/transition-info.dto';
+import {type Order} from '../entities/order.entity';
+import {type PersistableOrderStatusTransitionPort} from '../ports/persistable-order-status-transition.port';
+import {type CreateOrderTransitionInteractor} from '../interactors/create-order-status-transition.interactor';
+import {type TransitionInfo} from '../dtos/transition-info.dto';
 
 export class CreateOrderStatusTransitionUseCase
-  implements CreateOrderTransitionInteractor
-{
+implements CreateOrderTransitionInteractor {
   constructor(
-    readonly persistableOrderStatusTransitionPort: PersistableOrderStatusTransitionPort,
+		readonly persistableOrderStatusTransitionPort: PersistableOrderStatusTransitionPort,
   ) {}
 
-  execute(order: Order, info: TransitionInfo): Promise<void> {
+  async execute(order: Order, info: TransitionInfo): Promise<void> {
     return this.persistableOrderStatusTransitionPort.create(order, info);
   }
 }

@@ -1,13 +1,13 @@
-import { OnchainDelegateClaimEvent } from '../../supply/dtos/onchain-delegate-claim-event.dto';
-import { ReconcileDelegateSignatureClaimInteractor } from '../../supply/interactors/reconcile-delegate-signature-claim.interactor';
-import { ImportReconciledClaimsInteractor } from '../interactors/import-reconciled-claims.interactor';
-import { CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
-import { TransitionInfo } from '../../order/dtos/transition-info.dto';
-import { Order, OrderStatus } from '../../order/entities/order.entity';
-import { OnChainUserReceipt } from '../../supply/dtos/onchain-user-receipt.dto';
-import { LoggablePort } from '../../common/ports/loggable.port';
 import { Chain } from '../../common/entities/chain.entity';
-import { PersistableClaimReceiptPort } from '../ports/persistable-claim-receipt.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type TransitionInfo } from '../../order/dtos/transition-info.dto';
+import { OrderStatus, type Order } from '../../order/entities/order.entity';
+import { type CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
+import { type OnchainDelegateClaimEvent } from '../../supply/dtos/onchain-delegate-claim-event.dto';
+import { type OnChainUserReceipt } from '../../supply/dtos/onchain-user-receipt.dto';
+import { type ReconcileDelegateSignatureClaimInteractor } from '../../supply/interactors/reconcile-delegate-signature-claim.interactor';
+import { type ImportReconciledClaimsInteractor } from '../interactors/import-reconciled-claims.interactor';
+import { type PersistableClaimReceiptPort } from '../ports/persistable-claim-receipt.port';
 
 export class ImportReconciledClaimsUseCase
   implements ImportReconciledClaimsInteractor
@@ -41,7 +41,7 @@ export class ImportReconciledClaimsUseCase
   async importReconciledClaim(
     order: Order,
     userReceipt: OnChainUserReceipt,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     try {
       await this.persistableClaimReceiptPort.create(order, userReceipt);
 
@@ -67,7 +67,7 @@ export class ImportReconciledClaimsUseCase
   }
 
   private displayFailure(
-    err: any,
+    err: Error,
     order: Order,
     userReceipt: OnChainUserReceipt,
   ) {
@@ -91,7 +91,7 @@ export class ImportReconciledClaimsUseCase
       if (errorCount === 0) {
         this.logger.info(resultMessage);
       } else {
-        this.logger.warning(resultMessage);
+        this.logger.warn(resultMessage);
       }
 
       this.displayAnalysisMessage(resultMessage, results);

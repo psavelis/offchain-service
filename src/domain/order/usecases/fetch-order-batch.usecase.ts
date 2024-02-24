@@ -1,18 +1,17 @@
-import { OrderDictionary } from '../dtos/order-dictionary.dto';
-import { OrderWithPayment } from '../dtos/order-with-payment.dto';
-import { Order } from '../entities/order.entity';
-import { FetchOrderBatchInteractor } from '../interactors/fetch-order-batch.interactor';
-import { FetchableOrderPort } from '../ports/fetchable-order.port';
+import { type OrderDictionary } from '../dtos/order-dictionary.dto';
+import { type OrderWithPayment } from '../dtos/order-with-payment.dto';
+import { type FetchOrderBatchInteractor } from '../interactors/fetch-order-batch.interactor';
+import { type FetchableOrderPort } from '../ports/fetchable-order.port';
 
 export class FetchOrderBatchUseCase implements FetchOrderBatchInteractor {
   constructor(readonly fetchableOrderPort: FetchableOrderPort) {}
-  fetchPendingSettlement(
-    limit: number = 50,
+  async fetchPendingSettlement(
+    limit = 50,
   ): Promise<Record<number, OrderWithPayment>> {
     return this.fetchableOrderPort.fetchPendingSettlement(limit);
   }
 
-  fetchMany(endToEndIds: string[]): Promise<OrderDictionary> {
+  async fetchMany(endToEndIds: string[]): Promise<OrderDictionary> {
     if (!endToEndIds?.length) {
       return Promise.resolve({});
     }

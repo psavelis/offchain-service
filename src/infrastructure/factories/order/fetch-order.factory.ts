@@ -1,12 +1,12 @@
-import { Settings } from '../../../domain/common/settings';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
-import { GeneratePixQrCodeAdapter } from '../../adapters/outbound/qrcodes/order/generate-pix-qrcode.adapter';
-import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
-import { FetchOrderInteractor } from '../../../domain/order/interactors/fetch-order.interactor';
+import {type Settings} from '../../../domain/common/settings';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
+import {FetchableOrderDbAdapter} from '../../repositories/offchain/order/fetchable-order.adapter';
+import {PixQrCodeAdapter} from '../../adapters/identifiers/qr-codes/pix/pix-qrcode.adapter';
+import {KnexPostgresDatabase} from '../../repositories/offchain/knex-postgres.db';
+import {type FetchOrderInteractor} from '../../../domain/order/interactors/fetch-order.interactor';
 
-import { FetchBrazilianPixOrderUseCase } from '../../../domain/order/usecases/fetch-brazilian-pix-order.usecase';
-import { CreateQuoteFactory } from '../price/create-quote.factory';
+import {FetchBrazilianPixOrderUseCase} from '../../../domain/order/usecases/fetch-brazilian-pix-order.usecase';
+import {CreateQuoteFactory} from '../price/create-quote.factory';
 
 export class FetchOrderFactory {
   static instance: FetchOrderInteractor;
@@ -19,7 +19,7 @@ export class FetchOrderFactory {
         FetchableOrderDbAdapter.getInstance(knexPostgresDb);
 
       const creteQuoteInboundPort = CreateQuoteFactory.getInstance();
-      const generatePixPort = GeneratePixQrCodeAdapter.getInstance(settings);
+      const generatePixPort = PixQrCodeAdapter.getInstance(settings);
 
       this.instance = new FetchBrazilianPixOrderUseCase(
         settings,

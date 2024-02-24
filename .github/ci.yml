@@ -1,0 +1,102 @@
+name: Continuous Integration Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12.10
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }}"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --health-start-period 10s
+
+      json-rpc-mock:
+        image: open-rpc/mock-server
+        volumes:
+          - ./test/mock-servers/json-rpc-mock:/data
+        ports:
+          - '8545:8545'
+        environment:
+          OPENRPC_MOCK_DATA_DIR: /data
+
+      mock-api:
+        image: mendhak/http-https-echo
+        volumes:
+          - ./test/mock-servers/mock-api:/data
+        ports:
+          - '3002:80'
+        environment:
+          MOCK_DATA_DIR: /data
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.18'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Linter
+        run: npm run lint
+
+      - name: Run Security Checks
+        run: npm audit
+
+      - name: Run Unit Tests
+        run: npm test
+
+      - name: Run Integration Tests
+        run: npm run test:integration
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: coverage/
+
+      - name: Send Discord Notification
+        uses: appleboy/discord-action@master
+        with:
+          webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+          webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+          color: '3066993'
+          title: 'Integration Tests Completed'
+          description: 'All integration tests have passed successfully!'
+          url: 'https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+
+      - name: Add PR Comment with Test Report
+        uses: mshick/add-pr-comment@v1
+        with:
+          message: |
+            ## 📊 Test Report
+            - Linting: ✅
+            - Security Checks: ✅
+            - Unit Tests: ✅
+            - Integration Tests: ✅
+            !Coverage Report
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+
+      - name: Clean up
+        run: docker-compose down

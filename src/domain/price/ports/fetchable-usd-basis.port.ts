@@ -1,5 +1,5 @@
-import { UsdQuoteBasis } from '../value-objects/usd-quote-basis.value-object';
+import {type UsdQuoteBasis} from '../value-objects/usd-quote-basis.value-object';
 
-export interface FetchableUsdBasisPort {
-  fetch(forceReload?: boolean): Promise<UsdQuoteBasis>;
-}
+export type FetchableUsdBasisPort = {
+	fetch(forceReload?: boolean): Promise<UsdQuoteBasis>;
+};

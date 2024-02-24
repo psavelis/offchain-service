@@ -1,5 +1,5 @@
 export const ImportPurchases = Symbol('IMPORT_RECONCILED_CLAIMS');
 
-export interface ImportPurchasesInteractor {
-  execute(): Promise<void>;
-}
+export type ImportPurchasesInteractor = {
+	execute(): Promise<void>;
+};

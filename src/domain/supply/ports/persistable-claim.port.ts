@@ -1,6 +1,6 @@
-import { Claim } from '../entities/claim.entity';
+import {type Claim} from '../entities/claim.entity';
 
-export interface PersistableClaimPort {
-  create(claim: Claim): Promise<Claim>;
-  update(claim: Claim): Promise<void>;
-}
+export type PersistableClaimPort = {
+	create(claim: Claim): Promise<Claim>;
+	update(claim: Claim): Promise<void>;
+};

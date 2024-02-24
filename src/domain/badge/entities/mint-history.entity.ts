@@ -1,16 +1,16 @@
-import { Entity, Props } from '../../common/entity';
+import {Entity, type Props} from '../../common/entity';
 
-export interface MintHistoryProps extends Props {
-  referenceMetadataId: number;
-  cryptoWallet: string;
-  amount: number;
-  valid: boolean;
-  description?: string;
-  clientIp?: string;
-  clientAgent?: string;
-  dueDate?: Date;
-  chainId: number;
-}
+export type MintHistoryProps = {
+	referenceMetadataId: number;
+	cryptoWallet: string;
+	amount: number;
+	valid: boolean;
+	description?: string;
+	clientIp?: string;
+	clientAgent?: string;
+	dueDate?: Date;
+	chainId: number;
+} & Props;
 
 export class MintHistory extends Entity<MintHistoryProps> {
   constructor(props: MintHistoryProps, id?: string) {

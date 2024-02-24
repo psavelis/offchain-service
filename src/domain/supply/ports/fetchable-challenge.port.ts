@@ -1,5 +1,5 @@
-import { Challenge } from '../entities/challenge.entity';
+import {type Challenge} from '../entities/challenge.entity';
 
-export interface FetchableChallengePort {
-  fetch(verificationHash: string): Promise<Challenge | undefined>;
-}
+export type FetchableChallengePort = {
+	fetch(verificationHash: string): Promise<Challenge | undefined>;
+};

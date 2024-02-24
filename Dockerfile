@@ -17,8 +17,8 @@ RUN npm prune --production
 FROM --platform=linux/amd64 ${DOCKER_REPOSITORY}node:16.18-alpine
 
 ENV NODE_ENV=production
-ENV APP_NAME=offchain-purchase-service-dev
-ENV API_ENTRYPOINT=v1/purchases
+ENV APP_NAME=offchain-service
+ENV API_ENTRYPOINT=v2
 ENV API_PORT=3000
 ENV API_HOST=localhost
 ENV CORS_ORIGIN=*

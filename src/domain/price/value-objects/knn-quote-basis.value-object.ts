@@ -1,7 +1,7 @@
-import { CurrencyAmount } from './currency-amount.value-object';
+import {type CurrencyAmount} from './currency-amount.value-object';
 
-export interface KnnQuoteBasis {
-  USD: CurrencyAmount;
-  ETH: CurrencyAmount;
-  expiration: Date;
-}
+export type KnnQuoteBasis = {
+	USD: CurrencyAmount;
+	ETH: CurrencyAmount;
+	expiration: Date;
+};

@@ -1,26 +1,26 @@
-import { Props } from '../../common/entity';
-import { LayerType } from '../../common/enums/layer-type.enum';
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { SequenceEntity } from '../../common/sequence-entity';
-import { JournalEntryType, JournalMovementType } from './journal-entry.entity';
+import {type Props} from '../../common/entity';
+import {LayerType} from '../../common/enums/layer-type.enum';
+import {type NetworkType} from '../../common/enums/network-type.enum';
+import {SequenceEntity} from '../../common/sequence-entity';
+import {type JournalEntryType, type JournalMovementType} from './journal-entry.entity';
 
-export interface BalanceProps extends Props {
-  account: string;
-  group: string;
-  total: number;
-  [LayerType.L1]: number;
-  [LayerType.L2]: number;
-  status: JournalEntryType;
-  nonce: number;
-  joinDate: Date;
-  exitDate: Date | undefined;
-  lastJournalEntryDate: Date;
-  lastJournalMovementType: JournalMovementType;
-  lastJournalEntryAmount: number;
-  lastJournalEntryChainId: NetworkType;
-  checksum: string;
-  uint256total: string;
-}
+export type BalanceProps = {
+	account: string;
+	group: string;
+	total: number;
+	[LayerType.L1]: number;
+	[LayerType.L2]: number;
+	status: JournalEntryType;
+	nonce: number;
+	joinDate: Date;
+	exitDate: Date | undefined;
+	lastJournalEntryDate: Date;
+	lastJournalMovementType: JournalMovementType;
+	lastJournalEntryAmount: number;
+	lastJournalEntryChainId: NetworkType;
+	checksum: string;
+	uint256total: string;
+} & Props;
 
 export class Balance extends SequenceEntity<BalanceProps> {
   constructor(props: BalanceProps, id?: number) {

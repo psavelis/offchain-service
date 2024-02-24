@@ -1,4 +1,4 @@
 export enum LayerType {
-  L1,
-  L2,
+	L1,
+	L2,
 }

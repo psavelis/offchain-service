@@ -1,6 +1,6 @@
-import { Chain } from '../../common/entities/chain.entity';
-import { NonceAndExpirationDto } from '../dtos/nonce-and-expiration.dto';
+import {type Chain} from '../../common/entities/chain.entity';
+import {type NonceAndExpirationDto} from '../dtos/nonce-and-expiration.dto';
 
-export interface FetchableNonceAndExpirationPort {
-  fetch(cryptoWallet: string, chain: Chain): Promise<NonceAndExpirationDto>;
-}
+export type FetchableNonceAndExpirationPort = {
+	fetch(cryptoWallet: string, chain: Chain): Promise<NonceAndExpirationDto>;
+};

@@ -1,6 +1,6 @@
-import { TokenomicsDto } from '../dtos/tokenomics.dto';
+import {type TokenomicsDto} from '../dtos/tokenomics.dto';
 
 export const FetchTokenomics = Symbol('FETCH_TOKENOMICS');
-export interface FetchTokenomicsInteractor {
-  execute(): Promise<TokenomicsDto>;
-}
+export type FetchTokenomicsInteractor = {
+	execute(): Promise<TokenomicsDto>;
+};

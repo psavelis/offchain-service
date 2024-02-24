@@ -1,16 +1,16 @@
-import { RefreshOrderInteractor } from '../../order/interactors/refresh-order.interactor';
-import { LoggablePort } from '../../common/ports/loggable.port';
-import { Order, OrderStatus } from '../../order/entities/order.entity';
-import { CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
-import { Payment } from '../../payment/entities/payment.entity';
-import { CreatePaymentInteractor } from '../../payment/interactors/create-payment-interactor';
-import { ConfirmationRecord } from '../dtos/confirmation-record.dto';
-import { Clearing } from '../entities/clearing.entity';
-import { ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
-import { Transaction } from '../value-objects/transaction.value-object';
-import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type Settings } from '../../common/settings';
 import { formatDecimals } from '../../common/util';
-import { Settings } from '../../common/settings';
+import { OrderStatus, type Order } from '../../order/entities/order.entity';
+import { type CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
+import { type RefreshOrderInteractor } from '../../order/interactors/refresh-order.interactor';
+import { Payment } from '../../payment/entities/payment.entity';
+import { type CreatePaymentInteractor } from '../../payment/interactors/create-payment-interactor';
+import { type CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { type ConfirmationRecord } from '../dtos/confirmation-record.dto';
+import { type Clearing } from '../entities/clearing.entity';
+import { type ProcessStatementTransactionInteractor } from '../interactors/process-statement-transaction.interactor';
+import { type Transaction } from '../value-objects/transaction.value-object';
 
 const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
@@ -38,7 +38,7 @@ export class ProcessStatementTransactionUseCase
     transaction: Transaction,
     clearing: Clearing,
   ): Promise<ConfirmationRecord | undefined> {
-    let matchingOrder = order;
+    const matchingOrder = order;
 
     try {
       const {
@@ -51,7 +51,7 @@ export class ProcessStatementTransactionUseCase
 
       if (matchingOrder.hasPayments()) {
         if (matchingOrder.getPaymentProviderId() !== providerPaymentId) {
-          this.logger.warning(
+          this.logger.warn(
             `${findableKeyword} duplicated: ${
               transaction.providerPaymentId
             }: order ${matchingOrder.getId()} already paid`,
@@ -71,7 +71,7 @@ export class ProcessStatementTransactionUseCase
       const amountNotExact = expectedAmount !== amountPaid;
 
       if (amountNotExact) {
-        this.logger.warning(
+        this.logger.warn(
           `${findableKeyword} incorrect amount: ${
             transaction.providerPaymentId
           }: order ${matchingOrder.getId()} expects '${expectedAmount}' (order.total: ${matchingOrder.getTotal()}) but received '${amountPaid}'`,
@@ -81,7 +81,7 @@ export class ProcessStatementTransactionUseCase
       }
 
       if (!matchingOrder.inStatus(OrderStatus.Requested, OrderStatus.Expired)) {
-        this.logger.warning(
+        this.logger.warn(
           `${findableKeyword} invalid order status: ${
             transaction.providerPaymentId
           }: order ${matchingOrder.getId()} cannot be processed on ${matchingOrder.getStatus()}`,
@@ -100,7 +100,7 @@ export class ProcessStatementTransactionUseCase
         matchingOrder.setStatus(OrderStatus.Expired);
 
         await this.orderTransitionInteractor.execute(matchingOrder, {
-          reason: `[clearing] paid after expiration`,
+          reason: '[clearing] paid after expiration',
         });
 
         const refreshed = await this.createQuoteInteractor.execute({

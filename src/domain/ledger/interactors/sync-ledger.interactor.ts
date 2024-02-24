@@ -1,5 +1,5 @@
 export const SyncLedger = Symbol('SYNC_LEDGER');
 
-export interface SyncLedgerInteractor {
-  execute(): Promise<void>;
-}
+export type SyncLedgerInteractor = {
+	execute(): Promise<void>;
+};

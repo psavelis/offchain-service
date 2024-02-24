@@ -1,24 +1,24 @@
-import { SignerType } from '../../common/enums/signer-type.enum';
-import { CreateQuoteDto } from '../../price/dtos/create-quote.dto';
-import { Quote } from '../../price/entities/quote.entity';
-import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
-import { LayerType } from '../../common/enums/layer-type.enum';
 import {
-  SignaturePort,
-  SignaturePayload,
+  type SignaturePayload,
+  type SignaturePort,
 } from '../../../domain/common/ports/signature.port';
-import { LoggablePort } from '../../common/ports/loggable.port';
 import { Chain } from '../../common/entities/chain.entity';
-import { FetchableNonceAndExpirationPort } from '../ports/fetchable-nonce-and-expiration.port';
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
-import { CurrencyAmount } from '../../price/value-objects/currency-amount.value-object';
-import { KnnToCurrenciesInteractor } from '../../price/interactors/knn-to-currencies.interactor';
-import { NonceAndExpirationDto } from '../dtos/nonce-and-expiration.dto';
-import { DelegateOrderDto } from '../dtos/delegate-order.dto';
-import { EstimateDelegateOrderPort } from '../ports/estimate-delegate-order.port';
-import { EstimateDelegateOrderDto } from '../dtos/estimate-delegate-order.dto';
-import { QuotationAggregate } from '../../price/value-objects/quotation-aggregate.value-object';
-import { CreateQuoteWithWallet } from '../dtos/create-quote-with-wallet.dto';
+import { LayerType } from '../../common/enums/layer-type.enum';
+import { SignerType } from '../../common/enums/signer-type.enum';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type CreateQuoteDto } from '../../price/dtos/create-quote.dto';
+import { type Quote } from '../../price/entities/quote.entity';
+import { type CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { type KnnToCurrenciesInteractor } from '../../price/interactors/knn-to-currencies.interactor';
+import { type CurrencyAmount } from '../../price/value-objects/currency-amount.value-object';
+import { type QuotationAggregate } from '../../price/value-objects/quotation-aggregate.value-object';
+import { type CreateQuoteWithWallet } from '../dtos/create-quote-with-wallet.dto';
+import { type DelegateOrderDto } from '../dtos/delegate-order.dto';
+import { type EstimateDelegateOrderDto } from '../dtos/estimate-delegate-order.dto';
+import { type NonceAndExpirationDto } from '../dtos/nonce-and-expiration.dto';
+import { type EstimateDelegateOrderPort } from '../ports/estimate-delegate-order.port';
+import { type FetchableNonceAndExpirationPort } from '../ports/fetchable-nonce-and-expiration.port';
 
 const decimals = 8;
 
@@ -99,7 +99,7 @@ export class CreateSignedDelegateOrderUseCase {
 
   validateResult(
     createQuoteWithWallet: CreateQuoteWithWallet,
-    delegateOrder: DelegateOrderDto<'BRL' | 'ETH' | 'KNN' | 'USD' | 'MATIC'>,
+    delegateOrder: DelegateOrderDto,
   ): void {
     try {
       const { isoCode, unassignedNumber } = createQuoteWithWallet.amount;
@@ -143,7 +143,7 @@ export class CreateSignedDelegateOrderUseCase {
     price: QuotationAggregate,
     incrementalNonce: string,
     dueDate: string,
-    quote: Quote<'BRL' | 'ETH' | 'KNN' | 'USD' | 'MATIC'>,
+    quote: Quote,
     nonce: string,
     signature: string,
     chain: Chain,
@@ -236,7 +236,7 @@ export class CreateSignedDelegateOrderUseCase {
 
   private async createQuote(
     createQuoteWithWallet: CreateQuoteWithWallet,
-  ): Promise<Quote<'BRL' | 'ETH' | 'KNN' | 'USD' | 'MATIC'>> {
+  ): Promise<Quote> {
     try {
       return await this.createQuoteInteractor.execute(createQuoteWithWallet);
     } catch (err) {
@@ -299,11 +299,11 @@ export class CreateSignedDelegateOrderUseCase {
   private validateEntry(entry: CreateQuoteWithWallet) {
     try {
       if (!entry.cryptoWallet) {
-        throw new Error(`missing cryptoWallet`);
+        throw new Error('missing cryptoWallet');
       }
 
       if (!entry.chainId) {
-        throw new Error(`missing chainId`);
+        throw new Error('missing chainId');
       }
 
       if (
@@ -312,11 +312,11 @@ export class CreateSignedDelegateOrderUseCase {
           entry.amount.isoCode as IsoCodeType,
         )
       ) {
-        throw new Error(`invalid amount`);
+        throw new Error('invalid amount');
       }
 
       if (!entry.transactionType) {
-        throw new Error(`missing transactionType`);
+        throw new Error('missing transactionType');
       }
 
       if (entry.amount.decimals !== 18) {

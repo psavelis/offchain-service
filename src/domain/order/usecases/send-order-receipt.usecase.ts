@@ -1,13 +1,13 @@
-import { SendOrderReceiptInteractor } from '../interactors/send-order-receipt.interactor';
-import { Order, OrderStatus } from '../entities/order.entity';
-import { Settings } from '../../common/settings';
-import { FetchableOrderPort } from '../ports/fetchable-order.port';
-import { EncryptionPort } from '../../common/ports/encryption.port';
-import { MailerPort } from '../../common/ports/mailer.port';
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { Chain } from 'src/domain/common/entities/chain.entity';
+import { type EncryptionPort } from '../../common/ports/encryption.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type MailerPort } from '../../common/ports/mailer.port';
+import { type Settings } from '../../common/settings';
 import { formatDecimals } from '../../common/util';
 import purchaseConfirmationTemplate from '../../order/mails/purchase-confirmation.template';
-import { Chain } from 'src/domain/common/entities/chain.entity';
+import { Order } from '../entities/order.entity';
+import { type SendOrderReceiptInteractor } from '../interactors/send-order-receipt.interactor';
+import { type FetchableOrderPort } from '../ports/fetchable-order.port';
 
 const DEFAULT_KNN_DECIMALS = 8;
 
@@ -68,9 +68,9 @@ export class SendOrderReceiptUseCase implements SendOrderReceiptInteractor {
       },
     );
 
-    const chain = new Chain(order.getSettledChainId()!);
+    const chain = new Chain(order.getSettledChainId());
 
-    const url = chain.getBlockExplorerUrl(order.getLockTransactionHash()!);
+    const url = chain.getBlockExplorerUrl(order.getLockTransactionHash());
 
     this.mailer
       .sendMail({

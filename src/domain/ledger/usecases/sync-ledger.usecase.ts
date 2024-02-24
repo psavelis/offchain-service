@@ -1,21 +1,21 @@
-import { Settings } from '../../common/settings';
-import { Nullable } from '../../common/util';
-import { BalanceBuilder } from '../builders/balance.builder';
-import { Balance } from '../entities/balance.entity';
-import { JournalEntry } from '../entities/journal-entry.entity';
-import { SyncLedgerInteractor } from '../interactors/sync-ledger.interactor';
-import { FetchableBalancePort } from '../ports/fetchable-balance.port';
-import { FetchableJournalEntryPort } from '../ports/fetchable-journal-entry.port';
-import { FetchableJournalTransferEventPort } from '../ports/fetchable-journal-transfer-event.port';
-import { PersistableBalanceJournalPort } from '../ports/persistable-balance-journal.port';
-import { EncryptionPort } from '../../common/ports/encryption.port';
 import { LayerType } from '../../common/enums/layer-type.enum';
-import { CalculusPort } from '../../price/ports/calculus.port';
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { type EncryptionPort } from '../../common/ports/encryption.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type Settings } from '../../common/settings';
+import { type Nullable } from '../../common/util';
+import { type CalculusPort } from '../../price/ports/calculus.port';
+import { BalanceBuilder } from '../builders/balance.builder';
+import { type Balance } from '../entities/balance.entity';
+import { JournalEntry } from '../entities/journal-entry.entity';
+import { type SyncLedgerInteractor } from '../interactors/sync-ledger.interactor';
+import { type FetchableBalancePort } from '../ports/fetchable-balance.port';
+import { type FetchableJournalEntryPort } from '../ports/fetchable-journal-entry.port';
+import { type FetchableJournalTransferEventPort } from '../ports/fetchable-journal-transfer-event.port';
+import { type PersistableBalanceJournalPort } from '../ports/persistable-balance-journal.port';
 
 export class SyncLedgerUseCase implements SyncLedgerInteractor {
-  private cbcKey: string;
-  private disconnected: Date | null = null;
+  private readonly cbcKey: string;
+  private disconnected: Date | undefined = null;
 
   constructor(
     readonly settings: Settings,
@@ -51,7 +51,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       }
     } catch (err) {
       if (!this.disconnected) {
-        this.logger.warning(
+        this.logger.warn(
           '[Journal Ledger] Alchemy API failed to respond. Retrying...',
         );
 
@@ -93,7 +93,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       }
     } catch (err) {
       if (!this.disconnected) {
-        this.logger.warning(
+        this.logger.warn(
           '[Balances] Alchemy API failed to respond. Retrying...',
         );
 
@@ -158,7 +158,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
     return journalEntries;
   }
 
-  private checksum(balance: Balance): Promise<string> {
+  private async checksum(balance: Balance): Promise<string> {
     const dt = new Date();
 
     const securityTuple = `${dt.getTime()}|${balance.account}|${
@@ -185,7 +185,7 @@ export class SyncLedgerUseCase implements SyncLedgerInteractor {
       this.cbcKey,
     );
 
-    const [_, address, total, layer1total, layer2total, uint256total, nonce] =
+    const [, address, total, layer1total, layer2total, uint256total, nonce] =
       decryptedChecksum.split('|');
 
     const baseMessage = `[balance-check] invalid balance checksum for account ${balance.account}`;

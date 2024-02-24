@@ -1,5 +1,5 @@
-import { MaticQuoteBasis } from '../value-objects/matic-quote-basis.value-object';
+import { type MaticQuoteBasis } from '../value-objects/matic-quote-basis.value-object';
 
-export interface FetchableMaticBasisPort {
+export type FetchableMaticBasisPort = {
   fetch(forceReload?: boolean): Promise<MaticQuoteBasis>;
-}
+};

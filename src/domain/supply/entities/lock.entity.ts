@@ -1,14 +1,14 @@
-import { Entity, Props } from '../../common/entity';
+import {Entity, type Props} from '../../common/entity';
 
-export interface LockProps extends Props {
-  paymentId: string;
-  offchainAddress: string;
-  orderId: string;
-  uint256Amount: string;
-  createdAt: Date;
-  transactionHash?: string;
-  updatedAt?: Date;
-}
+export type LockProps = {
+	paymentId: string;
+	offchainAddress: string;
+	orderId: string;
+	uint256Amount: string;
+	createdAt: Date;
+	transactionHash?: string;
+	updatedAt?: Date;
+} & Props;
 
 export class LockEntity extends Entity<LockProps> {
   constructor(props: LockProps, id?: string) {

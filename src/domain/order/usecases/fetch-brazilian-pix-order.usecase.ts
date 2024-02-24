@@ -1,11 +1,14 @@
-import { FetchOrderInteractor } from '../interactors/fetch-order.interactor';
-import { CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
-import { GeneratePixPort, StaticPix } from '../ports/generate-pix.port';
-import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
+import { type Settings } from '../../common/settings';
+import { type CreateQuoteInteractor } from '../../price/interactors/create-quote.interactor';
+import { type BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
+import { type OrderDto } from '../dtos/order.dto';
 import { Order, OrderStatus } from '../entities/order.entity';
-import { OrderDto } from '../dtos/order.dto';
-import { Settings } from '../../common/settings';
-import { FetchableOrderPort } from '../ports/fetchable-order.port';
+import { type FetchOrderInteractor } from '../interactors/fetch-order.interactor';
+import { type FetchableOrderPort } from '../ports/fetchable-order.port';
+import {
+  type GeneratePixPort,
+  type StaticPix,
+} from '../ports/generate-pix.port';
 export class FetchBrazilianPixOrderUseCase implements FetchOrderInteractor {
   constructor(
     readonly settings: Settings,

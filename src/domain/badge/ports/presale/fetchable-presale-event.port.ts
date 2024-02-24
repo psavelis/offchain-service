@@ -1,11 +1,11 @@
 import {
-  PreSaleEvent,
-  PreSaleEventType,
-} from '../../dtos/presale/presale-event.dto';
+  type PreSaleEvent,
+  type PreSaleEventType,
+} from '../../../upstream-domains/presale/dtos/presale-event.dto';
 
-export interface FetchablePreSaleEventPort {
-  fetch(
-    cryptoWallet: string,
-    ...preSaleEventType: PreSaleEventType[]
-  ): Promise<PreSaleEvent[]>;
-}
+export type FetchablePreSaleEventPort = {
+	fetch(
+		cryptoWallet: string,
+		...preSaleEventType: PreSaleEventType[]
+	): Promise<PreSaleEvent[]>;
+};

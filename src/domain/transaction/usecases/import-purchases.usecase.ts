@@ -1,12 +1,12 @@
-import { Purchase } from '../entities/purchase.entity';
-import { ImportPurchasesInteractor } from '../interactors/import-purchases.interactor';
-import { FetchableOnChainPurchaseEventPort } from '../ports/fetchable-onchain-purchase-event.port';
-import { FetchablePurchasePort } from '../ports/fetchable-purchase.port';
-import { PersistablePurchasePort } from '../ports/persistable-purchase.port';
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type Purchase } from '../entities/purchase.entity';
+import { type ImportPurchasesInteractor } from '../interactors/import-purchases.interactor';
+import { type FetchableOnChainPurchaseEventPort } from '../ports/fetchable-onchain-purchase-event.port';
+import { type FetchablePurchasePort } from '../ports/fetchable-purchase.port';
+import { type PersistablePurchasePort } from '../ports/persistable-purchase.port';
 
 export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
-  disconnected: Date | null = null;
+  disconnected: Date | undefined = null;
 
   constructor(
     readonly logger: LoggablePort,
@@ -34,7 +34,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
       const errors: number = await this.processPurchase(purchases);
 
       if (errors) {
-        this.logger.warning(
+        this.logger.warn(
           `[import-purchases] ${purchases.length - errors}/${
             purchases.length
           } suceeded. ${errors} aborted`,
@@ -59,7 +59,7 @@ export class ImportPurchasesUseCase implements ImportPurchasesInteractor {
           timeStyle: 'long',
         }).format(new Date(this.disconnected.getTime() - 1000 * 60 * 60 * 3));
 
-        this.logger.warning(
+        this.logger.warn(
           `No response from Alchemy API... (since: ${datept} GMT-3)`,
         );
 

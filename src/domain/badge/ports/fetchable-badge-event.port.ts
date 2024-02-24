@@ -1,9 +1,9 @@
-import { BadgeEvent, BadgeEventType } from '../dtos/badge-event.dto';
+import {type BadgeEvent, type BadgeEventType} from '../dtos/badge-event.dto';
 
-export interface FetchableBadgeEventPort {
-  fetch(
-    cryptoWallet: string,
-    referenceMetadataId: number,
-    ...badgeEventType: BadgeEventType[]
-  ): Promise<BadgeEvent[]>;
-}
+export type FetchableBadgeEventPort = {
+	fetch(
+		cryptoWallet: string,
+		referenceMetadataId: number,
+		...badgeEventType: BadgeEventType[]
+	): Promise<BadgeEvent[]>;
+};

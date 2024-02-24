@@ -1,3 +1,3 @@
-export interface FetchableAuditPoolStakesPort {
-  fetchStakeOf(cryptoWallet: string): Promise<boolean>;
-}
+export type FetchableAuditPoolStakesPort = {
+	fetchStakeOf(cryptoWallet: string): Promise<boolean>;
+};

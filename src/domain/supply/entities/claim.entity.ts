@@ -1,14 +1,14 @@
-import { Entity, Props } from '../../common/entity';
+import {Entity, type Props} from '../../common/entity';
 
-export interface ClaimProps extends Props {
-  paymentId: string;
-  onchainAddress: string;
-  orderId: string;
-  uint256Amount: string;
-  createdAt: Date;
-  transactionHash?: string;
-  updatedAt?: Date;
-}
+export type ClaimProps = {
+	paymentId: string;
+	onchainAddress: string;
+	orderId: string;
+	uint256Amount: string;
+	createdAt: Date;
+	transactionHash?: string;
+	updatedAt?: Date;
+} & Props;
 
 export class Claim extends Entity<ClaimProps> {
   constructor(props: ClaimProps, id?: string) {

@@ -1,8 +1,8 @@
-import { MintHistory } from '../entities/mint-history.entity';
+import {type MintHistory} from '../entities/mint-history.entity';
 
-export interface FetchableMintHistoryPort {
-  fetchLast(
-    cryptoWallet: string,
-    referenceMetadataId: number,
-  ): Promise<MintHistory | undefined>;
-}
+export type FetchableMintHistoryPort = {
+	fetchLast(
+		cryptoWallet: string,
+		referenceMetadataId: number,
+	): Promise<MintHistory | undefined>;
+};

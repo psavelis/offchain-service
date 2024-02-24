@@ -1,7 +1,7 @@
-import { CurrencyAmount } from './currency-amount.value-object';
+import {type CurrencyAmount} from './currency-amount.value-object';
 
-export interface EthQuoteBasis {
-  BRL?: CurrencyAmount;
-  USD: CurrencyAmount;
-  expiration: Date;
-}
+export type EthQuoteBasis = {
+	BRL?: CurrencyAmount;
+	USD: CurrencyAmount;
+	expiration: Date;
+};

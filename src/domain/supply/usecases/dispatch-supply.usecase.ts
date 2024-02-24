@@ -1,38 +1,38 @@
-import { OrderWithPayment } from '../../order/dtos/order-with-payment.dto';
-import { OrderStatus } from '../../order/entities/order.entity';
-import { DispatchSupplyInteractor } from '../interactors/dispatch-supply.interactor';
-import { ClaimSupplyPort } from '../ports/claim-supply.port';
-import { OrderWithReceipt } from '../dtos/order-with-receipt.dto';
-import { ClaimSupplyDto } from '../dtos/claim-supply.dto';
-import { LockSupplyPort } from '../ports/lock-supply.port';
-import { LockSupplyDto } from '../dtos/lock-supply.dto';
-import { PersistableClaimPort } from '../ports/persistable-claim.port';
-import { Claim } from '../entities/claim.entity';
-import { LockEntity } from '../entities/lock.entity';
-import { PersistableLockPort } from '../ports/persistable-lock.port';
-import { OnChainReceipt } from '../dtos/onchain-receipt.dto';
-import { PersistableReceiptPort } from '../ports/persistable-receipt.port';
-import { Receipt } from '../entities/receipt.entity';
-import { EncryptionPort } from '../../common/ports/encryption.port';
-import { Settings } from '../../common/settings';
-import { LoggablePort } from '../../common/ports/loggable.port';
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { LayerType } from '../../common/enums/layer-type.enum';
-import { Chain } from '../../common/entities/chain.entity';
+import {type OrderWithPayment} from '../../order/dtos/order-with-payment.dto';
+import {OrderStatus} from '../../order/entities/order.entity';
+import {type DispatchSupplyInteractor} from '../interactors/dispatch-supply.interactor';
+import {type ClaimSupplyPort} from '../ports/claim-supply.port';
+import {type OrderWithReceipt} from '../dtos/order-with-receipt.dto';
+import {type ClaimSupplyDto} from '../dtos/claim-supply.dto';
+import {type LockSupplyPort} from '../ports/lock-supply.port';
+import {type LockSupplyDto} from '../dtos/lock-supply.dto';
+import {type PersistableClaimPort} from '../ports/persistable-claim.port';
+import {Claim} from '../entities/claim.entity';
+import {LockEntity} from '../entities/lock.entity';
+import {type PersistableLockPort} from '../ports/persistable-lock.port';
+import {type OnChainReceipt} from '../dtos/onchain-receipt.dto';
+import {type PersistableReceiptPort} from '../ports/persistable-receipt.port';
+import {Receipt} from '../entities/receipt.entity';
+import {type EncryptionPort} from '../../common/ports/encryption.port';
+import {type Settings} from '../../common/settings';
+import {type LoggablePort} from '../../common/ports/loggable.port';
+import {NetworkType} from '../../common/enums/network-type.enum';
+import {LayerType} from '../../common/enums/layer-type.enum';
+import {Chain} from '../../common/entities/chain.entity';
 
 const Email = 'EA';
 const CryptoWallet = 'CW';
 
 export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
   constructor(
-    readonly logger: LoggablePort,
-    readonly settings: Settings,
-    readonly claimSupplyPort: ClaimSupplyPort,
-    readonly lockSupplyPort: LockSupplyPort,
-    readonly encryptionPort: EncryptionPort,
-    readonly persistableClaimPort: PersistableClaimPort,
-    readonly persistableReceiptPort: PersistableReceiptPort,
-    readonly persistableLockPort: PersistableLockPort,
+		readonly logger: LoggablePort,
+		readonly settings: Settings,
+		readonly claimSupplyPort: ClaimSupplyPort,
+		readonly lockSupplyPort: LockSupplyPort,
+		readonly encryptionPort: EncryptionPort,
+		readonly persistableClaimPort: PersistableClaimPort,
+		readonly persistableReceiptPort: PersistableReceiptPort,
+		readonly persistableLockPort: PersistableLockPort,
   ) {}
 
   async execute({
@@ -79,7 +79,7 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
       );
 
       await this.persistableReceiptPort.create(
-        new Receipt({ ...receipt, orderId: order.getId() }),
+        new Receipt({...receipt, orderId: order.getId()}),
       );
 
       claim.setTransactionHash(receipt.transactionHash);
@@ -128,7 +128,7 @@ export class DispatchSupplyUseCase implements DispatchSupplyInteractor {
       );
 
       await this.persistableReceiptPort.create(
-        new Receipt({ ...receipt, orderId: order.getId() }),
+        new Receipt({...receipt, orderId: order.getId()}),
       );
 
       lock.setTransactionHash(receipt.transactionHash);

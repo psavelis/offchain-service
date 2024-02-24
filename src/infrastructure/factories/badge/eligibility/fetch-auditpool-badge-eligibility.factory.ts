@@ -1,9 +1,9 @@
-import { FetchAuditPoolBadgeEligibilityUseCase } from '../../../../domain/badge/usecases/impactful-cultivation/fetch-auditpool-badge-eligibility.usecase';
-import { SettingsAdapter } from '../../../adapters/outbound/environment/settings.adapter';
-import { FetchableBadgeEventJsonRpcAdapter } from '../../../adapters/outbound/json-rpc/badge/fetchable-badge-event.adapter';
-import { FetchableAuditPoolEventJsonRpcAdapter } from '../../../adapters/outbound/json-rpc/badge/impactful-cultivation/fetchable-auditpool-event.adapter';
-import { FetchableAuditPoolStakesJsonRpcAdapter } from '../../../adapters/outbound/json-rpc/badge/impactful-cultivation/fetchable-auditpool-stakes.adapter';
-import { KannaProvider } from '../../../adapters/outbound/json-rpc/kanna.provider';
+import {FetchAuditPoolBadgeEligibilityUseCase} from '../../../../domain/badge/usecases/impactful-cultivation/fetch-auditpool-badge-eligibility.usecase';
+import {SettingsAdapter} from '../../../adapters//config/settings.adapter';
+import {FetchableBadgeEventJsonRpcAdapter} from '../../../repositories/onchain/badge/fetchable-badge-event.adapter';
+import {FetchableAuditPoolEventJsonRpcAdapter} from '../../../repositories/onchain/badge/impactful-cultivation/fetchable-auditpool-event.adapter';
+import {FetchableAuditPoolStakesJsonRpcAdapter} from '../../../repositories/onchain/badge/impactful-cultivation/fetchable-auditpool-stakes.adapter';
+import {KannaProvider} from '../../../repositories/onchain/kanna.provider';
 
 export class FetchAuditPoolBadgeEligibilityFactory {
   static instance: FetchAuditPoolBadgeEligibilityUseCase;

@@ -1,4 +1,4 @@
-export interface NonceAndExpirationDto {
-  dueDate: string;
-  incrementalNonce: string;
-}
+export type NonceAndExpirationDto = {
+	dueDate: string;
+	incrementalNonce: string;
+};

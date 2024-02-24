@@ -1,7 +1,7 @@
-import { CurrencyAmount } from './currency-amount.value-object';
+import {type CurrencyAmount} from './currency-amount.value-object';
 
-export interface MaticQuoteBasis {
-  USD: CurrencyAmount;
-  ETH: CurrencyAmount;
-  expiration: Date;
-}
+export type MaticQuoteBasis = {
+	USD: CurrencyAmount;
+	ETH: CurrencyAmount;
+	expiration: Date;
+};

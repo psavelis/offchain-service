@@ -1,16 +1,16 @@
-import { Settings } from '../../../domain/common/settings';
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import { EncryptionPort } from '../../../domain/common/ports/encryption.port';
-import { MailerPort } from '../../../domain/common/ports/mailer.port';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import { FetchableOrderDbAdapter } from '../../adapters/outbound/database/order/fetchable-order.adapter';
-import { KnexPostgresDatabase } from '../../../infrastructure/adapters/outbound/database/knex-postgres.db';
-import { SendOrderReceiptInteractor } from '../../../domain/order/interactors/send-order-receipt.interactor';
-import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
-import Mailer from '../../adapters/outbound/smtp/mailer.adapter';
-import Logger from '../../adapters/outbound/log/logger';
+import {type Settings} from '../../../domain/common/settings';
+import {type LoggablePort} from '../../../domain/common/ports/loggable.port';
+import {type EncryptionPort} from '../../../domain/common/ports/encryption.port';
+import {type MailerPort} from '../../../domain/common/ports/mailer.port';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
+import {FetchableOrderDbAdapter} from '../../repositories/offchain/order/fetchable-order.adapter';
+import {KnexPostgresDatabase} from '../../repositories/offchain/knex-postgres.db';
+import {type SendOrderReceiptInteractor} from '../../../domain/order/interactors/send-order-receipt.interactor';
+import {Aes256EncryptionAdapter} from '../../adapters/crypto/aes256/aes-256-encryption.adapter';
+import Mailer from '../../adapters/mailing/mailer.adapter';
+import Logger from '../../adapters/logging/logger';
 
-import { SendOrderReceiptUseCase } from '../../../domain/order/usecases/send-order-receipt.usecase';
+import {SendOrderReceiptUseCase} from '../../../domain/order/usecases/send-order-receipt.usecase';
 
 export class SendOrderReceiptFactory {
   static instance: SendOrderReceiptInteractor;

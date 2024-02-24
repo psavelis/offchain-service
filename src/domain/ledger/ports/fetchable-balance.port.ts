@@ -1,5 +1,5 @@
-import { Balance } from '../entities/balance.entity';
+import {type Balance} from '../entities/balance.entity';
 
-export interface FetchableBalancePort {
-  fetch(account: string): Promise<Balance | undefined>;
-}
+export type FetchableBalancePort = {
+	fetch(account: string): Promise<Balance | undefined>;
+};

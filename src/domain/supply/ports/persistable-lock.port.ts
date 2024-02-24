@@ -1,6 +1,6 @@
-import { LockEntity } from '../entities/lock.entity';
+import {type LockEntity} from '../entities/lock.entity';
 
-export interface PersistableLockPort {
-  create(lock: LockEntity): Promise<LockEntity>;
-  update(lock: LockEntity): Promise<void>;
-}
+export type PersistableLockPort = {
+	create(lock: LockEntity): Promise<LockEntity>;
+	update(lock: LockEntity): Promise<void>;
+};

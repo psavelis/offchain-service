@@ -1,37 +1,40 @@
-import { CreateQuoteDto, TransactionType } from '../dtos/create-quote.dto';
-import { Quote } from '../entities/quote.entity';
-import { CreateQuoteInteractor } from '../interactors/create-quote.interactor';
-import { FetchableEthBasisPort } from '../ports/fetchable-eth-basis.port';
-import { FetchableMaticBasisPort } from '../ports/fetchable-matic-basis.port';
-import { FetchableKnnBasisPort } from '../ports/fetchable-knn-basis.port';
-import { FetchableUsdBasisPort } from '../ports/fetchable-usd-basis.port';
-import { PersistableQuotePort } from '../ports/persistable-quote.port';
-
-import { EthQuoteBasis } from '../value-objects/eth-quote-basis.value-object';
-import { KnnQuoteBasis } from '../value-objects/knn-quote-basis.value-object';
-import { UsdQuoteBasis } from '../value-objects/usd-quote-basis.value-object';
-import { MaticQuoteBasis } from '../value-objects/matic-quote-basis.value-object';
-
 import {
-  CurrencyAmount,
-  CurrencyIsoCode,
-} from '../value-objects/currency-amount.value-object';
-import { CalculusPort } from '../../price/ports/calculus.port';
-import { FetchableEthereumGasPricePort } from '../ports/fetchable-ethereum-gas-price.port';
-import { FetchablePolygonGasPricePort } from '../ports/fetchable-polygon-gas-price.port';
-import { Settings } from '../../common/settings';
+  type CreateQuoteDto,
+  type TransactionType,
+} from '../dtos/create-quote.dto';
+import { type Quote } from '../entities/quote.entity';
+import { type CreateQuoteInteractor } from '../interactors/create-quote.interactor';
+import { type FetchableEthBasisPort } from '../ports/fetchable-eth-basis.port';
+import { type FetchableKnnBasisPort } from '../ports/fetchable-knn-basis.port';
+import { type FetchableMaticBasisPort } from '../ports/fetchable-matic-basis.port';
+import { type FetchableUsdBasisPort } from '../ports/fetchable-usd-basis.port';
+import { type PersistableQuotePort } from '../ports/persistable-quote.port';
+
+import { type EthQuoteBasis } from '../value-objects/eth-quote-basis.value-object';
+import { type KnnQuoteBasis } from '../value-objects/knn-quote-basis.value-object';
+import { type MaticQuoteBasis } from '../value-objects/matic-quote-basis.value-object';
+import { type UsdQuoteBasis } from '../value-objects/usd-quote-basis.value-object';
+
+import { NetworkType } from '../..//common/enums/network-type.enum';
+import { Chain } from '../../common/entities/chain.entity';
+import { IsoCodeType } from '../../common/enums/iso-codes.enum';
+import { LayerType } from '../../common/enums/layer-type.enum';
+import { type Settings } from '../../common/settings';
 import {
-  validateDecimals,
+  formatDecimals,
   onlyCurrencies,
   onlyDigits,
-  formatDecimals,
+  validateDecimals,
 } from '../../common/util';
-import { IsoCodeType } from '../../common/enums/iso-codes.enum';
-import { Chain } from '../../common/entities/chain.entity';
-import { LayerType } from '../../common/enums/layer-type.enum';
-import { NetworkType } from '../..//common/enums/network-type.enum';
+import { type CalculusPort } from '../../price/ports/calculus.port';
+import { type FetchableEthereumGasPricePort } from '../ports/fetchable-ethereum-gas-price.port';
+import { type FetchablePolygonGasPricePort } from '../ports/fetchable-polygon-gas-price.port';
+import {
+  type CurrencyAmount,
+  type CurrencyIsoCode,
+} from '../value-objects/currency-amount.value-object';
 
-import { QuotationAggregate } from '../value-objects/quotation-aggregate.value-object';
+import { type QuotationAggregate } from '../value-objects/quotation-aggregate.value-object';
 
 const NO_PRICE_FALLBACK_AVAILABLE = 'No Price Fallback Available';
 
@@ -60,11 +63,11 @@ const DEFAULT_BRL_TRUNCATE_OPTIONS = {
   truncateDecimals: 2,
 };
 
-export interface CalculationStrategyAggregate
-  extends Record<CurrencyIsoCode, CalculationStrategy> {}
+export type CalculationStrategyAggregate = Record<string, unknown> &
+  Record<CurrencyIsoCode, CalculationStrategy>;
 
 export class CreateQuoteUseCase implements CreateQuoteInteractor {
-  private getQuotation: CalculationStrategyAggregate;
+  private readonly getQuotation: CalculationStrategyAggregate;
 
   constructor(
     readonly settings: Settings,
@@ -134,7 +137,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
   };
 
   private static validateMinimumAmount(
-    amount: CurrencyAmount<CurrencyIsoCode>,
+    amount: CurrencyAmount,
     transactionType: TransactionType,
   ) {
     if (transactionType === 'Transfer') {
@@ -186,8 +189,11 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
       amount: { isoCode: userCurrency },
     } = entry;
 
-    const entryAmount: CurrencyAmount<CurrencyIsoCode> =
-      this.prepareEntryAmount(entry, userCurrency, userEstimatedGasFee);
+    const entryAmount: CurrencyAmount = this.prepareEntryAmount(
+      entry,
+      userCurrency,
+      userEstimatedGasFee,
+    );
 
     const userQuotation: QuotationAggregate = this.getQuotation[userCurrency](
       entryAmount,
@@ -271,7 +277,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
     userCurrency: string,
     userEstimatedGasFee: QuotationAggregate,
   ) {
-    let entryAmount: CurrencyAmount<CurrencyIsoCode> = entry.amount;
+    let entryAmount: CurrencyAmount = entry.amount;
 
     if (userCurrency === IsoCodeType.BRL || userCurrency === IsoCodeType.USD) {
       const gasFee = userEstimatedGasFee[userCurrency];
@@ -304,6 +310,7 @@ export class CreateQuoteUseCase implements CreateQuoteInteractor {
         userEstimatedGasFee[userCurrency],
       );
     }
+
     return entryAmount;
   }
 

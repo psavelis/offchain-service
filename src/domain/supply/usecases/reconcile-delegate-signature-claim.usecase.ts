@@ -1,10 +1,10 @@
-import { OnChainUserReceipt } from '../dtos/onchain-user-receipt.dto';
-import { ReconcileDelegateSignatureClaimInteractor } from '../interactors/reconcile-delegate-signature-claim.interactor';
-import { FetchableDelegateClaimEventPort } from '../ports/fetchable-delegate-claim-event.port';
-import { FetchableOrderPort } from '../../order/ports/fetchable-order.port';
-import { Order, OrderStatus } from '../../order/entities/order.entity';
-import { OnchainDelegateClaimEvent } from '../dtos/onchain-delegate-claim-event.dto';
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { OrderStatus, type Order } from '../../order/entities/order.entity';
+import { type FetchableOrderPort } from '../../order/ports/fetchable-order.port';
+import { type OnchainDelegateClaimEvent } from '../dtos/onchain-delegate-claim-event.dto';
+import { type OnChainUserReceipt } from '../dtos/onchain-user-receipt.dto';
+import { type ReconcileDelegateSignatureClaimInteractor } from '../interactors/reconcile-delegate-signature-claim.interactor';
+import { type FetchableDelegateClaimEventPort } from '../ports/fetchable-delegate-claim-event.port';
 
 type PaymentSequence = number;
 type UnsettledDictionary = Record<PaymentSequence, Order>;
@@ -55,7 +55,7 @@ export class ReconcileDelegateSignatureClaimUseCase
         order.getTotalKnn() > userReceipt.amountInKnn + 0.001 ||
         order.getTotalKnn() < userReceipt.amountInKnn - 0.001
       ) {
-        this.logger.warning(
+        this.logger.warn(
           `[SECURITY][reconcile-unsettled-orders] Order ${order.getId()} (Payment #${order.getPaymentSequence()}) has a mismatched claimed amount. Expected ${order.getTotalKnn()} but got ${
             userReceipt.amountInKnn
           }`,
@@ -65,7 +65,7 @@ export class ReconcileDelegateSignatureClaimUseCase
       }
 
       if (order.getStatus() === OrderStatus.Locked) {
-        this.logger.warning(
+        this.logger.warn(
           `[SECURITY][reconcile-unsettled-orders] Order ${order.getId()} (Payment #${order.getPaymentSequence()}) was claimed without answering the challenge`,
         );
       }
@@ -80,7 +80,7 @@ export class ReconcileDelegateSignatureClaimUseCase
   }
 
   parseDictionary(unsettledOrders: Order[]): UnsettledDictionary {
-    return unsettledOrders.reduce(
+    return unsettledOrders.reduce<UnsettledDictionary>(
       (record: UnsettledDictionary, order: Order) => {
         const sequenceNumber = order.getPaymentSequence();
 
@@ -90,7 +90,7 @@ export class ReconcileDelegateSignatureClaimUseCase
 
         return record;
       },
-      {} as UnsettledDictionary,
+      {},
     );
   }
 }

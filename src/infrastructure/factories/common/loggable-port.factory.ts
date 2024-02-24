@@ -1,5 +1,5 @@
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import Logger from '../../../infrastructure/adapters/outbound/log/logger';
+import {type LoggablePort} from '../../../domain/common/ports/loggable.port';
+import Logger from '../../adapters/logging/logger';
 
 export class LoggablePortFactory {
   static instance: LoggablePort;

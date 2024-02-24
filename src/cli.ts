@@ -1,5 +1,5 @@
-import 'module-alias/register'; // TODO: ajustar aliases
-import * as cliAdapter from './infrastructure/adapters/inbound/cli';
+import 'module-alias/register';
+import * as cliAdapter from './application/cli';
 
 const setupCliAdapter = () => {
   cliAdapter.bootstrap();

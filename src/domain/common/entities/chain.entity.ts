@@ -1,6 +1,6 @@
-import { IsoCodeType } from '../enums/iso-codes.enum';
-import { LayerType } from '../enums/layer-type.enum';
-import { NetworkType } from '../enums/network-type.enum';
+import {IsoCodeType} from '../enums/iso-codes.enum';
+import {LayerType} from '../enums/layer-type.enum';
+import {NetworkType} from '../enums/network-type.enum';
 
 const networkLayer = {
   [NetworkType.Ethereum]: LayerType.L1,
@@ -38,6 +38,10 @@ export class Chain {
   constructor(readonly chainId: NetworkType) {
     if (!chainId) {
       throw new Error('ChainId not defined');
+    }
+
+    if (!Object.values(NetworkType).includes(chainId)) {
+      throw new Error(`Network '${chainId}' not supported`);
     }
 
     const environment = process.env.NODE_ENV;
@@ -79,8 +83,8 @@ export class Chain {
   }
 
   public toJSON(): string {
-    let obj = Object.assign(this);
-    let keys = Object.keys(this.constructor.prototype);
+    const obj = Object.assign(this);
+    const keys = Object.keys(this.constructor.prototype);
     obj.toJSON = undefined;
     return JSON.stringify(obj, keys);
   }

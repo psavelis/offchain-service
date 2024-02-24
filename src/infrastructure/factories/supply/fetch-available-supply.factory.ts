@@ -1,8 +1,8 @@
-import { FetchAvailableSupplyInteractor } from '../../../domain/supply/interactors/fetch-available-supply.interactor';
-import { FetchAvailableSupplyUseCase } from '../../../domain/supply/usecases/fetch-available-supply.usecase';
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
-import { FetchAvailableSupplyAdapter } from '../../adapters/outbound/json-rpc/supply/fetch-available-supply.adapter';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
+import {type FetchAvailableSupplyInteractor} from '../../../domain/supply/interactors/fetch-available-supply.interactor';
+import {FetchAvailableSupplyUseCase} from '../../../domain/supply/usecases/fetch-available-supply.usecase';
+import {KannaProvider} from '../../repositories/onchain/kanna.provider';
+import {FetchAvailableSupplyAdapter} from '../../repositories/onchain/supply/fetch-available-supply.adapter';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
 
 export class FetchAvailableSupplyFactory {
   static instance: FetchAvailableSupplyInteractor;

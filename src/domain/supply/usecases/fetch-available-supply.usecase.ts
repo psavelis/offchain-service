@@ -1,10 +1,9 @@
-import { AvailableSupplyDto } from '../dtos/available-supply.dto';
-import { FetchAvailableSupplyInteractor } from '../interactors/fetch-available-supply.interactor';
-import { FetchableSupplyPort } from '../ports/fetchable-supply.port';
+import {type AvailableSupplyDto} from '../dtos/available-supply.dto';
+import {type FetchAvailableSupplyInteractor} from '../interactors/fetch-available-supply.interactor';
+import {type FetchableSupplyPort} from '../ports/fetchable-supply.port';
 
 export class FetchAvailableSupplyUseCase
-  implements FetchAvailableSupplyInteractor
-{
+implements FetchAvailableSupplyInteractor {
   constructor(readonly fetchableSupply: FetchableSupplyPort) {}
 
   async fetch(): Promise<AvailableSupplyDto> {

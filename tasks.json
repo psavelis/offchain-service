@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "organize-imports",
+      "type": "shell",
+      "command": "tsc --project tsconfig.json && eslint 'src/**/*.ts' --fix",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

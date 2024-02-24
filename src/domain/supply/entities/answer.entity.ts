@@ -1,13 +1,13 @@
-import { SequenceEntity, Props } from '../../common/sequence-entity';
+import {SequenceEntity, type Props} from '../../common/sequence-entity';
 
-export interface AnswerProps extends Props {
-  identifierOrderId: string;
-  challengeId: number;
-  clientIp?: string;
-  clientAgent?: string;
-  verificationHash: string;
-  createdAt?: Date;
-}
+export type AnswerProps = {
+	identifierOrderId: string;
+	challengeId: number;
+	clientIp?: string;
+	clientAgent?: string;
+	verificationHash: string;
+	createdAt?: Date;
+} & Props;
 
 export class Answer extends SequenceEntity<AnswerProps> {
   constructor(props: AnswerProps, id?: number) {

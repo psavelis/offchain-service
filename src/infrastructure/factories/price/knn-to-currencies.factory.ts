@@ -1,7 +1,7 @@
-import { KnnToCurrenciesInteractor } from '../../../domain/price/interactors/knn-to-currencies.interactor';
-import { CreateQuoteUseCase } from '../../../domain/price/usecases/create-quote.usecase';
-import { KnnToCurrenciesUseCase } from '../../../domain/price/usecases/knn-to-currencies.usecase';
-import { CreateQuoteFactory } from './create-quote.factory';
+import {type KnnToCurrenciesInteractor} from '../../../domain/price/interactors/knn-to-currencies.interactor';
+import {type CreateQuoteUseCase} from '../../../domain/price/usecases/create-quote.usecase';
+import {KnnToCurrenciesUseCase} from '../../../domain/price/usecases/knn-to-currencies.usecase';
+import {CreateQuoteFactory} from './create-quote.factory';
 
 export class KnnToCurrenciesFactory {
   static instance: KnnToCurrenciesInteractor;

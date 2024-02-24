@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ethers } from 'ethers';
+import { FetchBadgeEligibilityResponseDto } from '../dtos/fetch-badge-eligibility-response.dto';
 import { FetchAggregatedBadgeEligibilityUseCase } from './fetch-aggregated-badge-eligibility.usecase';
 import { FetchAuditPoolBadgeEligibilityUseCase } from './impactful-cultivation/fetch-auditpool-badge-eligibility.usecase';
-import { FetchPreSaleBadgeEligibilityUseCase } from './presale/fetch-presale-badge-eligibility.usecase';
-import { FetchBadgeEligibilityResponseDto } from '../dtos/fetch-badge-eligibility-response.dto';
 import { FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase } from './impactful-cultivation/fetch-auditpool-early-validator-badge-eligibility.usecase';
+import { FetchPreSaleBadgeEligibilityUseCase } from './presale/fetch-presale-badge-eligibility.usecase';
 
 describe('FetchAggregatedBadgeEligibilityUseCase', () => {
   let fetchAuditPoolBadgeEligibilityUseCase: FetchAuditPoolBadgeEligibilityUseCase;

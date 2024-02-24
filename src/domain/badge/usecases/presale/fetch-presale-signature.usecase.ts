@@ -6,7 +6,7 @@ import { SignMintInteractor } from '../../interactors/sign-mint.interactor';
 import { VerifyMintInteractor } from '../../interactors/verify-mint-request.interactor';
 
 export class FetchPreSaleSignatureUseCase
-  implements FetchBadgeSignatureInteractor
+implements FetchBadgeSignatureInteractor
 {
   constructor(
     readonly signPreSaleMintInteractor: SignMintInteractor,

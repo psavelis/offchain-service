@@ -1,5 +1,5 @@
-import { Payment } from '../entities/payment.entity';
+import {type Payment} from '../entities/payment.entity';
 
-export interface PersistablePaymentPort {
-  create(entity: Payment): Promise<Payment>;
-}
+export type PersistablePaymentPort = {
+	create(entity: Payment): Promise<Payment>;
+};

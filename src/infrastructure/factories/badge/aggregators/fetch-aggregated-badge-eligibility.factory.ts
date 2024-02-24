@@ -1,8 +1,8 @@
-import { FetchAuditPoolEarlyValidatorBadgeEligibilityFactory } from '../eligibility/fetch-auditpool-early-validator-badge-eligibility.factory';
-import { FetchAggregatedBadgeEligibilityUseCase } from '../../../../domain/badge/usecases/fetch-aggregated-badge-eligibility.usecase';
-import { FetchAuditPoolBadgeEligibilityFactory } from '../eligibility/fetch-auditpool-badge-eligibility.factory';
-import { FetchPreSaleBadgeEligibilityFactory } from '../eligibility/fetch-presale-badge-eligibility.factory';
-import { SettingsAdapter } from '../../../adapters/outbound/environment/settings.adapter';
+import {FetchAuditPoolEarlyValidatorBadgeEligibilityFactory} from '../eligibility/fetch-auditpool-early-validator-badge-eligibility.factory';
+import {FetchAggregatedBadgeEligibilityUseCase} from '../../../../domain/badge/usecases/fetch-aggregated-badge-eligibility.usecase';
+import {FetchAuditPoolBadgeEligibilityFactory} from '../eligibility/fetch-auditpool-badge-eligibility.factory';
+import {FetchPreSaleBadgeEligibilityFactory} from '../eligibility/fetch-presale-badge-eligibility.factory';
+import {SettingsAdapter} from '../../../adapters//config/settings.adapter';
 
 export class FetchAggregatedBadgeEligibilityFactory {
   static instance: FetchAggregatedBadgeEligibilityUseCase;
@@ -25,6 +25,7 @@ export class FetchAggregatedBadgeEligibilityFactory {
         fetchAuditPoolEarlyValidatorBadgeEligibilityUseCase,
       );
     }
+
     return this.instance;
   }
 }

@@ -1,9 +1,9 @@
 export enum BadgeEventType {
-  MINT = 'Mint',
+	MINT = 'Mint',
 }
 
-export interface BadgeEvent {
-  name: BadgeEventType;
-  transactionHash: string;
-  referenceMetadataId: number;
-}
+export type BadgeEvent = {
+	name: BadgeEventType;
+	transactionHash: string;
+	referenceMetadataId: number;
+};

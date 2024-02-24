@@ -1,9 +1,8 @@
-import { CreateSettlementInteractor } from '../interactors/create-settlement.interactor';
-import { ProcessOrderSettlementInteractor } from '../interactors/process-order-settlement.interactor';
-import { FetchOrderBatchInteractor } from '../../order/interactors/fetch-order-batch.interactor';
-import { Order } from '../../order/entities/order.entity';
-import { OrderWithPayment } from '../../order/dtos/order-with-payment.dto';
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type OrderWithPayment } from '../../order/dtos/order-with-payment.dto';
+import { type FetchOrderBatchInteractor } from '../../order/interactors/fetch-order-batch.interactor';
+import { type CreateSettlementInteractor } from '../interactors/create-settlement.interactor';
+import { type ProcessOrderSettlementInteractor } from '../interactors/process-order-settlement.interactor';
 
 const DEFAULT_BATCH_SIZE = 50;
 export class CreateSettlementUseCase implements CreateSettlementInteractor {

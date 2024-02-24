@@ -1,57 +1,58 @@
-import { SequenceEntity } from '../../common/sequence-entity';
-import { Settings } from '../../common/settings';
-import { Props } from '../../common/entity';
-import { IsoCodeType } from '../../common/enums/iso-codes.enum';
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { LayerType } from '../../common/enums/layer-type.enum';
-import { Chain } from '../../common/entities/chain.entity';
+import {SequenceEntity} from '../../common/sequence-entity';
+import {type Settings} from '../../common/settings';
+import {type Props} from '../../common/entity';
+import {type IsoCodeType} from '../../common/enums/iso-codes.enum';
+import {type NetworkType} from '../../common/enums/network-type.enum';
+import {LayerType} from '../../common/enums/layer-type.enum';
+import {Chain} from '../../common/entities/chain.entity';
 
-const nullAddress = '0x0000000000000000000000000000000000000000';
+const CHAIN_NULL_OR_MINT = '0x0000000000000000000000000000000000000000';
 
 export type CryptoWallet = string;
 
 export enum JournalMovementType {
-  Debit = 'D',
-  Credit = 'C',
+	Debit = 'D',
+	Credit = 'C',
 }
 
 export enum JournalEntryType {
-  Join = 'JOIN',
-  Exit = 'EXIT',
-  Movement = 'MOVE',
+	Join = 'JOIN',
+	Exit = 'EXIT',
+	Movement = 'MOVE',
 }
 
 export enum AccountGroup {
-  Holder = 'HL',
-  PreSale = 'PS',
-  Sale = 'SL',
-  Treasury = 'TS',
-  Bridge = 'BG',
-  Chain = 'CN',
-  YieldPool = 'YP',
-  CarbonPool = 'CP',
-  StockOptionPool = 'SP',
-  DecentralizedExchange = 'DX',
+	Holder = 'HL',
+	PreSale = 'PS',
+	Sale = 'SL',
+	Treasury = 'TS',
+	Bridge = 'BG',
+	Chain = 'CN',
+	YieldPool = 'YP',
+	CarbonPool = 'CP',
+	StockOptionPool = 'SP',
+	DecentralizedExchange = 'DX',
 }
 
-export interface JournalEntryProps extends Props {
-  movementType: JournalMovementType;
-  chainId: NetworkType;
-  transactionHash: string;
-  logIndex: number;
-  entryType: JournalEntryType;
-  account: CryptoWallet;
-  accountGroup: AccountGroup;
-  amount: number;
-  uint256amount: string;
-  entryDate: Date;
-  isoCode: IsoCodeType;
-  blockNumber: number;
-  gasUsed: number;
-  cumulativeGasUsed: number;
-  effectiveGasPrice: number;
-}
+export type JournalEntryProps = {
+	movementType: JournalMovementType;
+	chainId: NetworkType;
+	transactionHash: string;
+	logIndex: number;
+	entryType: JournalEntryType;
+	account: CryptoWallet;
+	accountGroup: AccountGroup;
+	amount: number;
+	uint256amount: string;
+	entryDate: Date;
+	isoCode: IsoCodeType;
+	blockNumber: number;
+	gasUsed: number;
+	cumulativeGasUsed: number;
+	effectiveGasPrice: number;
+} & Props;
 
+// TODO: mintar os contratos de manager!
 const routing = {
   ['0x0cC2CaeD31490B546c741BD93dbba8Ab387f7F2c']: AccountGroup.Bridge,
   ['0xd531Cf2142D9b9Dc8b077dF3c4E93B46E7Cf879a']: AccountGroup.Bridge,
@@ -70,9 +71,9 @@ const routing = {
 
 export class JournalEntry extends SequenceEntity<JournalEntryProps> {
   private static AccountGroupingCache;
-  private _chain: Chain;
+  private readonly _chain: Chain;
   constructor(
-    { blockchain: { ethereum, polygon } }: Settings,
+    {blockchain: {ethereum, polygon}}: Settings,
     props: JournalEntryProps,
     id?: number,
   ) {
@@ -86,14 +87,14 @@ export class JournalEntry extends SequenceEntity<JournalEntryProps> {
           [ethereum.contracts.dynamicSaleAddress]: AccountGroup.Sale,
           [ethereum.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
           ...routing,
-          [nullAddress]: AccountGroup.Chain,
+          [CHAIN_NULL_OR_MINT]: AccountGroup.Chain,
         },
         [LayerType.L2]: {
           [polygon.contracts.saleAddress]: AccountGroup.Sale,
           [polygon.contracts.dynamicSaleAddress]: AccountGroup.Sale,
           [polygon.contracts.gnosisSafeAddress]: AccountGroup.Treasury,
           ...routing,
-          [nullAddress]: AccountGroup.Chain,
+          [CHAIN_NULL_OR_MINT]: AccountGroup.Chain,
         },
       };
     }

@@ -1,14 +1,14 @@
 import { Id } from './uuid';
 
-const isEntity = (v: any): v is Entity<any> => {
+const isEntity = (v: object): v is Entity<object> => {
   return v instanceof Entity;
 };
 
 export type UniqueEntityUUID = string;
 
-export interface Props {
+export type Props = {
   createdAt?: Date;
-}
+};
 
 export abstract class Entity<T extends Props> {
   protected readonly _id: UniqueEntityUUID;

@@ -1,7 +1,7 @@
-import { IsoCodeType } from '../../common/enums/iso-codes.enum';
-import { CurrencyAmount } from '../value-objects/currency-amount.value-object';
-import { QuotationAggregate } from '../value-objects/quotation-aggregate.value-object';
-import { CreateQuoteUseCase } from './create-quote.usecase';
+import { type IsoCodeType } from '../../common/enums/iso-codes.enum';
+import { type CurrencyAmount } from '../value-objects/currency-amount.value-object';
+import { type QuotationAggregate } from '../value-objects/quotation-aggregate.value-object';
+import { type CreateQuoteUseCase } from './create-quote.usecase';
 
 export class KnnToCurrenciesUseCase {
   constructor(readonly createQuoteUseCase: CreateQuoteUseCase) {}

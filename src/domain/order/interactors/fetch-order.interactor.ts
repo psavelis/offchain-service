@@ -1,8 +1,8 @@
-import { BrazilianPixOrderDto } from '../dtos/brazilian-pix-order.dto';
-import { OrderDto } from '../dtos/order.dto';
+import {type BrazilianPixOrderDto} from '../dtos/brazilian-pix-order.dto';
+import {type OrderDto} from '../dtos/order.dto';
 
 export const FetchOrder = Symbol('FETCH_ORDER');
 
-export interface FetchOrderInteractor {
-  fetch(id: string): Promise<BrazilianPixOrderDto | OrderDto | undefined>;
-}
+export type FetchOrderInteractor = {
+	fetch(id: string): Promise<BrazilianPixOrderDto | OrderDto | undefined>;
+};

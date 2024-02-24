@@ -1,7 +1,7 @@
-import { AvailableSupplyDto } from '../dtos/available-supply.dto';
+import {type AvailableSupplyDto} from '../dtos/available-supply.dto';
 
 export const FetchAvailableSupply = Symbol('FETCH_AVAILABLE_SUPPLY');
 
-export interface FetchAvailableSupplyInteractor {
-  fetch(): Promise<AvailableSupplyDto>;
-}
+export type FetchAvailableSupplyInteractor = {
+	fetch(): Promise<AvailableSupplyDto>;
+};

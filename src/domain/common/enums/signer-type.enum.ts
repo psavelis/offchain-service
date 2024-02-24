@@ -1,6 +1,6 @@
 export enum SignerType {
-  PreSaleClaimManager,
-  SaleClaimManager,
-  DynamicSaleClaimManager,
-  BadgesMinter,
+	PreSaleClaimManager,
+	SaleClaimManager,
+	DynamicSaleClaimManager,
+	BadgesMinter,
 }

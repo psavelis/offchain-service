@@ -1,14 +1,14 @@
 import { Settings } from '../../../common/settings';
 import { FetchableBadgeEventPort } from '../../ports/fetchable-badge-event.port';
 import { BadgeEventType } from '../../dtos/badge-event.dto';
-import { FetchableAuditPoolEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-event.port';
-import { AuditPoolEventType } from '../../dtos/impactful-cultivation/auditpool-event.dto';
+import { FetchableAuditPoolRemoteEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-remote-event.port';
 import { FetchableAuditPoolStakesPort } from '../../ports/impactful-cultivation/fetchable-auditpool-stakes.port';
 import { FetchAuditPoolBadgeEligibilityUseCase } from './fetch-auditpool-badge-eligibility.usecase';
 import { ethers } from 'ethers';
+import { AuditPoolEventType } from '../../../upstream-domains/impactful-cultivation/enums/audit-pool-event.enum';
 
 describe('FetchAuditPoolBadgeEligibilityUseCase', () => {
-  let fetchableAuditPoolEventPort: FetchableAuditPoolEventPort;
+  let fetchableAuditPoolEventPort: FetchableAuditPoolRemoteEventPort;
   let fetchableAuditPoolStakesPort: FetchableAuditPoolStakesPort;
   let fetchableBadgeEventPort: FetchableBadgeEventPort;
   const settings = {

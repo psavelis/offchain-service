@@ -1,4 +1,4 @@
-export interface FetchBadgeEligibilityResponseDto {
-  referenceMetadataId: number;
-  amount?: number;
-}
+export type FetchBadgeEligibilityResponseDto = {
+	referenceMetadataId: number;
+	amount?: number;
+};

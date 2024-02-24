@@ -1,20 +1,19 @@
-import { FixedPointCalculusAdapter } from '../../../../../src/infrastructure/adapters/outbound/bignumbers/calculus/fixed-point-calculus.adapter';
+import { NetworkType } from '../../../../../src/domain/common/enums/network-type.enum';
+import { Settings } from '../../../../../src/domain/common/settings';
 import { Quote } from '../../../../../src/domain/price/entities/quote.entity';
 import { FetchableEthBasisPort } from '../../../../../src/domain/price/ports/fetchable-eth-basis.port';
 import { FetchableEthereumGasPricePort } from '../../../../../src/domain/price/ports/fetchable-ethereum-gas-price.port';
-import { FetchablePolygonGasPricePort } from '../../../../../src/domain/price/ports/fetchable-polygon-gas-price.port';
 import { FetchableKnnBasisPort } from '../../../../../src/domain/price/ports/fetchable-knn-basis.port';
+import { FetchableMaticBasisPort } from '../../../../../src/domain/price/ports/fetchable-matic-basis.port';
+import { FetchablePolygonGasPricePort } from '../../../../../src/domain/price/ports/fetchable-polygon-gas-price.port';
 import { FetchableUsdBasisPort } from '../../../../../src/domain/price/ports/fetchable-usd-basis.port';
+import { PersistableQuotePort } from '../../../../../src/domain/price/ports/persistable-quote.port';
+import { CreateQuoteUseCase } from '../../../../../src/domain/price/usecases/create-quote.usecase';
 import { CurrencyAmount } from '../../../../../src/domain/price/value-objects/currency-amount.value-object';
 import { EthQuoteBasis } from '../../../../../src/domain/price/value-objects/eth-quote-basis.value-object';
 import { KnnQuoteBasis } from '../../../../../src/domain/price/value-objects/knn-quote-basis.value-object';
 import { UsdQuoteBasis } from '../../../../../src/domain/price/value-objects/usd-quote-basis.value-object';
-import { MaticQuoteBasis } from '../../../../../src/domain/price/value-objects/matic-quote-basis.value-object';
-import { CreateQuoteUseCase } from '../../../../../src/domain/price/usecases/create-quote.usecase';
-import { Settings } from '../../../../../src/domain/common/settings';
-import { PersistableQuotePort } from '../../../../../src/domain/price/ports/persistable-quote.port';
-import { FetchableMaticBasisPort } from '../../../../../src/domain/price/ports/fetchable-matic-basis.port';
-import { NetworkType } from '../../../../../src/domain/common/enums/network-type.enum';
+import { FixedPointCalculusAdapter } from '../../../../../src/infrastructure/adapters/unsupported-types/uint256/calculus/fixed-point-calculus.adapter';
 
 class FetchableEthBasisMock implements FetchableEthBasisPort {
   fetch(): Promise<EthQuoteBasis> {

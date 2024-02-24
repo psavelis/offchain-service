@@ -1,4 +1,4 @@
-export interface TransitionInfo {
-  reason: string;
-  pastDue?: Date;
-}
+export type TransitionInfo = {
+	reason: string;
+	pastDue?: Date;
+};

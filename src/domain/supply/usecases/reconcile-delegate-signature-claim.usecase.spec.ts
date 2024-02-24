@@ -1,15 +1,16 @@
 import { IsoCodeType } from '../../common/enums/iso-codes.enum';
 import { NetworkType } from '../../common/enums/network-type.enum';
+import { LoggablePort } from '../../common/ports/loggable.port';
 import {
   Order,
   OrderStatus,
   PaymentOption,
 } from '../../order/entities/order.entity';
 import { FetchableOrderPort } from '../../order/ports/fetchable-order.port';
+import { CurrencyAmount } from '../../price/value-objects/currency-amount.value-object';
+import { OnChainUserReceipt } from '../dtos/onchain-user-receipt.dto';
 import { FetchableDelegateClaimEventPort } from '../ports/fetchable-delegate-claim-event.port';
 import { ReconcileDelegateSignatureClaimUseCase } from './reconcile-delegate-signature-claim.usecase';
-import { LoggablePort } from '../../common/ports/loggable.port';
-import { OnChainUserReceipt } from '../dtos/onchain-user-receipt.dto';
 
 describe('ReconcileDelegateSignatureClaimUseCase', () => {
   let usecase: ReconcileDelegateSignatureClaimUseCase;
@@ -84,7 +85,7 @@ describe('ReconcileDelegateSignatureClaimUseCase', () => {
       totalGas: 10,
       totalNet: 590,
       totalKnn: 60.5,
-      amountOfTokens: {} as any,
+      amountOfTokens: {} as CurrencyAmount,
       userIdentifier: 'tech@kannacoin.io',
       identifierType: 'EA',
       endToEndId: 'ZWZRTSDZXZ',

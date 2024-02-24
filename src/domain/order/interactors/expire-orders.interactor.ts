@@ -1,5 +1,5 @@
 export const ExpireOrders = Symbol('EXPIRE_ORDERS');
 
-export interface ExpireOrdersInteractor {
-  execute(): Promise<void>;
-}
+export type ExpireOrdersInteractor = {
+	execute(): Promise<void>;
+};

@@ -1,99 +1,126 @@
+# Offchain-Service
 
 <p align="center">
-    <img src="https://kannacoin.wpenginepowered.com/wp-content/uploads/2023/01/knn-green@2x.png" width="60%" alt="Kanna">
+  <img src="https://kannacoin.wpenginepowered.com/wp-content/uploads/2023/01/knn-green@2x.png" width="300px" alt="Kanna Logo">
 </p>
 
 <p align="center">
-<img src="https://img.shields.io/badge/language-typescript-blue.svg?style=flat" alt="Typescript">
-<img src="https://img.shields.io/badge/v16.16-node%20js-yellowgreen.svg?style=flat" alt="NodeJS">
-<img src="https://img.shields.io/badge/v9.1.6-nest%20js-critical.svg?style=flat" alt="NestJS">
-<img src="https://img.shields.io/badge/v5.7.2-ethers-blueviolet.svg?style=flat" alt="Ethers">
-<br/>
-<img src="https://img.shields.io/badge/powered%20by-chainlink-darkblue.svg?style=flat" alt="Powered by Chainlink">
+  <img src="https://img.shields.io/badge/language-typescript-blue.svg?style=flat" alt="Typescript Badge">
+  <img src="https://img.shields.io/badge/v16.16-node%20js-yellowgreen.svg?style=flat" alt="NodeJS Badge">
+  <img src="https://img.shields.io/badge/v9.1.6-nest%20js-critical.svg?style=flat" alt="NestJS Badge">
+  <img src="https://img.shields.io/badge/v5.7.2-ethers-blueviolet.svg?style=flat" alt="Ethers Badge">
+  <img src="https://img.shields.io/badge/powered%20by-chainlink-darkblue.svg?style=flat" alt="Chainlink Badge">
 </p>
-<hr/>
 
-Welcome to the Offchain Purchase Service repository! This repository contains a NodeJS API created on top of NestJS framework using ports and adapters architecture and integrated to Ethereum and Polygon blockchains. The API is responsible for offering order and reservation of KNN Token (ERC20) through Brazilian Pix Payment system and it is designed to be easy to use and customize.
+---
 
-# Roadmap
-- [x] Public API and Open to integrate
-- [x] Oracle-based quotations for Fiduciary(BRL/USD), Crypto(ETH/MATIC/KNN) and network **Gas** fees powered by **Chainlink**
-- [x] Blockchain Integrated
-- [x] BaaS integration for Brazillian instant payment identification of purchases
-- [x] LGPD Compliant (Brazilian law of data protection)
-- [x] Layer 1 Ethereum support
-- [x] Layer 2 Polygon
-- [x] NFT Minting
+## Introduction
 
-# Features
-- [x] ECDSA Signing
-- [x] Aes256 based Crytography
-- [x] JSON Rpc Client
-- [x] SmartContract integration
-- [x] Multiple inbound ports/driving adapters (API, Worker, CLI)
+The **Offchain-Service** is built upon a robust Node.js backend, utilizing the NestJS framework and adopting a monolith-first architecture as recommended by Martin Fowler. This strategic approach lays a solid foundation for our application, accommodating multiple primary adapters including an API, worker processes, and a command-line interface (CLI). This design choice ensures a comprehensive understanding of the system's capabilities and provides a clear pathway for a future transition to microservices.
 
+Our service is structured around several key operational domains:
 
-# Getting Started
+- **Authentication & Authorization**: Ensuring secure system access and permissions management.
+- **Clearing & Settlement**: Streamlining transaction processing and fund distribution.
+- **Healthcheck & Monitoring**: Overseeing system health and performance metrics.
+- **Payment & Ledger**: Handling financial transactions and maintaining accurate records.
+- **Price & Statistics**: Delivering data analytics and real-time market pricing.
+- **Supply & Order**: Managing the distribution of tokens and the processing of orders.
+- **Transaction & Badge**: Documenting transactional activities and rewarding user engagement.
 
-To get started with the Offchain Purchase Service API, you will need to have Node.js (16.16/NVM) and npm installed on your machine. After cloning the repository, navigate to the project directory and run the following command to install the necessary dependencies:
+Collaboration with external upstream domains further extends our capabilities, enhancing our service offerings.
 
-```sh
-# toggle correct node version
+Informed by Domain-Driven Design (DDD), our architecture emphasizes core domains such as **Impactful Cultivation** and **Presale (Legacy)**. The forthcoming Impactful Cultivation domain module will integrate various components, including audit pools, audit modules, entry manifests, evaluation metrics, compliance checklists, and regulatory benchmarks. This integration will significantly improve our service's ability to manage and verify governance aspects within cultivation practices.
+
+We are dedicated to evolving our service in alignment with industry best practices and standards, ensuring scalability and maintainability for a reliable and efficient platform.
+
+## Architectural Decisions
+
+Interactors are designed to be the middleman between the presentation layer and the data layer, ensuring that the business rules are applied correctly and that the data is presented in a format suitable for primary or driving adapters.
+
+The term “interactor” is high level abstraction of “use case”, this pattern helps in decoupling the core logic of the application from external concerns in order to produce a more maintainable and testable code.
+
+## Roadmap
+
+Here's our progress on key milestones:
+
+- [x] Oracle-based quotations powered by Chainlink for fiat (BRL/USD), crypto (ETH/MATIC/KNN), and network gas fees
+- [x] Security audit completed by CoinFabrik
+- [x] Public API endpoints available
+- [x] Support for multiple blockchains and bridge functionalities
+- [x] Compliance with various EIP standards for enhanced functionality and security
+- [x] Integration with BaaS for instant payment verification in Brazil
+- [x] Adherence to LGPD for data protection
+- [x] Layer 1 and Layer 2 support for Ethereum and Polygon
+- [x] NFT minting feature
+- [x] Integration with the Impactful Cultivation Program
+- [x] Implementation of role-based access control (RBAC)
+
+## Features
+
+- Secure ECDSA signature implementation
+- AES-256 encryption for data security
+- Efficient JSON RPC communication
+- Seamless smart contract interactions
+- Diverse inbound ports and driving adapters including API, Worker, and CLI
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v16.16)
+- npm (Node Package Manager)
+
+We recommend using NVM (Node Version Manager) for seamless Node.js version management.
+
+### Installation
+
+Follow these steps to set up the project locally:
+
+```bash
+# Ensure you're using the correct Node.js version
 nvm use
 
-# alternatively, you can install it by using:
-# nvm install 16
+# Install Node.js v16 if not already installed
+nvm install 16
 
-# install dependencies
+# Install dependencies
 npm install
 ```
 
-## Local Development
-You will also need to create a .env file in the root of the project directory, with the following variables:
+### Configuration
 
-Once you have installed the dependencies and set up the environment variables, you can start the API by running the following command:
+Populate a `.env` file with the required environment variables in the project's root directory.
 
-```sh
-npm run start:dev
-```
+### Running the Service
 
-## Or using Docker 🐳
-```sh
-docker-compose up --build
-```
+- **Development Mode:**
 
-# Available Scripts
+  ```bash
+  npm run start:dev
+  ```
 
-In the project directory, you can run the following commands:
-### `npm test`
+- **Docker:**
 
-Runs the Jest test runner to execute all unit tests.
-### `npm run build`
+  ```bash
+  docker-compose up --build
+  ```
 
-Builds the project. The build artifacts will be stored in the dist/ directory.
-### `npm start`
+## Scripts
 
-Starts the NestJS server.
-### `npm run start:dev`
+- `npm test`: Run unit tests with Jest.
+- `npm run build`: Compile the project. Output is in the `dist/` directory.
+- `npm start`: Start the NestJS server.
+- `npm run start:dev`: Launch the server in development mode with hot reload.
+- `npm run start:debug`: Debug the server.
+- `npm run migrations:create`: Manage database migrations.
+- `npm run migrations`: Apply database migrations in production.
+- `npm run healthcheck`: Conduct a health check on the API.
 
-Starts the NestJS server in watch mode.
-### `npm run start:debug`
+## Contributing
 
-Starts the NestJS server in debug mode.
+Your contributions make our service better! Issues and pull requests are welcome to explore the path to blockchain efficiency.
 
-### `npm run migrations:create`
+## Contact
 
-Rolls back all database migrations using Knex.
-### `npm run migrations`
-
-Runs all pending database migrations in production mode using Knex.
-### `npm run healthcheck`
-
-Runs a healthcheck on the API in production mode using the CLI.
-
-
-# 🤝 Contributing
-
-We welcome contributions to our API! If you find any issues or have any suggestions, please open an issue or a pull request.
-
-Thank you for taking the time to check out the Offchain Purchase Service repository! If you have any questions or feedback, please don't hesitate to reach out.
+Reach out to @Kanna-Coin for any queries or feedback about this project.

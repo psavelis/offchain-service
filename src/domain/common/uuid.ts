@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const UuidEncoder = require('uuid-encoder');
 const encoder = new UuidEncoder('base36');
 import { v4 as uuidv4 } from 'uuid';

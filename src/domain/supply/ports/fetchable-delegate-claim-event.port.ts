@@ -1,5 +1,5 @@
-import { OnChainUserReceipt } from '../dtos/onchain-user-receipt.dto';
+import {type OnChainUserReceipt} from '../dtos/onchain-user-receipt.dto';
 
-export interface FetchableDelegateClaimEventPort {
-  fetch(): Promise<OnChainUserReceipt[]>;
-}
+export type FetchableDelegateClaimEventPort = {
+	fetch(): Promise<OnChainUserReceipt[]>;
+};

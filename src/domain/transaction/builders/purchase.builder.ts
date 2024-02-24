@@ -1,25 +1,25 @@
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { unsafeMul } from '../../common/util';
-import { Purchase, PurchaseProps } from '../entities/purchase.entity';
+import {NetworkType} from '../../common/enums/network-type.enum';
+import {unsafeMul} from '../../common/util';
+import {Purchase, type PurchaseProps} from '../entities/purchase.entity';
 
 const ETH_PRECISION = 1e18;
 const USD_PRECISION = 1e8;
 
 export class PurchaseBuilder {
   private props: PurchaseProps;
-  private id?: number;
+  private readonly id?: number;
 
-  private contractAddress: string;
-  private network: string;
-  private cryptoWallet: string;
-  private purchaseTransactionHash: string;
-  private knnPriceInUsd: number;
+  private readonly contractAddress: string;
+  private readonly network: string;
+  private readonly cryptoWallet: string;
+  private readonly purchaseTransactionHash: string;
+  private readonly knnPriceInUsd: number;
   private paymentDate: Date;
-  private totalKnn: number;
-  private gasUsed: number;
-  private cumulativeGasUsed: number;
-  private effectiveGasPrice: number;
-  private blockNumber: number;
+  private readonly totalKnn: number;
+  private readonly gasUsed: number;
+  private readonly cumulativeGasUsed: number;
+  private readonly effectiveGasPrice: number;
+  private readonly blockNumber: number;
 
   constructor(
     from: string,
@@ -70,7 +70,7 @@ export class PurchaseBuilder {
     ethPriceInUsd: number,
     totalEth: number,
     pastDue: Date,
-  ): PurchaseBuilder {
+  ): this {
     this.paymentDate = pastDue;
 
     const totalGasEth = unsafeMul(
@@ -106,7 +106,7 @@ export class PurchaseBuilder {
     maticPriceInUsd: number,
     totalMatic: number,
     pastDue: Date,
-  ): PurchaseBuilder {
+  ): this {
     this.paymentDate = pastDue;
 
     const totalGasMatic = unsafeMul(

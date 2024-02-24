@@ -1,12 +1,12 @@
-export interface StaticPix {
-  payload: string;
-  base64: string;
-}
+export type StaticPix = {
+	payload: string;
+	base64: string;
+};
 
-export interface GeneratePixPort {
-  generate(
-    value: number,
-    endToEndId: string,
-    message: string,
-  ): Promise<StaticPix>;
-}
+export type GeneratePixPort = {
+	generate(
+		value: number,
+		endToEndId: string,
+		message: string,
+	): Promise<StaticPix>;
+};

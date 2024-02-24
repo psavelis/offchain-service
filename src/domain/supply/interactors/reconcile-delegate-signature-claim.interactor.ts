@@ -1,7 +1,7 @@
-import { OnchainDelegateClaimEvent } from '../dtos/onchain-delegate-claim-event.dto';
+import {type OnchainDelegateClaimEvent} from '../dtos/onchain-delegate-claim-event.dto';
 
 export const ReconcileDelegateClaim = Symbol('RECONCILE_DELEGATE_CLAIM');
 
-export interface ReconcileDelegateSignatureClaimInteractor {
-  execute(): Promise<OnchainDelegateClaimEvent[]>;
-}
+export type ReconcileDelegateSignatureClaimInteractor = {
+	execute(): Promise<OnchainDelegateClaimEvent[]>;
+};

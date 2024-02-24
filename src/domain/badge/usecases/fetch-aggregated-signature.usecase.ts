@@ -1,16 +1,15 @@
-import { SignMintInteractor } from '../interactors/sign-mint.interactor';
-import { FetchBadgeSignatureInteractor } from '../interactors/fetch-badge-signature.interactor';
-import { SignedMintResponseDto } from '../dtos/signed-mint-response.dto';
-import { NetworkType } from '../../common/enums/network-type.enum';
-import { Chain } from '../../common/entities/chain.entity';
-import { VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
+import {type SignMintInteractor} from '../interactors/sign-mint.interactor';
+import {type FetchBadgeSignatureInteractor} from '../interactors/fetch-badge-signature.interactor';
+import {type SignedMintResponseDto} from '../dtos/signed-mint-response.dto';
+import {NetworkType} from '../../common/enums/network-type.enum';
+import {Chain} from '../../common/entities/chain.entity';
+import {type VerifyMintInteractor} from '../interactors/verify-mint-request.interactor';
 
 export class FetchAggregatedSignatureUseCase
-  implements FetchBadgeSignatureInteractor
-{
+implements FetchBadgeSignatureInteractor {
   constructor(
-    readonly signAggregatedMintInteractor: SignMintInteractor,
-    readonly verifyAggregatedMintInteractor: VerifyMintInteractor,
+		readonly signAggregatedMintInteractor: SignMintInteractor,
+		readonly verifyAggregatedMintInteractor: VerifyMintInteractor,
   ) {}
 
   async execute(

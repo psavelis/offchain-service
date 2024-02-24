@@ -1,28 +1,27 @@
-import { ProcessOrderSettlementInteractor } from '../interactors/process-order-settlement.interactor';
-import { LoggablePort } from '../../common/ports/loggable.port';
-import { Settings } from '../../common/settings';
-import { OrderWithPayment } from '../../order/dtos/order-with-payment.dto';
-import { DispatchSupplyInteractor } from '../../supply/interactors/dispatch-supply.interactor';
-import { OrderWithReceipt } from '../../supply/dtos/order-with-receipt.dto';
-import { CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
-import { MailerPort } from '../../common/ports/mailer.port';
+import {type ProcessOrderSettlementInteractor} from '../interactors/process-order-settlement.interactor';
+import {type LoggablePort} from '../../common/ports/loggable.port';
+import {type Settings} from '../../common/settings';
+import {type OrderWithPayment} from '../../order/dtos/order-with-payment.dto';
+import {type DispatchSupplyInteractor} from '../../supply/interactors/dispatch-supply.interactor';
+import {type OrderWithReceipt} from '../../supply/dtos/order-with-receipt.dto';
+import {type CreateOrderTransitionInteractor} from '../../order/interactors/create-order-status-transition.interactor';
+import {type MailerPort} from '../../common/ports/mailer.port';
 import purchaseConfirmationTemplate from '../../order/mails/purchase-confirmation.template';
-import { formatDecimals } from '../../common/util';
-import { EncryptionPort } from '../../common/ports/encryption.port';
-import { Chain } from '../../common/entities/chain.entity';
+import {formatDecimals} from '../../common/util';
+import {type EncryptionPort} from '../../common/ports/encryption.port';
+import {Chain} from '../../common/entities/chain.entity';
 
 const DEFAULT_KNN_DECIMALS = 8;
 
 export class ProcessOrderSettlementUseCase
-  implements ProcessOrderSettlementInteractor
-{
+implements ProcessOrderSettlementInteractor {
   constructor(
-    readonly settings: Settings,
-    readonly logger: LoggablePort,
-    readonly encryptionPort: EncryptionPort,
-    readonly dispatchSupplyInteractor: DispatchSupplyInteractor,
-    readonly createOrderTransitionInteractor: CreateOrderTransitionInteractor,
-    readonly mailer: MailerPort,
+		readonly settings: Settings,
+		readonly logger: LoggablePort,
+		readonly encryptionPort: EncryptionPort,
+		readonly dispatchSupplyInteractor: DispatchSupplyInteractor,
+		readonly createOrderTransitionInteractor: CreateOrderTransitionInteractor,
+		readonly mailer: MailerPort,
   ) {}
 
   async execute(params: OrderWithPayment): Promise<void> {
@@ -34,7 +33,7 @@ export class ProcessOrderSettlementUseCase
       );
     }
 
-    const { order, receipt }: OrderWithReceipt =
+    const {order, receipt}: OrderWithReceipt =
       await this.dispatchSupplyInteractor.execute(params);
 
     if (!receipt?.transactionHash) {
@@ -42,6 +41,7 @@ export class ProcessOrderSettlementUseCase
         `[process-order-settlment] failed! receipt: ${JSON.stringify(receipt)}`,
       );
     }
+
     await this.createOrderTransitionInteractor.execute(order, {
       reason: `#${params.payment.sequence} settled from payment: ${params.payment.id} and txn: ${receipt.transactionHash}`,
     });

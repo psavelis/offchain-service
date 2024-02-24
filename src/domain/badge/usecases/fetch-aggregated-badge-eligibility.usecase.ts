@@ -1,26 +1,26 @@
-import { FetchBadgeEligibilityResponseDto } from '../dtos/fetch-badge-eligibility-response.dto';
-import { FetchAggregatedBadgeEligibilityInteractor } from '../interactors/fetch-aggregated-badge-eligibility.interactor';
-import { FetchAuditPoolBadgeEligibilityUseCase } from './impactful-cultivation/fetch-auditpool-badge-eligibility.usecase';
-import { FetchPreSaleBadgeEligibilityUseCase } from './presale/fetch-presale-badge-eligibility.usecase';
-import { FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase } from './impactful-cultivation/fetch-auditpool-early-validator-badge-eligibility.usecase';
-import { Settings } from 'src/domain/common/settings';
+import {type FetchBadgeEligibilityResponseDto} from '../dtos/fetch-badge-eligibility-response.dto';
+import {type FetchAggregatedBadgeEligibilityInteractor} from '../interactors/fetch-aggregated-badge-eligibility.interactor';
+import {type FetchAuditPoolBadgeEligibilityUseCase} from './impactful-cultivation/fetch-auditpool-badge-eligibility.usecase';
+import {type FetchPreSaleBadgeEligibilityUseCase} from './presale/fetch-presale-badge-eligibility.usecase';
+import {type FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase} from './impactful-cultivation/fetch-auditpool-early-validator-badge-eligibility.usecase';
+import {type Settings} from 'src/domain/common/settings';
 
 export class FetchAggregatedBadgeEligibilityUseCase
-  implements FetchAggregatedBadgeEligibilityInteractor
-{
+implements FetchAggregatedBadgeEligibilityInteractor {
   private readonly eligibilityStrategyMap: Record<
-    number,
-    {
-      execute(
-        cryptoWallet: string,
-      ): Promise<FetchBadgeEligibilityResponseDto | undefined>;
-    }
-  >;
+	number,
+	{
+		execute(
+			cryptoWallet: string,
+		): Promise<FetchBadgeEligibilityResponseDto | undefined>;
+	}
+	>;
+
   constructor(
-    private readonly settings: Settings,
-    private readonly fetchAuditPoolBadgeEligibilityUseCase: FetchAuditPoolBadgeEligibilityUseCase,
-    private readonly fetchPreSaleBadgeEligibilityUseCase: FetchPreSaleBadgeEligibilityUseCase,
-    private readonly fetchAuditPoolEarlyValidatorBadgeEligibilityUseCase: FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase,
+		private readonly settings: Settings,
+		private readonly fetchAuditPoolBadgeEligibilityUseCase: FetchAuditPoolBadgeEligibilityUseCase,
+		private readonly fetchPreSaleBadgeEligibilityUseCase: FetchPreSaleBadgeEligibilityUseCase,
+		private readonly fetchAuditPoolEarlyValidatorBadgeEligibilityUseCase: FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase,
   ) {
     this.eligibilityStrategyMap = {
       [this.settings.badge.presale.referenceMetadataId]:
@@ -35,7 +35,7 @@ export class FetchAggregatedBadgeEligibilityUseCase
 
   async executeAll(
     cryptoWallet: string,
-  ): Promise<Array<FetchBadgeEligibilityResponseDto>> {
+  ): Promise<FetchBadgeEligibilityResponseDto[]> {
     const results = await Promise.all([
       this.fetchPreSaleBadgeEligibilityUseCase.execute(cryptoWallet),
       this.fetchAuditPoolBadgeEligibilityUseCase.execute(cryptoWallet),
@@ -44,7 +44,7 @@ export class FetchAggregatedBadgeEligibilityUseCase
       ),
     ]);
 
-    return results.filter((r) => r) as Array<FetchBadgeEligibilityResponseDto>;
+    return results.filter((r) => r);
   }
 
   async executeSingle(

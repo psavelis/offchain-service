@@ -1,8 +1,8 @@
-import { LockSupplyDto } from '../dtos/lock-supply.dto';
-import { OnChainReceipt } from '../dtos/onchain-receipt.dto';
+import {type LockSupplyDto} from '../dtos/lock-supply.dto';
+import {type OnChainReceipt} from '../dtos/onchain-receipt.dto';
 
-export interface LockSupplyPort {
-  lock({ amount, nonce }: LockSupplyDto): Promise<OnChainReceipt>;
+export type LockSupplyPort = {
+	lock({amount, nonce}: LockSupplyDto): Promise<OnChainReceipt>;
 
-  verify({ amount, nonce }: LockSupplyDto): Promise<void>;
-}
+	verify({amount, nonce}: LockSupplyDto): Promise<void>;
+};

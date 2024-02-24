@@ -1,7 +1,6 @@
-import { Chain } from '../../common/entities/chain.entity';
-import { QuotationAggregate } from '../../price/value-objects/quotation-aggregate.value-object';
+import { type Chain } from '../../common/entities/chain.entity';
 
-export interface EstimateDelegateOrderDto {
+export type EstimateDelegateOrderDto = {
   recipient: string;
   knnPriceInUSD: string;
   incrementalNonce: string;
@@ -11,4 +10,4 @@ export interface EstimateDelegateOrderDto {
   nonce: string;
   signature: string;
   chain: Chain;
-}
+};

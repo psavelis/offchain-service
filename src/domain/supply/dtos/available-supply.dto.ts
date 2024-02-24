@@ -1,3 +1,3 @@
-export interface AvailableSupplyDto {
-  amountInKNN: string;
-}
+export type AvailableSupplyDto = {
+	amountInKNN: string;
+};

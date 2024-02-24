@@ -1,13 +1,13 @@
 import { ethers } from 'ethers';
 import { Settings } from '../../../common/settings';
 import { FetchableBadgeEventPort } from '../../ports/fetchable-badge-event.port';
-import { FetchableAuditPoolEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-event.port';
+import { FetchableAuditPoolRemoteEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-remote-event.port';
 import { FetchableAuditPoolStakesPort } from '../../ports/impactful-cultivation/fetchable-auditpool-stakes.port';
 import { FetchAuditPoolBadgeEligibilityUseCase } from './fetch-auditpool-badge-eligibility.usecase';
-import { AuditPoolEvent } from '../../dtos/impactful-cultivation/auditpool-event.dto';
+import { AuditPoolRemoteEventDto } from '../../../upstream-domains/impactful-cultivation/dtos/audit-pool-remote-event.dto';
 
 describe('FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase', () => {
-  let fetchableAuditPoolEventPort: FetchableAuditPoolEventPort;
+  let fetchableAuditPoolEventPort: FetchableAuditPoolRemoteEventPort;
   let fetchableAuditPoolStakesPort: FetchableAuditPoolStakesPort;
   let fetchableBadgeEventPort: FetchableBadgeEventPort;
   const settings = {
@@ -78,12 +78,12 @@ describe('FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase', () => {
       .mockResolvedValueOnce([
         {
           blockTimestamp: 100,
-        } as AuditPoolEvent,
+        } as AuditPoolRemoteEventDto,
       ])
       .mockResolvedValueOnce([
         {
           blockTimestamp: 200,
-        } as AuditPoolEvent,
+        } as AuditPoolRemoteEventDto,
       ]);
 
     const fetchAuditPoolBadgeEligibilityUseCase =
@@ -136,7 +136,7 @@ describe('FetchAuditPoolEarlyValidatorBadgeEligibilityUseCase', () => {
       .mockResolvedValueOnce([
         {
           blockTimestamp: 100,
-        } as AuditPoolEvent,
+        } as AuditPoolRemoteEventDto,
       ])
       .mockResolvedValueOnce([]);
 

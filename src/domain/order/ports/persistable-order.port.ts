@@ -1,6 +1,6 @@
-import { Order } from '../entities/order.entity';
+import {type Order} from '../entities/order.entity';
 
-export interface PersistableOrderPort {
-  refresh(order: Order): Promise<void>;
-  create(order: Order): Promise<Order>;
-}
+export type PersistableOrderPort = {
+	refresh(order: Order): Promise<void>;
+	create(order: Order): Promise<Order>;
+};

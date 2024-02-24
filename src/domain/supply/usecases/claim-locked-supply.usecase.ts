@@ -1,31 +1,33 @@
-import { EncryptionPort } from '../../common/ports/encryption.port';
-import { LoggablePort } from '../../common/ports/loggable.port';
+import { type EncryptionPort } from '../../common/ports/encryption.port';
+import { type LoggablePort } from '../../common/ports/loggable.port';
+import { type MailerPort } from '../../common/ports/mailer.port';
 import {
-  SignaturePort,
-  SignatureResult,
+  type SignaturePort,
+  type SignatureResult,
 } from '../../common/ports/signature.port';
-import { Settings } from '../../common/settings';
-import { Id } from '../../common/uuid';
-import { Order, OrderStatus } from '../../order/entities/order.entity';
-import { FetchableOrderPort } from '../../order/ports/fetchable-order.port';
-import { ClaimLockedSupplyDto } from '../dtos/claim-locked-supply.dto';
-import { ClaimLockedSupplyInteractor } from '../interactors/claim-locked-supply.interactor';
+import { type Settings } from '../../common/settings';
 import {
   cryptoWalletRegEx,
   formatDecimals,
   hideEmailPartially,
 } from '../../common/util';
-import { DelegateClaimPort } from '../ports/delegate-claim.port';
-import { MinimalSignedClaim, SignedClaim } from '../dtos/signed-claim.dto';
-import { Challenge } from '../entities/challenge.entity';
-import { PersistableChallengePort } from '../ports/persistable-challenge.port';
-import { CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
-import { FetchableChallengePort } from '../ports/fetchable-challenge.port';
-import { Answer } from '../entities/answer.entity';
-import { PersistableAnswerPort } from '../ports/persistable-answer.port';
-import { MailerPort } from '../../common/ports/mailer.port';
+import { Id } from '../../common/uuid';
+import { OrderStatus, type Order } from '../../order/entities/order.entity';
+import { type CreateOrderTransitionInteractor } from '../../order/interactors/create-order-status-transition.interactor';
+import { type FetchableOrderPort } from '../../order/ports/fetchable-order.port';
 import claimOtpTemplate from '../../supply/mails/claim-otp.template';
-import { Chain } from '../../common/entities/chain.entity';
+import { type ClaimLockedSupplyDto } from '../dtos/claim-locked-supply.dto';
+import {
+  type MinimalSignedClaim,
+  type SignedClaim,
+} from '../dtos/signed-claim.dto';
+import { Answer } from '../entities/answer.entity';
+import { Challenge } from '../entities/challenge.entity';
+import { type ClaimLockedSupplyInteractor } from '../interactors/claim-locked-supply.interactor';
+import { type DelegateClaimPort } from '../ports/delegate-claim.port';
+import { type FetchableChallengePort } from '../ports/fetchable-challenge.port';
+import { type PersistableAnswerPort } from '../ports/persistable-answer.port';
+import { type PersistableChallengePort } from '../ports/persistable-challenge.port';
 
 const DEFAULT_KNN_TRUNCATE_OPTIONS = {
   truncateDecimals: 8,
@@ -71,7 +73,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
   async executeChallenge(entry: ClaimLockedSupplyDto) {
     if (banlistByIP[entry.clientIp]) {
-      this.logger.warning(
+      this.logger.warn(
         `[skip] banned user ${entry.clientIp} (attempted: ${hideEmailPartially(
           entry.emailAddress,
         )})`,
@@ -141,6 +143,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
         reason: `${entry.clientIp} challenged with #${challenge.getId()}`,
       });
     }
+
     const html = this.mailerPort.parserTemplate(claimOtpTemplate, {
       otp: oneTimePassword,
     });
@@ -171,7 +174,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     entry: ClaimLockedSupplyDto,
   ): Promise<MinimalSignedClaim[]> {
     if (banlistByIP[entry.clientIp]) {
-      this.logger.warning(
+      this.logger.warn(
         `[skip] banned user ${entry.clientIp} (attempted: ${hideEmailPartially(
           entry.emailAddress,
         )})`,
@@ -218,7 +221,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
     const verificationHash = this.generateVerificationHash(
       lowerCaseEmailAddress,
-      entry.code!,
+      entry.code,
     );
 
     const currentDate = new Date();
@@ -267,24 +270,25 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
     entry: ClaimLockedSupplyDto,
     userOrders: Order[],
   ) {
-    const signedOrders: Array<SignedClaim> = [];
+    const signedOrders: SignedClaim[] = [];
 
     for (const order of userOrders) {
-      const signature: SignatureResult | null = await this.delegateClaimPort
-        .delegateClaimLocked(entry, order)
-        .catch((err) => {
-          this.logger.error(
-            err,
-            `[signing] delegate-claim failed for OrderId=${order.getId()}`,
-            {
-              ...entry,
-              code: undefined,
-              emailAddress: hideEmailPartially(entry.emailAddress),
-            },
-          );
+      const signature: SignatureResult | undefined =
+        await this.delegateClaimPort
+          .delegateClaimLocked(entry, order)
+          .catch((err) => {
+            this.logger.error(
+              err,
+              `[signing] delegate-claim failed for OrderId=${order.getId()}`,
+              {
+                ...entry,
+                code: undefined,
+                emailAddress: hideEmailPartially(entry.emailAddress),
+              },
+            );
 
-          return null;
-        });
+            return null;
+          });
 
       if (!signature) {
         continue;
@@ -320,7 +324,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
   }
 
   private async reportFailure(entry: ClaimLockedSupplyDto): Promise<void> {
-    this.logger.warning(
+    this.logger.warn(
       `[sec-warning] Attempt failure: ${JSON.stringify({
         ...entry,
         emailAddress: hideEmailPartially(entry.emailAddress),
@@ -339,7 +343,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
 
       await this.persistableChallengePort.deactivate(deactivationHash);
 
-      this.logger.warning(
+      this.logger.warn(
         `[sec-warning] user ${entry.clientIp}@${
           entry.clientAgent
         } permanently banned (#${
@@ -361,7 +365,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
       return [];
     }
 
-    const filtered: Array<Order> = [];
+    const filtered: Order[] = [];
 
     for (const [orderId, order] of Object.entries(orders)) {
       const notEmailIdentifier = order.getIdentifierType() !== 'EA';
@@ -414,7 +418,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
         totalKnnStored < totalKnnExpected - 1;
 
       if (valueNotMatched) {
-        this.logger.warning(
+        this.logger.warn(
           `[sec-warning] inconsistent amount of stored tokens, expected '${totalKnnExpected}' but got '${order.getTotalKnn()}'. (OrderId=${orderId})`,
           JSON.stringify(request),
         );
@@ -426,7 +430,7 @@ export class ClaimLockedSupplyUseCase implements ClaimLockedSupplyInteractor {
         order.getTotalLockedUint256() !== amountOfTokens.unassignedNumber;
 
       if (lockNotMatched) {
-        this.logger.warning(
+        this.logger.warn(
           `[sec-warning] inconsistent amount of locked tokens, expected '${
             amountOfTokens.unassignedNumber
           }' but got '${order.getTotalLockedUint256()}'. (OrderId=${orderId})`,

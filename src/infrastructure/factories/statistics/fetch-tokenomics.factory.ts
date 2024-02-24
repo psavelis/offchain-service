@@ -1,10 +1,10 @@
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
+import { type FetchTokenomicsInteractor } from '../../../domain/statistics/interactors/fetch-tokenomics.interactor';
 import { FetchTokenomicsUseCase } from '../../../domain/statistics/usecases/fetch-tokenomics.usecase';
-import { FetchTokenomicsInteractor } from '../../../domain/statistics/interactors/fetch-tokenomics.interactor';
-import { FetchableKnnSummaryDbAdapter } from '../../adapters/outbound/database/statistics/fetchable-knn-summary.adapter';
-import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
-import { FetchableLockedOrdersSummaryRpcAdapter } from '../../adapters/outbound/json-rpc/statistics/fetchable-locked-orders-summary.adapter';
+import { SettingsAdapter } from '../../adapters/config/settings.adapter';
+import { KnexPostgresDatabase } from '../../repositories/offchain/knex-postgres.db';
+import { FetchableKnnSummaryDbAdapter } from '../../repositories/offchain/statistics/fetchable-knn-summary.adapter';
+import { KannaProvider } from '../../repositories/onchain/kanna.provider';
+import { FetchableLockedOrdersSummaryRpcAdapter } from '../../repositories/onchain/statistics/fetchable-locked-orders-summary.adapter';
 import { KnnToCurrenciesFactory } from '../price/knn-to-currencies.factory';
 
 export class FetchTokenomicsFactory {

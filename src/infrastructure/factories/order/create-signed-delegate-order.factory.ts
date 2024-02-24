@@ -1,16 +1,16 @@
-import { Settings } from '../../../domain/common/settings';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
+import { type Settings } from '../../../domain/common/settings';
+import { SettingsAdapter } from '../../adapters/config/settings.adapter';
 
-import { CreateQuoteFactory } from '../price/create-quote.factory';
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import Logger from '../../adapters/outbound/log/logger';
-import { CreateSignedDelegateOrderInteractor } from '../../../domain/order/interactors/create-signed-delegate-order.interactor';
+import { type LoggablePort } from '../../../domain/common/ports/loggable.port';
+import { type CreateSignedDelegateOrderInteractor } from '../../../domain/order/interactors/create-signed-delegate-order.interactor';
 import { CreateSignedDelegateOrderUseCase } from '../../../domain/order/usecases/create-signed-delegate-order.usecase';
-import { FetchableNonceAndExpirationJsonRpcAdapter } from '../../adapters/outbound/json-rpc/order/fetchable-nonce-and-expiration.adapter';
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
-import { ECDSASignatureAdapter } from '../../adapters/outbound/encryption/ecdsa/ecdsa-signature.adapter';
+import { ECDSASignatureAdapter } from '../../adapters/crypto/ecdsa/ecdsa-signature.adapter';
+import Logger from '../../adapters/logging/logger';
+import { KannaProvider } from '../../repositories/onchain/kanna.provider';
+import { EstimateDelegateOrderJsonRpcAdapter } from '../../repositories/onchain/order/estimate-delegate-order.adapter';
+import { FetchableNonceAndExpirationJsonRpcAdapter } from '../../repositories/onchain/order/fetchable-nonce-and-expiration.adapter';
+import { CreateQuoteFactory } from '../price/create-quote.factory';
 import { KnnToCurrenciesFactory } from '../price/knn-to-currencies.factory';
-import { EstimateDelegateOrderJsonRpcAdapter } from '../../adapters/outbound/json-rpc/order/estimate-delegate-order.adapter';
 
 export class CreateSignedDelegateOrderFactory {
   static instance: CreateSignedDelegateOrderInteractor;

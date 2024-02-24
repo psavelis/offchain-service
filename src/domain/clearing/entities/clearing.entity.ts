@@ -1,31 +1,31 @@
-import { Entity, Props } from '../../common/entity';
-import { Order } from '../../order/entities/order.entity';
-import { Payment } from '../../payment/entities/payment.entity';
+import {Entity, type Props} from '../../common/entity';
+import {type Order} from '../../order/entities/order.entity';
+import {type Payment} from '../../payment/entities/payment.entity';
 
 export enum ClearingStatus {
-  Empty = 1,
-  Faulted = 2,
-  RanToCompletion = 3,
+	Empty = 1,
+	Faulted = 2,
+	RanToCompletion = 3,
 }
 
-export interface Result {
-  order: Order;
-  payment: Payment;
-}
+export type Result = {
+	order: Order;
+	payment: Payment;
+};
 
-export interface ClearingProps extends Props {
-  hash: string;
-  target: string;
-  offset: string;
-  createdAt?: Date;
-  status?: ClearingStatus;
-  endedAt?: Date;
-  durationMs?: number;
-  totalEntries?: number;
-  totalAmount?: number;
-  remarks?: string;
-  sequence?: number;
-}
+export type ClearingProps = {
+	hash: string;
+	target: string;
+	offset: string;
+	createdAt?: Date;
+	status?: ClearingStatus;
+	endedAt?: Date;
+	durationMs?: number;
+	totalEntries?: number;
+	totalAmount?: number;
+	remarks?: string;
+	sequence?: number;
+} & Props;
 
 export class Clearing extends Entity<ClearingProps> {
   constructor(props: ClearingProps, id?: string) {
@@ -97,7 +97,7 @@ export class Clearing extends Entity<ClearingProps> {
     this.props.totalAmount = 0;
     this.props.endedAt = new Date();
     this.props.durationMs =
-      this.props.endedAt!.getTime() - this.props.createdAt!.getTime();
+      this.props.endedAt.getTime() - this.props.createdAt.getTime();
 
     for (const id of ids) {
       const processed = processedPayments[id];

@@ -1,17 +1,17 @@
-import { Chain } from '../../common/entities/chain.entity';
-import { LayerType } from '../../common/enums/layer-type.enum';
-import { SignerType } from '../../common/enums/signer-type.enum';
+import {Chain} from '../../common/entities/chain.entity';
+import {LayerType} from '../../common/enums/layer-type.enum';
+import {SignerType} from '../../common/enums/signer-type.enum';
 import {
-  SignaturePayload,
-  SignaturePort,
+  type SignaturePayload,
+  type SignaturePort,
 } from '../../common/ports/signature.port';
-import { Settings } from '../../common/settings';
-import { SignMintRequestDto } from '../dtos/sign-mint-request.dto';
-import { SignedMintResponseDto } from '../dtos/signed-mint-response.dto';
-import { MintHistory } from '../entities/mint-history.entity';
-import { SignMintInteractor } from '../interactors/sign-mint.interactor';
-import { VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
-import { PersistableMintHistoryPort } from '../ports/persistable-mint-history.port';
+import {type Settings} from '../../common/settings';
+import {type SignMintRequestDto} from '../dtos/sign-mint-request.dto';
+import {type SignedMintResponseDto} from '../dtos/signed-mint-response.dto';
+import {MintHistory} from '../entities/mint-history.entity';
+import {type SignMintInteractor} from '../interactors/sign-mint.interactor';
+import {type VerifyMintInteractor} from '../interactors/verify-mint-request.interactor';
+import {type PersistableMintHistoryPort} from '../ports/persistable-mint-history.port';
 
 const typeHash = {
   [LayerType.L1]:
@@ -26,10 +26,10 @@ const incremental = 1;
 const signatureExpiration = 15 * 60 * 1000; // 15min
 export class SignAggregatedMintUseCase implements SignMintInteractor {
   constructor(
-    readonly settings: Settings,
-    readonly verifyMintInteractor: VerifyMintInteractor,
-    readonly persistableMintHistoryPort: PersistableMintHistoryPort,
-    readonly signaturePort: SignaturePort,
+		readonly settings: Settings,
+		readonly verifyMintInteractor: VerifyMintInteractor,
+		readonly persistableMintHistoryPort: PersistableMintHistoryPort,
+		readonly signaturePort: SignaturePort,
   ) {}
 
   async execute({
@@ -114,7 +114,7 @@ export class SignAggregatedMintUseCase implements SignMintInteractor {
       ],
     };
 
-    const { signature, nonce } = await this.signaturePort.sign(
+    const {signature, nonce} = await this.signaturePort.sign(
       payload,
       SignerType.BadgesMinter,
       new Chain(verifyResult.chainId),
@@ -128,7 +128,7 @@ export class SignAggregatedMintUseCase implements SignMintInteractor {
       incremental,
       nonce,
       dueDate: dueDateInUTCEpoch,
-      switchChainsDate: verifyResult.switchChainsDate!,
+      switchChainsDate: verifyResult.switchChainsDate,
       onHold: verifyResult.onHold,
       chainId: verifyResult.chainId,
     };

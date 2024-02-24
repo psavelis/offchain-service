@@ -1,20 +1,20 @@
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import { Settings } from '../../../domain/common/settings';
-import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import Logger from '../../adapters/outbound/log/logger';
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
-import { ImportPurchasesInteractor } from '../../../domain/transaction/interactors/import-purchases.interactor';
-import { ImportPurchasesUseCase } from '../../../domain/transaction/usecases/import-purchases.usecase';
-import { FetchablePurchasePort } from '../../../domain/transaction/ports/fetchable-purchase.port';
-import { FetchablePurchaseDbAdapter } from '../../adapters/outbound/database/transaction/fetchable-purchase.adapter';
+import {type LoggablePort} from '../../../domain/common/ports/loggable.port';
+import {type Settings} from '../../../domain/common/settings';
+import {KnexPostgresDatabase} from '../../repositories/offchain/knex-postgres.db';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
+import Logger from '../../adapters/logging/logger';
+import {KannaProvider} from '../../repositories/onchain/kanna.provider';
+import {type ImportPurchasesInteractor} from '../../../domain/transaction/interactors/import-purchases.interactor';
+import {ImportPurchasesUseCase} from '../../../domain/transaction/usecases/import-purchases.usecase';
+import {type FetchablePurchasePort} from '../../../domain/transaction/ports/fetchable-purchase.port';
+import {FetchablePurchaseDbAdapter} from '../../repositories/offchain/transaction/fetchable-purchase.adapter';
 
-import { FetchableOnChainPurchaseEventRpcAdapter } from '../../adapters/outbound/json-rpc/transaction/fetchable-onchain-purchase-event.adapter';
-import { PersistablePurchaseDbAdapter } from '../../adapters/outbound/database/transaction/persistable-purchase.adapter';
-import { FetchableOnChainPurchaseEventPort } from '../../../domain/transaction/ports/fetchable-onchain-purchase-event.port';
+import {FetchableOnChainPurchaseEventRpcAdapter} from '../../repositories/onchain/transaction/fetchable-onchain-purchase-event.adapter';
+import {PersistablePurchaseDbAdapter} from '../../repositories/offchain/transaction/persistable-purchase.adapter';
+import {type FetchableOnChainPurchaseEventPort} from '../../../domain/transaction/ports/fetchable-onchain-purchase-event.port';
 
 const disabled = {
-  execute: () => Promise.resolve(),
+  execute: async () => Promise.resolve(),
 };
 
 export class ImportPurchasesFactory {

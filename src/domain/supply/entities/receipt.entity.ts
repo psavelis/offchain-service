@@ -1,18 +1,18 @@
-import { SequenceEntity, Props } from '../../common/sequence-entity';
+import {SequenceEntity, type Props} from '../../common/sequence-entity';
 
-export interface ReceiptProps extends Props {
-  chainId: number;
-  blockNumber: number;
-  transactionHash: string;
-  orderId: string;
-  from: string;
-  to: string;
-  gasUsed: number;
-  cumulativeGasUsed: number;
-  effectiveGasPrice: number;
-  maxPriorityFeePerGas: number;
-  maxFeePerGas: number;
-}
+export type ReceiptProps = {
+	chainId: number;
+	blockNumber: number;
+	transactionHash: string;
+	orderId: string;
+	from: string;
+	to: string;
+	gasUsed: number;
+	cumulativeGasUsed: number;
+	effectiveGasPrice: number;
+	maxPriorityFeePerGas: number;
+	maxFeePerGas: number;
+} & Props;
 
 export class Receipt extends SequenceEntity<ReceiptProps> {
   constructor(props: ReceiptProps) {

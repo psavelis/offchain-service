@@ -26,5 +26,5 @@ phases:
       - echo Writing image definitions file...
       - printf '[{"name":"app","imageUri":"%s"}]' $APP_REPOSITORY_URI:$IMAGE_TAG > app-definitios.json
 artifacts:
-    files:
-      - app-definitios.json
+  files:
+    - app-definitios.json

@@ -1,15 +1,15 @@
-import { Entity, Props } from '../../common/entity';
+import {Entity, type Props} from '../../common/entity';
 
-export interface PaymentProps extends Props {
-  orderId: string;
-  clearingId: string;
-  providerId: string;
-  providerEndToEndId: string;
-  providerTimestamp: string;
-  effectiveDate: string;
-  total: number;
-  sequence?: number;
-}
+export type PaymentProps = {
+	orderId: string;
+	clearingId: string;
+	providerId: string;
+	providerEndToEndId: string;
+	providerTimestamp: string;
+	effectiveDate: string;
+	total: number;
+	sequence?: number;
+} & Props;
 
 export class Payment extends Entity<PaymentProps> {
   constructor(props: PaymentProps, id?: string) {

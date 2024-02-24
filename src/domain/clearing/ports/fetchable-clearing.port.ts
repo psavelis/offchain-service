@@ -1,5 +1,5 @@
-import { Clearing } from '../entities/clearing.entity';
+import {type Clearing} from '../entities/clearing.entity';
 
-export interface FetchableClearingPort {
-  fetchLast(): Promise<Clearing | undefined>;
-}
+export type FetchableClearingPort = {
+	fetchLast(): Promise<Clearing | undefined>;
+};

@@ -1,19 +1,19 @@
-import { Settings } from '../../../common/settings';
-import { FetchBadgeEligibilityResponseDto } from '../../dtos/fetch-badge-eligibility-response.dto';
+import { type Settings } from '../../../common/settings';
 import { cryptoWalletRegEx } from '../../../common/util';
-import { FetchableBadgeEventPort } from '../../ports/fetchable-badge-event.port';
+import { AuditPoolEventType } from '../../../upstream-domains/impactful-cultivation/enums/audit-pool-event.enum';
 import { BadgeEventType } from '../../dtos/badge-event.dto';
-import { FetchableAuditPoolEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-event.port';
-import { AuditPoolEventType } from '../../dtos/impactful-cultivation/auditpool-event.dto';
-import { FetchableAuditPoolStakesPort } from '../../ports/impactful-cultivation/fetchable-auditpool-stakes.port';
+import { type FetchBadgeEligibilityResponseDto } from '../../dtos/fetch-badge-eligibility-response.dto';
+import { type FetchableBadgeEventPort } from '../../ports/fetchable-badge-event.port';
+import { type FetchableAuditPoolRemoteEventPort } from '../../ports/impactful-cultivation/fetchable-auditpool-remote-event.port';
+import { type FetchableAuditPoolStakesPort } from '../../ports/impactful-cultivation/fetchable-auditpool-stakes.port';
 
 export class FetchAuditPoolBadgeEligibilityUseCase {
   static cachedAlreadyMinted: Record<string, boolean> = {};
-  static cachedIsFinalized: Boolean;
+  static cachedIsFinalized: boolean;
 
   constructor(
     readonly settings: Settings,
-    readonly fetchableAuditPoolEventPort: FetchableAuditPoolEventPort,
+    readonly fetchableAuditPoolEventPort: FetchableAuditPoolRemoteEventPort,
     readonly fetchableAuditPoolStakesPort: FetchableAuditPoolStakesPort,
     readonly fetchableBadgeEventPort: FetchableBadgeEventPort,
   ) {}
@@ -55,7 +55,7 @@ export class FetchAuditPoolBadgeEligibilityUseCase {
       ),
     ]);
 
-    if (Boolean(badgeEvents.length)) {
+    if (badgeEvents.length) {
       FetchAuditPoolBadgeEligibilityUseCase.cachedAlreadyMinted[cryptoWallet] =
         true;
 

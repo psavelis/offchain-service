@@ -1,10 +1,10 @@
-import { Settings } from '../../common/settings';
+import { type Settings } from '../../common/settings';
 import { cryptoWalletRegEx } from '../../common/util';
-import { VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
-import { VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
-import { FetchAggregatedBadgeEligibilityUseCase } from './fetch-aggregated-badge-eligibility.usecase';
-import { FetchableMintHistoryPort } from '../ports/fetchable-mint-history.port';
-import { VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
+import { type VerifyMintRequestDto } from '../dtos/verify-mint-request.dto';
+import { type VerifyMintResponseDto } from '../dtos/verify-mint-response.dto';
+import { type VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
+import { type FetchableMintHistoryPort } from '../ports/fetchable-mint-history.port';
+import { type FetchAggregatedBadgeEligibilityUseCase } from './fetch-aggregated-badge-eligibility.usecase';
 const blockSecurityInterval = 900 * 1000;
 
 export class VerifyAggregatedBadgeMintUseCase implements VerifyMintInteractor {
@@ -29,7 +29,7 @@ export class VerifyAggregatedBadgeMintUseCase implements VerifyMintInteractor {
         referenceMetadataId,
       );
 
-    let isVerified = (eligibilityResult?.amount ?? 0) > 0;
+    const isVerified = (eligibilityResult?.amount ?? 0) > 0;
 
     const lastSignatureHistory = await this.fetchableMintHistoryPort.fetchLast(
       cryptoWallet,
@@ -40,7 +40,7 @@ export class VerifyAggregatedBadgeMintUseCase implements VerifyMintInteractor {
 
     const lastSignatureDueDate =
       (lastSignatureHistory?.dueDate ?? new Date(0)) > current
-        ? lastSignatureHistory!.dueDate
+        ? lastSignatureHistory.dueDate
         : undefined;
 
     const switchChainsDate = lastSignatureDueDate
@@ -57,7 +57,7 @@ export class VerifyAggregatedBadgeMintUseCase implements VerifyMintInteractor {
       isVerified,
       amount: Number(isVerified),
       dueDate,
-      chainId: dueDate ? lastSignatureHistory!.chainId : chain.id,
+      chainId: dueDate ? lastSignatureHistory.chainId : chain.id,
       switchChainsDate,
       onHold: Boolean(
         dueDate &&

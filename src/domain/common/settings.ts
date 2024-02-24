@@ -1,11 +1,16 @@
-import { Chain } from './entities/chain.entity';
+import { type Chain } from './entities/chain.entity';
 
-export interface Settings {
+export type Settings = {
   cbc: {
     key: string;
   };
   sha3: {
     identitySecret: string;
+  };
+  ecdsaP521: {
+    key: string;
+    pubKey: string;
+    expiresIn: string;
   };
   oauthProvider: {
     path: string;
@@ -49,7 +54,7 @@ export interface Settings {
       dynamicSaleClaimsManagerKey: string;
       badgesMinterSignerKey: string;
       contracts: {
-        gnosisSafeAddress: any;
+        gnosisSafeAddress: string;
         tokenAddress: string;
         saleAddress: string;
         legacyPreSaleAddress: string;
@@ -121,4 +126,4 @@ export interface Settings {
       };
     };
   };
-}
+};

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { VerifyAggregatedBadgeMintUseCase } from './verify-aggregated-badge-mint.usecase';
-import { NetworkType } from '../../common/enums/network-type.enum';
 import { Chain } from '../../common/entities/chain.entity';
+import { NetworkType } from '../../common/enums/network-type.enum';
+import { VerifyAggregatedBadgeMintUseCase } from './verify-aggregated-badge-mint.usecase';
 
 describe('VerifyAggregatedBadgeMintUseCase', () => {
   let randomWallet;

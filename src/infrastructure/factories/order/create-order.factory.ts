@@ -1,16 +1,16 @@
-import { Settings } from '../../../domain/common/settings';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import { PersistableOrderDbAdapter } from '../../adapters/outbound/database/order/persistable-order.adapter';
-import { GeneratePixQrCodeAdapter } from '../../adapters/outbound/qrcodes/order/generate-pix-qrcode.adapter';
-import { KnexPostgresDatabase } from '../../../infrastructure/adapters/outbound/database/knex-postgres.db';
-import { CreateOrderInteractor } from '../../../domain/order/interactors/create-order.interactor';
+import {type Settings} from '../../../domain/common/settings';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
+import {PersistableOrderDbAdapter} from '../../repositories/offchain/order/persistable-order.adapter';
+import {PixQrCodeAdapter} from '../../adapters/identifiers/qr-codes/pix/pix-qrcode.adapter';
+import {KnexPostgresDatabase} from '../../repositories/offchain/knex-postgres.db';
+import {type CreateOrderInteractor} from '../../../domain/order/interactors/create-order.interactor';
 
-import { CreateBrazilianPixOrderUseCase } from '../../../domain/order/usecases/create-brazilian-pix-order.usecase';
-import { CreateQuoteFactory } from '../price/create-quote.factory';
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
-import Logger from '../../adapters/outbound/log/logger';
-import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
-import { EncryptionPort } from '../../../domain/common/ports/encryption.port';
+import {CreateBrazilianPixOrderUseCase} from '../../../domain/order/usecases/create-brazilian-pix-order.usecase';
+import {CreateQuoteFactory} from '../price/create-quote.factory';
+import {type LoggablePort} from '../../../domain/common/ports/loggable.port';
+import Logger from '../../adapters/logging/logger';
+import {Aes256EncryptionAdapter} from '../../adapters/crypto/aes256/aes-256-encryption.adapter';
+import {type EncryptionPort} from '../../../domain/common/ports/encryption.port';
 
 export class CreateOrderFactory {
   static instance: CreateOrderInteractor;
@@ -24,7 +24,7 @@ export class CreateOrderFactory {
         PersistableOrderDbAdapter.getInstance(knexPostgresDb);
 
       const creteQuoteInboundPort = CreateQuoteFactory.getInstance();
-      const generatePixPort = GeneratePixQrCodeAdapter.getInstance(settings);
+      const generatePixPort = PixQrCodeAdapter.getInstance(settings);
 
       const encryptionPort: EncryptionPort =
         Aes256EncryptionAdapter.getInstance();

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { FetchAggregatedSignatureUseCase } from './fetch-aggregated-signature.usecase';
 import { SignMintInteractor } from '../interactors/sign-mint.interactor';
 import { VerifyMintInteractor } from '../interactors/verify-mint-request.interactor';
+import { FetchAggregatedSignatureUseCase } from './fetch-aggregated-signature.usecase';
 
 describe('FetchAggregatedSignatureUseCase', () => {
   let signAggregatedMintInteractor: SignMintInteractor;

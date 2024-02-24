@@ -1,28 +1,28 @@
-import { Props, SequenceEntity } from '../../common/sequence-entity';
+import {type Props, SequenceEntity} from '../../common/sequence-entity';
 
-export interface PurchaseProps extends Props {
-  paymentDate: Date;
-  totalKnn: number;
+export type PurchaseProps = {
+	paymentDate: Date;
+	totalKnn: number;
 
-  knnPriceInUsd: number;
-  totalUsd: number;
-  totalGasUsd: number;
+	knnPriceInUsd: number;
+	totalUsd: number;
+	totalGasUsd: number;
 
-  contractAddress: string;
-  network: string;
-  cryptoWallet: string;
-  purchaseTransactionHash: string;
+	contractAddress: string;
+	network: string;
+	cryptoWallet: string;
+	purchaseTransactionHash: string;
 
-  totalEth?: number;
-  totalGasEth?: number;
-  ethPriceInUsd?: number;
-  ethereumBlockNumber?: number;
+	totalEth?: number;
+	totalGasEth?: number;
+	ethPriceInUsd?: number;
+	ethereumBlockNumber?: number;
 
-  totalMatic?: number;
-  totalGasMatic?: number;
-  maticPriceInUsd?: number;
-  polygonBlockNumber?: number;
-}
+	totalMatic?: number;
+	totalGasMatic?: number;
+	maticPriceInUsd?: number;
+	polygonBlockNumber?: number;
+} & Props;
 
 export class Purchase extends SequenceEntity<PurchaseProps> {
   constructor(props: PurchaseProps, id?: number) {
@@ -106,8 +106,8 @@ export class Purchase extends SequenceEntity<PurchaseProps> {
   }
 
   public toJSON(): string {
-    let obj = Object.assign(this);
-    let keys = Object.keys(this.constructor.prototype);
+    const obj = Object.assign(this);
+    const keys = Object.keys(this.constructor.prototype);
     obj.toJSON = undefined;
     return JSON.stringify(obj, keys);
   }

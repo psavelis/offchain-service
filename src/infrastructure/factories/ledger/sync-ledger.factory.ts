@@ -1,21 +1,21 @@
-import { Settings } from '../../../domain/common/settings';
-import { SyncLedgerInteractor } from '../../../domain/ledger/interactors/sync-ledger.interactor';
-import { SyncLedgerUseCase } from '../../../domain/ledger/usecases/sync-ledger.usecase';
-import { KnexPostgresDatabase } from '../../adapters/outbound/database/knex-postgres.db';
-import { SettingsAdapter } from '../../adapters/outbound/environment/settings.adapter';
-import { KannaProvider } from '../../adapters/outbound/json-rpc/kanna.provider';
-import { FixedPointCalculusAdapter } from '../../adapters/outbound/bignumbers/calculus/fixed-point-calculus.adapter';
-import { EncryptionPort } from '../../../domain/common/ports/encryption.port';
-import { Aes256EncryptionAdapter } from '../../adapters/outbound/encryption/aes256/aes-256-encryption.adapter';
-import { FetchableJournalEntryDbAdapter } from '../../adapters/outbound/database/ledger/fetchable-journal-entry.adapter';
-import { FetchableJournalTransferEventRpcAdapter } from '../../adapters/outbound/json-rpc/ledger/fetchable-journal-transfer-event.adapter';
-import { FetchableBalanceDbAdapter } from '../../adapters/outbound/database/ledger/fetchable-balance.adapter';
-import { PersistableBalanceJournalDbAdapter } from '../../adapters/outbound/database/ledger/persistable-balance-journal.adapter';
-import Logger from '../../adapters/outbound/log/logger';
-import { LoggablePort } from '../../../domain/common/ports/loggable.port';
+import {type Settings} from '../../../domain/common/settings';
+import {type SyncLedgerInteractor} from '../../../domain/ledger/interactors/sync-ledger.interactor';
+import {SyncLedgerUseCase} from '../../../domain/ledger/usecases/sync-ledger.usecase';
+import {KnexPostgresDatabase} from '../../repositories/offchain/knex-postgres.db';
+import {SettingsAdapter} from '../../adapters/config/settings.adapter';
+import {KannaProvider} from '../../repositories/onchain/kanna.provider';
+import {FixedPointCalculusAdapter} from '../../adapters/unsupported-types/uint256/calculus/fixed-point-calculus.adapter';
+import {type EncryptionPort} from '../../../domain/common/ports/encryption.port';
+import {Aes256EncryptionAdapter} from '../../adapters/crypto/aes256/aes-256-encryption.adapter';
+import {FetchableJournalEntryDbAdapter} from '../../repositories/offchain/ledger/fetchable-journal-entry.adapter';
+import {FetchableJournalTransferEventRpcAdapter} from '../../repositories/onchain/ledger/fetchable-journal-transfer-event.adapter';
+import {FetchableBalanceDbAdapter} from '../../repositories/offchain/ledger/fetchable-balance.adapter';
+import {PersistableBalanceJournalDbAdapter} from '../../repositories/offchain/ledger/persistable-balance-journal.adapter';
+import Logger from '../../adapters/logging/logger';
+import {type LoggablePort} from '../../../domain/common/ports/loggable.port';
 
 const disabled = {
-  execute: () => Promise.resolve(),
+  execute: async () => Promise.resolve(),
 };
 
 export class SyncLedgerFactory {

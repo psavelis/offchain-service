@@ -1,10 +1,11 @@
-const isSequenceEntity = (v: any): v is SequenceEntity<any> => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const isSequenceEntity = (v): v is SequenceEntity<any> => {
   return v instanceof SequenceEntity;
 };
 
-export interface Props {
+export type Props = {
   createdAt?: Date;
-}
+};
 
 export abstract class SequenceEntity<T extends Props> {
   protected readonly _id: number;

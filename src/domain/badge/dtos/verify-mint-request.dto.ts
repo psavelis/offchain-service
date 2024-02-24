@@ -1,7 +1,7 @@
-import { Chain } from 'src/domain/common/entities/chain.entity';
+import {type Chain} from 'src/domain/common/entities/chain.entity';
 
-export interface VerifyMintRequestDto {
-  cryptoWallet: string;
-  chain: Chain;
-  referenceMetadataId: number;
-}
+export type VerifyMintRequestDto = {
+	cryptoWallet: string;
+	chain: Chain;
+	referenceMetadataId: number;
+};

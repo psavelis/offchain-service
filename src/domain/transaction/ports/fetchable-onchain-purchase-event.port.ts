@@ -1,8 +1,8 @@
-import { Purchase } from '../entities/purchase.entity';
+import {type Purchase} from '../entities/purchase.entity';
 
-export interface FetchableOnChainPurchaseEventPort {
-  fetchByBlockNumber(
-    fromEthereumBlock: number,
-    fromPolygonBlock: number,
-  ): Promise<Purchase[]>;
-}
+export type FetchableOnChainPurchaseEventPort = {
+	fetchByBlockNumber(
+		fromEthereumBlock: number,
+		fromPolygonBlock: number,
+	): Promise<Purchase[]>;
+};

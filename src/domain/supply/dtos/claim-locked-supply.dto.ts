@@ -1,7 +1,7 @@
-export interface ClaimLockedSupplyDto {
-  clientAgent: string;
-  clientIp: string;
-  emailAddress: string;
-  code?: string;
-  cryptoWallet?: string;
-}
+export type ClaimLockedSupplyDto = {
+	clientAgent: string;
+	clientIp: string;
+	emailAddress: string;
+	code?: string;
+	cryptoWallet?: string;
+};

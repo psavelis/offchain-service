@@ -1,7 +1,7 @@
-import { ClaimSupplyDto } from '../dtos/claim-supply.dto';
-import { OnChainReceipt } from '../dtos/onchain-receipt.dto';
+import { type ClaimSupplyDto } from '../dtos/claim-supply.dto';
+import { type OnChainReceipt } from '../dtos/onchain-receipt.dto';
 
-export interface ClaimSupplyPort {
+export type ClaimSupplyPort = {
   claim({
     onchainAddress,
     amount,
@@ -9,4 +9,4 @@ export interface ClaimSupplyPort {
   }: ClaimSupplyDto): Promise<OnChainReceipt>;
 
   verify({ onchainAddress, amount, nonce }: ClaimSupplyDto): Promise<void>;
-}
+};
